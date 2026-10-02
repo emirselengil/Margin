@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Baş öğretmen öğrencileri</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="min-height: 960px; display: flex; flex-wrap: wrap; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Geist', system-ui, sans-serif; font-size: 14px">
+  <aside style="flex: 1 1 236px; padding: 14px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+    <div style="height: 40px; padding: 0 6px; display: flex; align-items: center; gap: 10px">
+      <div style="width: 30px; height: 30px; border-radius: 9px; background: {{t.accent}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5.5h10M5 10h6M5 14.5h10" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg></div>
+      <div style="line-height: 1.2"><div style="font-weight: 600">Margin</div><div style="font-size: 12px; color: {{t.muted}}">2026–2027 dönemi</div></div>
+    </div>
+    <nav style="display: flex; flex-direction: column; gap: 2px">
+      <a href="{{L.basListe}}" style="{{navOn}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{t.accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 20a6 6 0 0 0-2.5-4.9"></path></svg>Öğrencilerim<span style="margin-left: auto; font: 400 12px 'Geist Mono', monospace; color: {{t.muted}}">4</span></a>
+    </nav>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <div style="padding: 0 10px 6px; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.06em; color: {{t.muted}}">ASİSTANIM</div>
+      <div style="{{navOff}}"><span style="width: 22px; height: 22px; border-radius: 11px; background: {{t.accentSoft}}; color: {{t.accentText}}; display: inline-flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600">SA</span>Selin Aydın</div>
+    </div>
+    <div style="flex-grow: 1"></div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; background: {{t.surface}}; border: 1px solid {{t.line}}">
+      <span style="{{meAv}}">AK</span>
+      <div style="flex: 1; min-width: 0; line-height: 1.25">
+        <div style="font-weight: 500">Ahmet Kaya</div>
+        <div style="font-size: 12px; color: {{t.muted}}">Baş öğretmen</div>
+      </div>
+      <a href="{{L.giris}}" aria-label="Çıkış yap" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: {{t.muted}}; border-radius: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"></path></svg></a>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; margin: 8px; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: 16px; box-shadow: {{t.shadow}}; display: flex; flex-direction: column; overflow: hidden">
+    <div style="min-height: 56px; padding: 8px 24px; box-sizing: border-box; border-bottom: 1px solid {{t.line}}; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 8px; color: {{t.muted}}">
+        <span>Öğrencilerim</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        <span style="color: {{t.ink}}; font-weight: 500">Salı, 6 Ekim</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span style="height: 30px; padding: 0 10px; border-radius: 8px; background: {{t.sunken}}; border: 1px solid {{t.line}}; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: {{t.ink2}}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+          Salt görüntüleme
+        </span>
+        <button type="button" onClick="{{toggleTheme}}" aria-label="{{themeLabel}}" style="width: 36px; height: 36px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink2}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <sc-if value="{{isDark}}" hint-placeholder-val="{{false}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{true}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        </button>
+      </div>
+    </div>
+
+    <div style="padding: 24px 24px 40px; display: flex; flex-direction: column; gap: 22px">
+      <div>
+        <div style="font: 500 12px 'Geist Mono', monospace; letter-spacing: 0.06em; color: {{t.accentText}}">SALI · 6 EKİM 2026</div>
+        <h1 style="margin: 6px 0 0; font-size: 30px; font-weight: 600; letter-spacing: -0.03em">Günaydın, Ahmet Bey</h1>
+        <p style="margin: 6px 0 0; color: {{t.ink2}}">Öğrencilerinizin etüt kayıtlarını asistanınız Selin Aydın giriyor. Buradan yalnızca takip edebilirsiniz.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px">
+        <div style="padding: 16px; border-radius: 14px; background: {{t.surface2}}; border: 1px solid {{t.line}}">
+          <div style="font-size: 13px; color: {{t.muted}}">Öğrencilerim</div>
+          <div style="margin-top: 6px; font: 500 26px 'Geist Mono', monospace; letter-spacing: -0.03em">4</div>
+          <div style="margin-top: 2px; font-size: 12px; color: {{t.muted}}">bugün 3'ü etütte</div>
+        </div>
+        <div style="padding: 16px; border-radius: 14px; background: {{t.surface2}}; border: 1px solid {{t.line}}; display: flex; justify-content: space-between; align-items: center">
+          <div><div style="font-size: 13px; color: {{t.muted}}">Bugün kayıt girildi</div><div style="margin-top: 6px; font: 500 26px 'Geist Mono', monospace; letter-spacing: -0.03em">2<span style="color: {{t.muted}}">/3</span></div></div>
+          <svg width="44" height="44" viewBox="0 0 40 40" aria-hidden="true" style="transform: rotate(-90deg)"><circle cx="20" cy="20" r="16" fill="none" stroke="{{t.line}}" stroke-width="5"></circle><circle cx="20" cy="20" r="16" fill="none" stroke="{{t.accent}}" stroke-width="5" stroke-linecap="round" stroke-dasharray="67 100.53"></circle></svg>
+        </div>
+        <div style="padding: 16px; border-radius: 14px; background: {{t.accentSoft}}; border: 1px solid {{t.accentLine}}">
+          <div style="font-size: 13px; color: {{t.accentText}}">Ödev yapılma · son 4 etüt</div>
+          <div style="margin-top: 6px; font: 500 26px 'Geist Mono', monospace; letter-spacing: -0.03em; color: {{t.accentText}}">9<span style="opacity: 0.6">/12</span></div>
+          <div style="margin-top: 2px; font-size: 12px; color: {{t.accentText}}">bugün etütteki 3 öğrenci</div>
+        </div>
+        <div style="padding: 16px; border-radius: 14px; background: {{t.warnSoft}}; border: 1px solid {{t.warnLine}}">
+          <div style="font-size: 13px; color: {{t.warnText}}">Bugün ödev eksik</div>
+          <div style="margin-top: 6px; font: 500 26px 'Geist Mono', monospace; letter-spacing: -0.03em; color: {{t.warnText}}">1</div>
+          <div style="margin-top: 2px; font-size: 12px; color: {{t.warnText}}">Ayşe Kılıç</div>
+        </div>
+      </div>
+
+      <div style="overflow-x: auto">
+        <div style="display: grid; grid-template-columns: repeat(7, minmax(84px, 1fr)); gap: 8px; min-width: 640px">
+          <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+            <button type="button" style="{{d.style}}">
+              <span style="{{d.subStyle}}">{{d.short}}</span>
+              <span style="font-size: 22px; font-weight: 600; letter-spacing: -0.03em">{{d.num}}</span>
+              <span style="display: flex; gap: 3px; height: 6px">
+                <sc-for list="{{d.dots}}" as="x" hint-placeholder-count="2"><span style="{{x}}"></span></sc-for>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="border: 1px solid {{t.line}}; border-radius: 14px; overflow: hidden">
+        <div style="padding: 14px 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; background: {{t.surface2}}; border-bottom: 1px solid {{t.line}}">
+          <h2 style="margin: 0; font-size: 15px; font-weight: 600">Salı etüdü <span style="font: 400 13px 'Geist Mono', monospace; color: {{t.muted}}">3</span></h2>
+          <span style="display: flex; gap: 14px; font-size: 12px; color: {{t.muted}}">
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{t.accent}}"></span>Ödev yapıldı</span>
+            <span style="display: flex; align-items: center; gap: 6px"><span style="width: 10px; height: 10px; border-radius: 3px; box-sizing: border-box; border: 2px solid {{t.warn}}"></span>Eksik</span>
+          </span>
+        </div>
+        <div style="overflow-x: auto">
+          <table style="width: 100%; min-width: 860px; border-collapse: collapse">
+            <thead>
+              <tr style="text-align: left; font-size: 12px; color: {{t.muted}}">
+                <th style="padding: 10px 18px; font-weight: 500">Öğrenci</th>
+                <th style="padding: 10px 12px; font-weight: 500">Bugün ödev</th>
+                <th style="padding: 10px 12px; font-weight: 500">Bugün kitap</th>
+                <th style="padding: 10px 12px; font-weight: 500">Not</th>
+                <th style="padding: 10px 12px; font-weight: 500">Son 4 etüt</th>
+                <th style="padding: 10px 18px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden">Aç</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+                <tr style="border-top: 1px solid {{t.line}}">
+                  <td style="padding: 12px 18px">
+                    <a href="{{L.basDetay}}" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: {{t.ink}}">
+                      <span style="{{r.av}}">{{r.ini}}</span>
+                      <span style="display: flex; flex-direction: column; gap: 1px"><span style="font-weight: 500">{{r.name}}</span><span style="font: 400 12px 'Geist Mono', monospace; color: {{t.muted}}">{{r.sinif}}</span></span>
+                    </a>
+                  </td>
+                  <td style="padding: 12px"><span style="{{r.odevS}}">{{r.odev}}</span></td>
+                  <td style="padding: 12px"><span style="{{r.kitapS}}">{{r.kitap}}</span></td>
+                  <td style="padding: 12px; font-size: 13px; color: {{t.ink2}}; max-width: 240px">{{r.not}}</td>
+                  <td style="padding: 12px">
+                    <span style="display: flex; gap: 4px" aria-label="{{r.histAria}}">
+                      <sc-for list="{{r.hist}}" as="h" hint-placeholder-count="4"><span style="{{h}}"></span></sc-for>
+                    </span>
+                  </td>
+                  <td style="padding: 12px 18px; text-align: right">
+                    <a href="{{L.basDetay}}" aria-label="Öğrenciyi aç" style="width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 9px; color: {{t.muted}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></a>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { theme: null };
+  }
+  renderVals() {
+    var self = this;
+    var T = {
+      light: { bg: '#F4F4F1', surface: '#FFFFFF', surface2: '#FAFAF8', sunken: '#F1F1ED', line: '#E4E3DE', line2: '#D3D1CA', ink: '#17171A', ink2: '#45454D', muted: '#6B6B73', accent: '#4F46E5', onAccent: '#FFFFFF', accentSoft: '#ECEBFC', accentLine: '#D6D3FA', accentText: '#3730C4', warn: '#C2410C', warnSoft: '#FDF0E7', warnLine: '#F6D7C3', warnText: '#A83A0B', shadow: '0 1px 2px rgba(23,23,26,0.04), 0 8px 24px rgba(23,23,26,0.04)', ak: { dot: '#0284C7', bg: '#E0F2FE', fg: '#075985' } },
+      dark: { bg: '#0B0B0E', surface: '#141418', surface2: '#18181D', sunken: '#0F0F12', line: '#26262D', line2: '#38383F', ink: '#EDEDF1', ink2: '#BDBDC6', muted: '#8E8E99', accent: '#5B53EE', onAccent: '#FFFFFF', accentSoft: '#22214A', accentLine: '#34326A', accentText: '#B3AEFF', warn: '#F97316', warnSoft: '#2A160C', warnLine: '#4A2614', warnText: '#FDBA74', shadow: '0 1px 2px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.3)', ak: { dot: '#38BDF8', bg: '#0C2A3D', fg: '#7DD3FC' } }
+    };
+    var dark = (this.state.theme || this.props.theme || 'light') === 'dark';
+    var t = dark ? T.dark : T.light;
+    var sfx = dark ? 'Koyu' : '';
+    var L = { giris: 'WebGiris' + sfx + '.dc.html', basListe: 'WebBasOgrenciler' + sfx + '.dc.html', basDetay: 'WebBasDetay' + sfx + '.dc.html' };
+    var navBase = 'height:38px;padding:0 10px;border-radius:9px;display:flex;align-items:center;gap:10px;text-decoration:none;';
+    var av = function (size) { var p = t.ak; return 'width:' + size + 'px;height:' + size + 'px;flex-shrink:0;border-radius:' + (size / 2) + 'px;display:inline-flex;align-items:center;justify-content:center;font-weight:600;font-size:' + Math.round(size * 0.36) + 'px;background:' + p.bg + ';color:' + p.fg; };
+    var chip = function (kind) { var b = 'height:26px;padding:0 9px;border-radius:7px;display:inline-flex;align-items:center;font-size:12px;font-weight:500;white-space:nowrap;'; if (kind === 'ok') return b + 'background:' + t.accentSoft + ';color:' + t.accentText; if (kind === 'no') return b + 'background:' + t.warnSoft + ';color:' + t.warnText; return b + 'background:' + t.sunken + ';color:' + t.muted + ';border:1px dashed ' + t.line2; };
+    var sq = function (v) { return 'width:16px;height:16px;border-radius:4px;box-sizing:border-box;' + (v ? 'background:' + t.accent : 'border:2px solid ' + t.warn); };
+    var dayData = [['PZT', '5', 1], ['SAL', '6', 3], ['ÇAR', '7', 1], ['PER', '8', 3], ['CUM', '9', 0], ['CMT', '10', 0], ['PAZ', '11', 0]];
+    return {
+      t: t, L: L, isDark: dark, isLight: !dark,
+      themeLabel: dark ? 'Açık temaya geç' : 'Koyu temaya geç',
+      toggleTheme: function () { self.setState({ theme: dark ? 'light' : 'dark' }); },
+      navOn: navBase + 'font-weight:500;color:' + t.ink + ';background:' + t.surface + ';box-shadow:0 0 0 1px ' + t.line + ',0 1px 2px rgba(0,0,0,0.04)',
+      navOff: navBase + 'color:' + t.ink2,
+      meAv: av(32),
+      days: dayData.map(function (d) {
+        var sel = d[0] === 'SAL';
+        var dots = [];
+        for (var i = 0; i < d[2]; i++) dots.push('width:6px;height:6px;border-radius:3px;background:' + (sel ? 'rgba(255,255,255,0.8)' : t.accent));
+        return { short: d[0], num: d[1], dots: dots, subStyle: 'font:500 11px Geist Mono,monospace;letter-spacing:0.06em;' + (sel ? 'color:rgba(255,255,255,0.85)' : 'color:' + t.muted), style: 'height:88px;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;cursor:pointer;font-family:Geist,sans-serif;text-align:left;' + (sel ? 'background:' + t.accent + ';color:#FFFFFF;border:1px solid ' + t.accent + ';box-shadow:0 6px 18px rgba(79,70,229,0.28)' : 'background:' + t.surface + ';color:' + t.ink + ';border:1px solid ' + t.line) };
+      }),
+      rows: [
+        { ini: 'EY', name: 'Elif Yılmaz', sinif: '8-A', av: av(34), odev: 'Yapıldı', odevS: chip('ok'), kitap: 'Getirdi', kitapS: chip('ok'), not: 'Konuyu iyi kavramış.', hist: [sq(1), sq(1), sq(1), sq(1)], histAria: 'Son 4 etüdün 4ünde ödev yapıldı' },
+        { ini: 'AK', name: 'Ayşe Kılıç', sinif: '8-C', av: av(34), odev: 'Eksik', odevS: chip('no'), kitap: 'Getirdi', kitapS: chip('ok'), not: 'Türkçe ödevi yarım kalmış.', hist: [sq(1), sq(0), sq(1), sq(0)], histAria: 'Son 4 etüdün 2sinde ödev yapıldı' },
+        { ini: 'MD', name: 'Mert Demir', sinif: '8-A', av: av(34), odev: 'Bekleniyor', odevS: chip('wait'), kitap: 'Bekleniyor', kitapS: chip('wait'), not: '—', hist: [sq(0), sq(1), sq(1), sq(1)], histAria: 'Son 4 etüdün 3ünde ödev yapıldı' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

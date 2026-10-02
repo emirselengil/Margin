@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Kayıt ol</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="min-height: 1000px; display: flex; flex-direction: column; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Geist', system-ui, sans-serif; font-size: 14px">
+  <header style="height: 72px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between">
+    <div style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px">
+      <div style="width: 30px; height: 30px; border-radius: 9px; background: {{t.accent}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5.5h10M5 10h6M5 14.5h10" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg></div>
+      Margin
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px">
+      <span style="font-size: 13px; color: {{t.muted}}">Zaten hesabınız var mı?</span>
+      <a href="{{L.giris}}" style="height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink}}; font-weight: 500; display: flex; align-items: center; text-decoration: none">Giriş yap</a>
+      <button type="button" onClick="{{toggleTheme}}" aria-label="{{themeLabel}}" style="width: 36px; height: 36px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink2}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+        <sc-if value="{{isDark}}" hint-placeholder-val="{{false}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+        <sc-if value="{{isLight}}" hint-placeholder-val="{{true}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+      </button>
+    </div>
+  </header>
+
+  <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 16px 48px">
+    <div style="width: 100%; max-width: 480px; box-sizing: border-box; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: 18px; box-shadow: {{t.shadow}}; padding: 36px 32px; display: flex; flex-direction: column; gap: 24px">
+      <div>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.03em">Öğretmen hesabı oluşturun</h1>
+      </div>
+
+      <form style="margin: 0; display: flex; flex-direction: column; gap: 18px">
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+          <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+            <label for="r-ad" style="font-size: 13px; font-weight: 500">Ad</label>
+            <input id="r-ad" type="text" autocomplete="given-name" style="height: 44px; box-sizing: border-box; width: 100%; border: 1px solid {{t.line2}}; border-radius: 10px; background: {{t.field}}; color: {{t.ink}}; padding: 0 14px; font: 400 14px 'Geist', sans-serif">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+            <label for="r-soyad" style="font-size: 13px; font-weight: 500">Soyad</label>
+            <input id="r-soyad" type="text" autocomplete="family-name" style="height: 44px; box-sizing: border-box; width: 100%; border: 1px solid {{t.line2}}; border-radius: 10px; background: {{t.field}}; color: {{t.ink}}; padding: 0 14px; font: 400 14px 'Geist', sans-serif">
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="r-eposta" style="font-size: 13px; font-weight: 500">E-posta</label>
+          <input id="r-eposta" type="email" autocomplete="email" placeholder="ad.soyad@okul.edu.tr" style="height: 44px; box-sizing: border-box; border: 1px solid {{t.line2}}; border-radius: 10px; background: {{t.field}}; color: {{t.ink}}; padding: 0 14px; font: 400 14px 'Geist', sans-serif">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="r-sifre" style="font-size: 13px; font-weight: 500">Şifre</label>
+          <input id="r-sifre" type="password" autocomplete="new-password" placeholder="En az 8 karakter" style="height: 44px; box-sizing: border-box; border: 1px solid {{t.line2}}; border-radius: 10px; background: {{t.field}}; color: {{t.ink}}; padding: 0 14px; font: 400 14px 'Geist', sans-serif">
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 2px">
+            <div style="flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+              <span style="height: 4px; border-radius: 2px; background: {{t.accent}}"></span>
+              <span style="height: 4px; border-radius: 2px; background: {{t.accent}}"></span>
+              <span style="height: 4px; border-radius: 2px; background: {{t.accent}}"></span>
+              <span style="height: 4px; border-radius: 2px; background: {{t.line}}"></span>
+            </div>
+            <span style="font-size: 12px; color: {{t.muted}}">İyi</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="r-sifre2" style="font-size: 13px; font-weight: 500">Şifre tekrar</label>
+          <input id="r-sifre2" type="password" autocomplete="new-password" style="height: 44px; box-sizing: border-box; border: 1px solid {{t.line2}}; border-radius: 10px; background: {{t.field}}; color: {{t.ink}}; padding: 0 14px; font: 400 14px 'Geist', sans-serif">
+        </div>
+
+        <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; color: {{t.ink2}}"><input type="checkbox" style="width: 16px; height: 16px; margin: 2px 0 0; flex-shrink: 0; accent-color: {{t.accent}}"><span><a href="#" style="color: {{t.accentText}}; font-weight: 500; text-decoration: none">KVKK aydınlatma metnini</a> okudum ve kabul ediyorum.</span></label>
+
+        <a href="{{L.giris}}" style="height: 46px; margin-top: 2px; border-radius: 10px; background: {{t.accent}}; color: #FFFFFF; font-weight: 500; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 18px rgba(79,70,229,0.28)">Hesap oluştur</a>
+      </form>
+
+      <p style="margin: 0; padding-top: 18px; border-top: 1px solid {{t.line}}; text-align: center; font-size: 13px; color: {{t.muted}}">Zaten hesabınız var mı? <a href="{{L.giris}}" style="color: {{t.accentText}}; font-weight: 500; text-decoration: none">Giriş yapın</a></p>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { theme: null, rol: 'asistan' };
+  }
+  renderVals() {
+    var self = this;
+    var T = {
+      light: { bg: '#F4F4F1', surface: '#FFFFFF', field: '#FFFFFF', sunken: '#F1F1ED', line: '#E4E3DE', line2: '#D3D1CA', ink: '#17171A', ink2: '#45454D', muted: '#6B6B73', accent: '#4F46E5', accentSoft: '#ECEBFC', accentText: '#3730C4', shadow: '0 1px 2px rgba(23,23,26,0.04), 0 16px 40px rgba(23,23,26,0.06)' },
+      dark: { bg: '#0B0B0E', surface: '#141418', field: '#0F0F12', sunken: '#0F0F12', line: '#26262D', line2: '#38383F', ink: '#EDEDF1', ink2: '#BDBDC6', muted: '#8E8E99', accent: '#5B53EE', accentSoft: '#22214A', accentText: '#B3AEFF', shadow: '0 1px 2px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.35)' }
+    };
+    var dark = (this.state.theme || this.props.theme || 'light') === 'dark';
+    var t = dark ? T.dark : T.light;
+    var sfx = dark ? 'Koyu' : '';
+    return {
+      t: t, isDark: dark, isLight: !dark,
+      L: { giris: 'WebGiris' + sfx + '.dc.html' },
+      themeLabel: dark ? 'Açık temaya geç' : 'Koyu temaya geç',
+      toggleTheme: function () { self.setState({ theme: dark ? 'light' : 'dark' }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

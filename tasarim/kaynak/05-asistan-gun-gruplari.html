@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Gün grupları</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="min-height: 960px; display: flex; flex-wrap: wrap; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Geist', system-ui, sans-serif; font-size: 14px">
+  <aside style="flex: 1 1 236px; padding: 14px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+    <div style="height: 40px; padding: 0 6px; display: flex; align-items: center; gap: 10px">
+      <div style="width: 30px; height: 30px; border-radius: 9px; background: {{t.accent}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5.5h10M5 10h6M5 14.5h10" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg></div>
+      <div style="line-height: 1.2"><div style="font-weight: 600">Margin</div><div style="font-size: 12px; color: {{t.muted}}">2026–2027 dönemi</div></div>
+    </div>
+    <nav style="display: flex; flex-direction: column; gap: 2px">
+      <a href="{{L.ogrenciler}}" style="{{navOff}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Etüt listesi<span style="margin-left: auto; font: 500 11px 'Geist Mono', monospace; padding: 2px 6px; border-radius: 5px; background: {{t.warnSoft}}; color: {{t.warnText}}">2</span></a>
+      <a href="{{L.gruplar}}" style="{{navOn}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{t.accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M3 9h18M8 2v4M16 2v4"></path></svg>Gün grupları</a>
+    </nav>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <div style="padding: 0 10px 6px; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.06em; color: {{t.muted}}">BAŞ ÖĞRETMENLER</div>
+      <a href="#" style="{{navOff}}"><span style="{{avAkS}}">AK</span><span style="flex: 1">Ahmet Kaya</span><span style="font: 400 12px 'Geist Mono', monospace; color: {{t.muted}}">4</span></a>
+      <a href="#" style="{{navOff}}"><span style="{{avZcS}}">ZÇ</span><span style="flex: 1">Zeynep Çelik</span><span style="font: 400 12px 'Geist Mono', monospace; color: {{t.muted}}">3</span></a>
+    </div>
+    <div style="flex-grow: 1"></div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; background: {{t.surface}}; border: 1px solid {{t.line}}">
+      <div style="width: 32px; height: 32px; border-radius: 16px; background: {{t.accent}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">SA</div>
+      <div style="flex: 1; min-width: 0; line-height: 1.25">
+        <div style="font-weight: 500">Selin Aydın</div>
+        <div style="font-size: 12px; color: {{t.muted}}">Asistan öğretmen</div>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; margin: 8px; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: 16px; box-shadow: {{t.shadow}}; display: flex; flex-direction: column; overflow: hidden">
+    <div style="min-height: 56px; padding: 8px 24px; box-sizing: border-box; border-bottom: 1px solid {{t.line}}; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+      <span style="font-weight: 500">Gün grupları</span>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <sc-if value="{{dirty}}" hint-placeholder-val="{{false}}">
+          <span style="height: 28px; padding: 0 10px; border-radius: 7px; background: {{t.warnSoft}}; color: {{t.warnText}}; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500"><span style="width: 6px; height: 6px; border-radius: 3px; background: {{t.warnText}}"></span>Kaydedilmemiş değişiklik</span>
+        </sc-if>
+        <button type="button" onClick="{{toggleTheme}}" aria-label="{{themeLabel}}" style="width: 36px; height: 36px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink2}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <sc-if value="{{isDark}}" hint-placeholder-val="{{false}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{true}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        </button>
+        <a href="{{L.ogrenciler}}" style="height: 36px; padding: 0 16px; border-radius: 9px; background: {{t.accent}}; color: #FFFFFF; font-weight: 500; display: flex; align-items: center; text-decoration: none">Kaydet</a>
+      </div>
+    </div>
+
+    <div style="padding: 24px 24px 40px; display: flex; flex-direction: column; gap: 22px">
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch">
+        <div style="flex: 1 1 320px">
+          <div style="font: 500 12px 'Geist Mono', monospace; letter-spacing: 0.06em; color: {{t.accentText}}">HAFTALIK PLAN</div>
+          <h1 style="margin: 6px 0 0; font-size: 30px; font-weight: 600; letter-spacing: -0.03em">Kim hangi gün geliyor?</h1>
+          <p style="margin: 8px 0 0; color: {{t.ink2}}; line-height: 1.55; max-width: 460px">Kutulara tıklayarak etüt günlerini belirleyin. Etüt listesi her gün bu plana göre oluşur.</p>
+          <div style="margin-top: 16px; display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: {{t.sunken}}; border: 1px solid {{t.line}}">
+            <button type="button" style="height: 34px; padding: 0 12px; border: 0; border-radius: 7px; background: {{t.surface}}; box-shadow: 0 0 0 1px {{t.line}}; font: 500 13px 'Geist', sans-serif; color: {{t.ink}}">Tümü · 7</button>
+            <button type="button" style="height: 34px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; font: 500 13px 'Geist', sans-serif; color: {{t.muted}}">Ahmet Kaya · 4</button>
+            <button type="button" style="height: 34px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; font: 500 13px 'Geist', sans-serif; color: {{t.muted}}">Zeynep Çelik · 3</button>
+          </div>
+        </div>
+        <div style="flex: 1 1 380px; padding: 16px 18px; border-radius: 14px; background: {{t.surface2}}; border: 1px solid {{t.line}}; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 600">Günlük yoğunluk</span><span style="color: {{t.muted}}">öğrenci sayısı</span></div>
+          <div style="flex: 1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; align-items: end; min-height: 120px">
+            <sc-for list="{{bars}}" as="b" hint-placeholder-count="7">
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 100%">
+                <span style="font: 500 12px 'Geist Mono', monospace">{{b.n}}</span>
+                <span style="{{b.style}}"></span>
+                <span style="font: 500 11px 'Geist Mono', monospace; color: {{t.muted}}">{{b.l}}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="border: 1px solid {{t.line}}; border-radius: 14px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; min-width: 900px; border-collapse: collapse">
+            <thead>
+              <tr style="font-size: 12px; color: {{t.muted}}; background: {{t.surface2}}">
+                <th style="padding: 12px 18px; text-align: left; font-weight: 500">Öğrenci</th>
+                <th style="padding: 12px; text-align: left; font-weight: 500">Baş öğretmen</th>
+                <sc-for list="{{labels}}" as="l" hint-placeholder-count="7">
+                  <th style="padding: 12px 2px; width: 58px; text-align: center; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.06em">{{l}}</th>
+                </sc-for>
+                <th style="padding: 12px 18px; width: 56px; text-align: right; font-weight: 500">Toplam</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{students}}" as="s" hint-placeholder-count="7">
+                <tr style="border-top: 1px solid {{t.line}}">
+                  <td style="padding: 8px 18px">
+                    <span style="display: flex; align-items: center; gap: 12px">
+                      <span style="{{s.av}}">{{s.ini}}</span>
+                      <span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{s.name}}</span><span style="font: 400 12px 'Geist Mono', monospace; color: {{t.muted}}">{{s.sinif}}</span></span>
+                    </span>
+                  </td>
+                  <td style="padding: 8px 12px; color: {{t.ink2}}"><span style="display: inline-flex; align-items: center; gap: 8px"><span style="{{s.dot}}"></span>{{s.bas}}</span></td>
+                  <sc-for list="{{s.chips}}" as="c" hint-placeholder-count="7">
+                    <td style="padding: 6px 2px; text-align: center">
+                      <button type="button" aria-label="{{c.aria}}" aria-pressed="{{c.pressed}}" onClick="{{c.toggle}}" style="{{c.style}}">
+                        <sc-if value="{{c.on}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></sc-if>
+                      </button>
+                    </td>
+                  </sc-for>
+                  <td style="padding: 8px 18px; text-align: right; font: 500 13px 'Geist Mono', monospace">{{s.count}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: null, dirty: false,
+      list: [
+        { ini: 'EY', name: 'Elif Yılmaz', sinif: '8-A', bas: 'Ahmet Kaya', k: 'ak', days: [1, 3] },
+        { ini: 'MD', name: 'Mert Demir', sinif: '8-A', bas: 'Ahmet Kaya', k: 'ak', days: [1, 3] },
+        { ini: 'AK', name: 'Ayşe Kılıç', sinif: '8-C', bas: 'Ahmet Kaya', k: 'ak', days: [1, 3] },
+        { ini: 'BA', name: 'Berk Aksoy', sinif: '8-C', bas: 'Ahmet Kaya', k: 'ak', days: [0, 2] },
+        { ini: 'DA', name: 'Defne Arslan', sinif: '7-B', bas: 'Zeynep Çelik', k: 'zc', days: [0, 1] },
+        { ini: 'CÖ', name: 'Can Öztürk', sinif: '7-B', bas: 'Zeynep Çelik', k: 'zc', days: [1, 4] },
+        { ini: 'EŞ', name: 'Emir Şahin', sinif: '7-A', bas: 'Zeynep Çelik', k: 'zc', days: [1, 5] }
+      ]
+    };
+  }
+  renderVals() {
+    var self = this;
+    var T = {
+      light: { bg: '#F4F4F1', surface: '#FFFFFF', surface2: '#FAFAF8', sunken: '#F1F1ED', line: '#E4E3DE', line2: '#D3D1CA', ink: '#17171A', ink2: '#45454D', muted: '#6B6B73', accent: '#4F46E5', accentSoft: '#ECEBFC', accentText: '#3730C4', warnSoft: '#FDF0E7', warnText: '#A83A0B', shadow: '0 1px 2px rgba(23,23,26,0.04), 0 8px 24px rgba(23,23,26,0.04)', ak: { dot: '#0284C7', bg: '#E0F2FE', fg: '#075985' }, zc: { dot: '#DB2777', bg: '#FCE7F3', fg: '#9D174D' } },
+      dark: { bg: '#0B0B0E', surface: '#141418', surface2: '#18181D', sunken: '#0F0F12', line: '#26262D', line2: '#38383F', ink: '#EDEDF1', ink2: '#BDBDC6', muted: '#8E8E99', accent: '#5B53EE', accentSoft: '#22214A', accentText: '#B3AEFF', warnSoft: '#2A160C', warnText: '#FDBA74', shadow: '0 1px 2px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.3)', ak: { dot: '#38BDF8', bg: '#0C2A3D', fg: '#7DD3FC' }, zc: { dot: '#F472B6', bg: '#3B0F24', fg: '#F9A8D4' } }
+    };
+    var dark = (this.state.theme || this.props.theme || 'light') === 'dark';
+    var t = dark ? T.dark : T.light;
+    var sfx = dark ? 'Koyu' : '';
+    var L = { ogrenciler: 'WebOgrenciler' + sfx + '.dc.html', gruplar: 'WebGruplar' + sfx + '.dc.html' };
+    var navBase = 'height:38px;padding:0 10px;border-radius:9px;display:flex;align-items:center;gap:10px;text-decoration:none;';
+    var av = function (k, size) { var p = t[k]; return 'width:' + size + 'px;height:' + size + 'px;flex-shrink:0;border-radius:' + (size / 2) + 'px;display:inline-flex;align-items:center;justify-content:center;font-weight:600;font-size:' + Math.round(size * 0.36) + 'px;background:' + p.bg + ';color:' + p.fg; };
+    var labels = ['PZT', 'SAL', 'ÇAR', 'PER', 'CUM', 'CMT', 'PAZ'];
+    var full = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+    var list = this.state.list;
+    var totals = labels.map(function (l, i) { return list.filter(function (s) { return s.days.indexOf(i) >= 0; }).length; });
+    var cell = 'width:42px;height:42px;border-radius:10px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;';
+    return {
+      t: t, L: L, isDark: dark, isLight: !dark, dirty: this.state.dirty,
+      themeLabel: dark ? 'Açık temaya geç' : 'Koyu temaya geç',
+      toggleTheme: function () { self.setState({ theme: dark ? 'light' : 'dark' }); },
+      navOn: navBase + 'font-weight:500;color:' + t.ink + ';background:' + t.surface + ';box-shadow:0 0 0 1px ' + t.line + ',0 1px 2px rgba(0,0,0,0.04)',
+      navOff: navBase + 'color:' + t.ink2,
+      avAkS: av('ak', 22), avZcS: av('zc', 22),
+      labels: labels,
+      bars: labels.map(function (l, i) { return { l: l, n: totals[i], style: 'width:100%;max-width:34px;border-radius:6px;background:' + (totals[i] ? t.accent : t.line) + ';height:' + Math.max(4, totals[i] * 13) + 'px' }; }),
+      students: list.map(function (s, si) {
+        return {
+          ini: s.ini, name: s.name, sinif: s.sinif, bas: s.bas, count: s.days.length,
+          av: av(s.k, 32), dot: 'width:8px;height:8px;border-radius:3px;background:' + t[s.k].dot,
+          chips: labels.map(function (l, di) {
+            var on = s.days.indexOf(di) >= 0;
+            return {
+              on: on, pressed: on ? 'true' : 'false', aria: s.name + ', ' + full[di],
+              style: cell + (on ? 'background:' + t.accent + ';color:#FFFFFF;border:0;box-shadow:0 2px 8px rgba(79,70,229,0.3)' : 'background:' + t.sunken + ';border:1px dashed ' + t.line2),
+              toggle: function () {
+                self.setState({
+                  dirty: true,
+                  list: list.map(function (x, xi) {
+                    if (xi !== si) return x;
+                    return Object.assign({}, x, { days: on ? x.days.filter(function (v) { return v !== di; }) : x.days.concat([di]) });
+                  })
+                });
+              }
+            };
+          })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

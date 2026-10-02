@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Yönetim, etüt kayıtları</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div style="min-height: 1000px; display: flex; flex-wrap: wrap; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Geist', system-ui, sans-serif; font-size: 14px">
+  <aside style="flex: 1 1 236px; padding: 14px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+    <div style="height: 40px; padding: 0 6px; display: flex; align-items: center; gap: 10px">
+      <div style="width: 30px; height: 30px; border-radius: 9px; background: {{t.accent}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5.5h10M5 10h6M5 14.5h10" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg></div>
+      <div style="line-height: 1.2"><div style="font-weight: 600">Margin</div><div style="font-size: 12px; color: {{t.muted}}">Yönetim paneli</div></div>
+    </div>
+    <nav style="display: flex; flex-direction: column; gap: 2px">
+      <a href="{{L.ogretmen}}" style="{{navOff}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Öğretmenler<span style="margin-left: auto; font: 500 11px 'Geist Mono', monospace; padding: 2px 6px; border-radius: 5px; background: {{t.warnSoft}}; color: {{t.warnText}}">2</span></a>
+      <a href="{{L.ogrenci}}" style="{{navOff}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20a6.5 6.5 0 0 1 13 0"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 20a6 6 0 0 0-2.5-4.9"></path></svg>Öğrenciler<span style="margin-left: auto; font: 400 12px 'Geist Mono', monospace; color: {{t.muted}}">7</span></a>
+      <a href="{{L.kayit}}" style="{{navOn}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{t.accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Etüt kayıtları</a>
+    </nav>
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <div style="padding: 0 10px 6px; font: 500 11px 'Geist Mono', monospace; letter-spacing: 0.06em; color: {{t.muted}}">AYARLAR</div>
+      <a href="#" style="{{navOff}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M3 9h18M8 2v4M16 2v4"></path></svg>Dönem ve sınıflar</a>
+      <a href="#" style="{{navOff}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"></path></svg>Kurum bilgileri</a>
+    </div>
+    <div style="flex-grow: 1"></div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; background: {{t.surface}}; border: 1px solid {{t.line}}">
+      <div style="width: 32px; height: 32px; border-radius: 16px; background: {{t.ink}}; color: {{t.bg}}; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">YN</div>
+      <div style="flex: 1; min-width: 0; line-height: 1.25">
+        <div style="font-weight: 500">Okul Yöneticisi</div>
+        <div style="font-size: 12px; color: {{t.muted}}">Tam yetki</div>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; margin: 8px; background: {{t.surface}}; border: 1px solid {{t.line}}; border-radius: 16px; box-shadow: {{t.shadow}}; display: flex; flex-direction: column; overflow: hidden">
+    <div style="min-height: 56px; padding: 8px 24px; box-sizing: border-box; border-bottom: 1px solid {{t.line}}; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 8px; color: {{t.muted}}">
+        <span>Yönetim</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        <span style="color: {{t.ink}}; font-weight: 500">Etüt kayıtları</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px">
+        <button type="button" style="height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink}}; font: 500 13px 'Geist', sans-serif; display: flex; align-items: center; gap: 6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"></path></svg>Excel'e aktar</button>
+        <button type="button" onClick="{{toggleTheme}}" aria-label="{{themeLabel}}" style="width: 36px; height: 36px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink2}}; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <sc-if value="{{isDark}}" hint-placeholder-val="{{false}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{true}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        </button>
+      </div>
+    </div>
+
+    <div style="padding: 24px; display: flex; flex-direction: column; gap: 18px">
+      <div>
+        <h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.03em">Etüt kayıtları</h1>
+        <p style="margin: 6px 0 0; color: {{t.ink2}}">Tüm kayıtları görüntüleyin, düzeltin veya silin. Yöneticinin yaptığı her değişiklik kayıt geçmişine yazılır.</p>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+        <button type="button" style="height: 36px; padding: 0 12px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink}}; font: 500 13px 'Geist', sans-serif; display: flex; align-items: center; gap: 8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M3 9h18M8 2v4M16 2v4"></path></svg><span style="font-family: 'Geist Mono', monospace">22.09 – 06.10.2026</span></button>
+        <div style="display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: {{t.sunken}}; border: 1px solid {{t.line}}">
+          <sc-for list="{{filters}}" as="f" hint-placeholder-count="3">
+            <button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.label}}</button>
+          </sc-for>
+        </div>
+        <button type="button" role="switch" aria-checked="{{onlyMissingAria}}" onClick="{{toggleMissing}}" style="height: 36px; padding: 0 12px; border-radius: 9px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink}}; font: 500 13px 'Geist', sans-serif; display: flex; align-items: center; gap: 8px; cursor: pointer">
+          <span style="{{mTrack}}"><span style="width: 14px; height: 14px; border-radius: 7px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.25)"></span></span>
+          Yalnızca eksikler
+        </button>
+        <span style="margin-left: auto; font: 400 13px 'Geist Mono', monospace; color: {{t.muted}}">{{shownCount}} kayıt</span>
+      </div>
+
+      <div style="border: 1px solid {{t.line}}; border-radius: 14px; overflow: hidden">
+        <div style="overflow-x: auto">
+          <table style="width: 100%; min-width: 1040px; border-collapse: collapse">
+            <thead>
+              <tr style="text-align: left; font-size: 12px; color: {{t.muted}}; background: {{t.surface2}}">
+                <th style="padding: 11px 16px; font-weight: 500">Tarih</th>
+                <th style="padding: 11px 12px; font-weight: 500">Öğrenci</th>
+                <th style="padding: 11px 12px; font-weight: 500">Ödev</th>
+                <th style="padding: 11px 12px; font-weight: 500">Kitap</th>
+                <th style="padding: 11px 12px; font-weight: 500">Not</th>
+                <th style="padding: 11px 12px; font-weight: 500">Giren</th>
+                <th style="padding: 11px 16px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden">İşlemler</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+                <tr style="border-top: 1px solid {{t.line}}">
+                  <td style="padding: 10px 16px; font: 400 12px 'Geist Mono', monospace; color: {{t.ink2}}; white-space: nowrap">{{r.date}}</td>
+                  <td style="padding: 10px 12px">
+                    <span style="display: flex; align-items: center; gap: 10px">
+                      <span style="{{r.av}}">{{r.ini}}</span>
+                      <span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{r.name}}</span><span style="font-size: 12px; color: {{t.muted}}">{{r.bas}}</span></span>
+                    </span>
+                  </td>
+                  <td style="padding: 6px 12px">
+                    <div style="display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: {{t.sunken}}; border: 1px solid {{t.line}}">
+                      <button type="button" aria-pressed="{{r.oyP}}" onClick="{{r.setOY}}" style="{{r.oy}}">Yapıldı</button>
+                      <button type="button" aria-pressed="{{r.onP}}" onClick="{{r.setON}}" style="{{r.on}}">Eksik</button>
+                    </div>
+                  </td>
+                  <td style="padding: 6px 12px">
+                    <div style="display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: {{t.sunken}}; border: 1px solid {{t.line}}">
+                      <button type="button" aria-pressed="{{r.kyP}}" onClick="{{r.setKY}}" style="{{r.ky}}">Getirdi</button>
+                      <button type="button" aria-pressed="{{r.knP}}" onClick="{{r.setKN}}" style="{{r.kn}}">Getirmedi</button>
+                    </div>
+                  </td>
+                  <td style="padding: 10px 12px; font-size: 13px; color: {{t.ink2}}; max-width: 240px">{{r.not}}</td>
+                  <td style="padding: 10px 12px; font-size: 13px; color: {{t.ink2}}; white-space: nowrap">
+                    {{r.by}}
+                    <sc-if value="{{r.edited}}" hint-placeholder-val="{{false}}"><span style="margin-left: 6px; height: 20px; padding: 0 6px; border-radius: 5px; background: {{t.accentSoft}}; color: {{t.accentText}}; font-size: 11px; font-weight: 500; display: inline-flex; align-items: center">düzenlendi</span></sc-if>
+                  </td>
+                  <td style="padding: 10px 16px; text-align: right; white-space: nowrap">
+                    <button type="button" aria-label="Notu düzenle" style="width: 34px; height: 34px; border-radius: 8px; border: 1px solid {{t.line}}; background: {{t.surface}}; color: {{t.ink2}}; display: inline-flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"></path></svg></button>
+                    <button type="button" aria-label="Kaydı sil" onClick="{{r.remove}}" style="width: 34px; height: 34px; margin-left: 4px; border-radius: 8px; border: 1px solid {{t.warnLine}}; background: transparent; color: {{t.warnText}}; display: inline-flex; align-items: center; justify-content: center; cursor: pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></button>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: null, filter: 'all', onlyMissing: false,
+      rows: [
+        { id: 1, date: 'SAL 06.10', ini: 'EY', name: 'Elif Yılmaz', b: 'ak', odev: 'y', kitap: 'y', not: 'Konuyu iyi kavramış.', edited: false },
+        { id: 2, date: 'SAL 06.10', ini: 'DA', name: 'Defne Arslan', b: 'zc', odev: 'y', kitap: 'n', not: 'Kitabı evde unutmuş.', edited: false },
+        { id: 3, date: 'SAL 06.10', ini: 'CÖ', name: 'Can Öztürk', b: 'zc', odev: 'y', kitap: 'y', not: '—', edited: false },
+        { id: 4, date: 'SAL 06.10', ini: 'AK', name: 'Ayşe Kılıç', b: 'ak', odev: 'n', kitap: 'y', not: 'Türkçe ödevi yarım kalmış.', edited: false },
+        { id: 5, date: 'PER 01.10', ini: 'MD', name: 'Mert Demir', b: 'ak', odev: 'y', kitap: 'y', not: 'Derse aktif katıldı.', edited: false },
+        { id: 6, date: 'SAL 29.09', ini: 'MD', name: 'Mert Demir', b: 'ak', odev: 'y', kitap: 'n', not: 'Fen kitabını evde unutmuş.', edited: false },
+        { id: 7, date: 'PER 24.09', ini: 'MD', name: 'Mert Demir', b: 'ak', odev: 'y', kitap: 'y', not: '—', edited: false },
+        { id: 8, date: 'SAL 22.09', ini: 'MD', name: 'Mert Demir', b: 'ak', odev: 'n', kitap: 'y', not: 'Matematik ödevinin ikinci sayfası boş.', edited: false }
+      ]
+    };
+  }
+  renderVals() {
+    var self = this;
+    var T = {
+      light: { bg: '#F4F4F1', surface: '#FFFFFF', surface2: '#FAFAF8', sunken: '#F1F1ED', line: '#E4E3DE', line2: '#D3D1CA', ink: '#17171A', ink2: '#45454D', muted: '#6B6B73', accent: '#4F46E5', accentSoft: '#ECEBFC', accentText: '#3730C4', warnSoft: '#FDF0E7', warnLine: '#F6D7C3', warnText: '#A83A0B', shadow: '0 1px 2px rgba(23,23,26,0.04), 0 8px 24px rgba(23,23,26,0.04)', ak: { bg: '#E0F2FE', fg: '#075985' }, zc: { bg: '#FCE7F3', fg: '#9D174D' } },
+      dark: { bg: '#0B0B0E', surface: '#141418', surface2: '#18181D', sunken: '#0F0F12', line: '#26262D', line2: '#38383F', ink: '#EDEDF1', ink2: '#BDBDC6', muted: '#8E8E99', accent: '#5B53EE', accentSoft: '#22214A', accentText: '#B3AEFF', warnSoft: '#2A160C', warnLine: '#4A2614', warnText: '#FDBA74', shadow: '0 1px 2px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.3)', ak: { bg: '#0C2A3D', fg: '#7DD3FC' }, zc: { bg: '#3B0F24', fg: '#F9A8D4' } }
+    };
+    var dark = (this.state.theme || this.props.theme || 'light') === 'dark';
+    var t = dark ? T.dark : T.light;
+    var sfx = dark ? 'Koyu' : '';
+    var L = { ogretmen: 'WebAdminOgretmenler' + sfx + '.dc.html', ogrenci: 'WebAdminOgrenciler' + sfx + '.dc.html', kayit: 'WebAdminKayitlar' + sfx + '.dc.html' };
+    var navBase = 'height:38px;padding:0 10px;border-radius:9px;display:flex;align-items:center;gap:10px;text-decoration:none;';
+    var av = function (k) { var p = t[k]; return 'width:30px;height:30px;flex-shrink:0;border-radius:15px;display:inline-flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;background:' + p.bg + ';color:' + p.fg; };
+    var BN = { ak: 'Ahmet Kaya', zc: 'Zeynep Çelik' };
+    var s = this.state;
+    var rows = s.rows;
+    var seg = 'height:32px;padding:0 11px;border:0;border-radius:7px;font:500 12px Geist,sans-serif;cursor:pointer;';
+    var off = seg + 'background:transparent;color:' + t.muted;
+    var pos = seg + 'background:' + t.accentSoft + ';color:' + t.accentText;
+    var neg = seg + 'background:' + t.warnSoft + ';color:' + t.warnText;
+    var set = function (id, key, val) { return function () { self.setState({ rows: rows.map(function (r) { if (r.id !== id || r[key] === val) return r; var c = Object.assign({}, r, { edited: true }); c[key] = val; return c; }) }); }; };
+    var segF = 'height:30px;padding:0 10px;border:0;border-radius:7px;font:500 12px Geist,sans-serif;cursor:pointer;';
+    var shown = rows.filter(function (r) { return (s.filter === 'all' || r.b === s.filter) && (!s.onlyMissing || r.odev === 'n' || r.kitap === 'n'); });
+    return {
+      t: t, L: L, isDark: dark, isLight: !dark,
+      themeLabel: dark ? 'Açık temaya geç' : 'Koyu temaya geç',
+      toggleTheme: function () { self.setState({ theme: dark ? 'light' : 'dark' }); },
+      navOn: navBase + 'font-weight:500;color:' + t.ink + ';background:' + t.surface + ';box-shadow:0 0 0 1px ' + t.line + ',0 1px 2px rgba(0,0,0,0.04)',
+      navOff: navBase + 'color:' + t.ink2,
+      filters: [['all', 'Tümü'], ['ak', 'Ahmet Kaya'], ['zc', 'Zeynep Çelik']].map(function (f) {
+        var on = s.filter === f[0];
+        return { label: f[1], pressed: on ? 'true' : 'false', style: segF + (on ? 'background:' + t.surface + ';color:' + t.ink + ';box-shadow:0 0 0 1px ' + t.line : 'background:transparent;color:' + t.muted), pick: function () { self.setState({ filter: f[0] }); } };
+      }),
+      onlyMissingAria: s.onlyMissing ? 'true' : 'false',
+      mTrack: 'width:30px;height:18px;border-radius:9px;padding:2px;box-sizing:border-box;display:flex;align-items:center;justify-content:' + (s.onlyMissing ? 'flex-end' : 'flex-start') + ';background:' + (s.onlyMissing ? t.accent : t.line2),
+      toggleMissing: function () { self.setState({ onlyMissing: !s.onlyMissing }); },
+      shownCount: shown.length,
+      rows: shown.map(function (r) {
+        return {
+          date: r.date, ini: r.ini, name: r.name, bas: BN[r.b], not: r.not, by: 'Selin Aydın', edited: r.edited, av: av(r.b),
+          oy: r.odev === 'y' ? pos : off, on: r.odev === 'n' ? neg : off, ky: r.kitap === 'y' ? pos : off, kn: r.kitap === 'n' ? neg : off,
+          oyP: r.odev === 'y' ? 'true' : 'false', onP: r.odev === 'n' ? 'true' : 'false', kyP: r.kitap === 'y' ? 'true' : 'false', knP: r.kitap === 'n' ? 'true' : 'false',
+          setOY: set(r.id, 'odev', 'y'), setON: set(r.id, 'odev', 'n'), setKY: set(r.id, 'kitap', 'y'), setKN: set(r.id, 'kitap', 'n'),
+          remove: function () { self.setState({ rows: rows.filter(function (x) { return x.id !== r.id; }) }); }
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
