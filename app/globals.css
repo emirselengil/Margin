@@ -46,6 +46,14 @@
   --warn-line: #F6D7C3;
   --ok: #15803D;
   --shadow-panel: 0 1px 2px rgba(23, 23, 26, 0.04), 0 8px 24px rgba(23, 23, 26, 0.04);
+
+  /* Baş öğretmenleri ayırt etmek için dönüşümlü avatar renkleri */
+  --avatar-1-bg: #E0F2FE; --avatar-1-fg: #075985; --avatar-1-dot: #0284C7;
+  --avatar-2-bg: #FCE7F3; --avatar-2-fg: #9D174D; --avatar-2-dot: #DB2777;
+  --avatar-3-bg: #D1FAE5; --avatar-3-fg: #065F46; --avatar-3-dot: #059669;
+  --avatar-4-bg: #FEF3C7; --avatar-4-fg: #92400E; --avatar-4-dot: #D97706;
+  --avatar-5-bg: #EDE9FE; --avatar-5-fg: #5B21B6; --avatar-5-dot: #7C3AED;
+  --avatar-6-bg: #CCFBF1; --avatar-6-fg: #115E59; --avatar-6-dot: #0D9488;
 }
 
 .dark {
@@ -68,6 +76,13 @@
   --warn-line: #4A2614;
   --ok: #4ADE80;
   --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.3);
+
+  --avatar-1-bg: #0C2A3D; --avatar-1-fg: #7DD3FC; --avatar-1-dot: #38BDF8;
+  --avatar-2-bg: #3B0F24; --avatar-2-fg: #F9A8D4; --avatar-2-dot: #F472B6;
+  --avatar-3-bg: #0B2E22; --avatar-3-fg: #6EE7B7; --avatar-3-dot: #34D399;
+  --avatar-4-bg: #2E1D07; --avatar-4-fg: #FCD34D; --avatar-4-dot: #FBBF24;
+  --avatar-5-bg: #241A3D; --avatar-5-fg: #C4B5FD; --avatar-5-dot: #A78BFA;
+  --avatar-6-bg: #072A26; --avatar-6-fg: #5EEAD4; --avatar-6-dot: #2DD4BF;
 }
 
 body {

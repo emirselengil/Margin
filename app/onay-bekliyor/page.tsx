@@ -14,11 +14,23 @@ export default async function OnayBekliyorPage() {
   if (!profile) {
     redirect("/giris");
   }
-  if (profile.role !== "pending") {
+  if (profile.isActive && profile.role !== "pending") {
     redirect(ROLE_HOME[profile.role]);
   }
 
-  const rejected = !profile.isActive;
+  const deactivated = !profile.isActive && profile.role !== "pending";
+  const rejected = !profile.isActive && profile.role === "pending";
+
+  const heading = deactivated
+    ? "Hesabınız devre dışı bırakıldı"
+    : rejected
+      ? "Kaydınız onaylanmadı"
+      : "Hesabınız onay bekliyor";
+  const description = deactivated
+    ? "Yöneticiniz hesabınızı devre dışı bıraktı. Bir hata olduğunu düşünüyorsanız okul yöneticinizle iletişime geçin."
+    : rejected
+      ? "Yöneticiniz kayıt talebinizi onaylamadı. Bir hata olduğunu düşünüyorsanız okul yöneticinizle iletişime geçin."
+      : "Kaydınız alındı. Yöneticiniz rolünüzü belirleyip onayladığında uygulamaya erişebileceksiniz.";
 
   return (
     <div className="flex min-h-screen flex-col bg-bg text-ink">
@@ -32,22 +44,20 @@ export default async function OnayBekliyorPage() {
           <div
             className="flex h-14 w-14 items-center justify-center rounded-full"
             style={{
-              background: rejected ? "var(--warn-soft)" : "var(--accent-soft)",
-              color: rejected ? "var(--warn-text)" : "var(--accent-text)",
+              background: !profile.isActive ? "var(--warn-soft)" : "var(--accent-soft)",
+              color: !profile.isActive ? "var(--warn-text)" : "var(--accent-text)",
             }}
           >
-            {rejected ? <ShieldX size={26} aria-hidden="true" /> : <Hourglass size={26} aria-hidden="true" />}
+            {!profile.isActive ? (
+              <ShieldX size={26} aria-hidden="true" />
+            ) : (
+              <Hourglass size={26} aria-hidden="true" />
+            )}
           </div>
 
           <div>
-            <h1 className="text-xl font-semibold tracking-[-0.02em]">
-              {rejected ? "Kaydınız onaylanmadı" : "Hesabınız onay bekliyor"}
-            </h1>
-            <p className="mt-2 leading-relaxed text-ink-2">
-              {rejected
-                ? "Yöneticiniz kayıt talebinizi onaylamadı. Bir hata olduğunu düşünüyorsanız okul yöneticinizle iletişime geçin."
-                : "Kaydınız alındı. Yöneticiniz rolünüzü belirleyip onayladığında uygulamaya erişebileceksiniz."}
-            </p>
+            <h1 className="text-xl font-semibold tracking-[-0.02em]">{heading}</h1>
+            <p className="mt-2 leading-relaxed text-ink-2">{description}</p>
           </div>
 
           <form action={signOutAction}>
