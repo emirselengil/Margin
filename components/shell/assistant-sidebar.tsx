@@ -38,7 +38,7 @@ export async function AssistantSidebar({ user, active }: { user: Profile; active
       </SidebarNav>
 
       {headTeachers.length > 0 ? (
-        <SidebarSection title="BAŞ ÖĞRETMENLER">
+        <SidebarSection title="ÖĞRETMENLER">
           {headTeachers.map((ht) => (
             <div key={ht.id} className="flex h-[38px] items-center gap-2.5 rounded-[9px] px-2.5 text-ink-2">
               <Avatar name={ht.name} colorId={ht.id} size={22} />
@@ -53,7 +53,7 @@ export async function AssistantSidebar({ user, active }: { user: Profile; active
       <SidebarUserCard
         initials={initialsOf(`${user.firstName} ${user.lastName}`)}
         name={`${user.firstName} ${user.lastName}`}
-        roleLabel="Asistan öğretmen"
+        roleLabel="Öğretmen"
         signOutAction={signOutAction}
       />
     </>

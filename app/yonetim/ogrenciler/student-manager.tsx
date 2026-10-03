@@ -137,8 +137,7 @@ export function StudentManager({
           <div>
             <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Öğrenciler</h1>
             <p className="mt-1.5 text-ink-2">
-              Öğrencileri baş öğretmenlere atayın, sınıf ve etüt günlerini düzenleyin. Asistan, baş
-              öğretmen üzerinden otomatik belirlenir.
+              Öğrencileri öğretmenlere atayın, sınıf ve etüt günlerini düzenleyin.
             </p>
           </div>
           <button
@@ -208,7 +207,7 @@ export function StudentManager({
                   <tr className="bg-surface-2 text-left text-xs text-muted">
                     <th className="px-4 py-2.5 font-medium">Öğrenci</th>
                     <th className="px-3 py-2.5 font-medium">Sınıf</th>
-                    <th className="px-3 py-2.5 font-medium">Baş öğretmen</th>
+                    <th className="px-3 py-2.5 font-medium">Öğretmen</th>
                     <th className="px-3 py-2.5 font-medium">Asistan</th>
                     <th className="px-4 py-2.5 font-medium">Etüt günleri</th>
                   </tr>
@@ -299,7 +298,7 @@ export function StudentManager({
             </div>
             <div className="flex min-w-0 flex-col gap-1.5">
               <label htmlFor="e-bas" className="text-[13px] font-medium">
-                Baş öğretmen
+                Öğretmen
               </label>
               <select
                 id="e-bas"
@@ -319,9 +318,9 @@ export function StudentManager({
           <div className="rounded-[10px] bg-accent-soft px-3 py-2.5 text-[13px] leading-relaxed text-accent-text">
             Kayıtları{" "}
             <strong>
-              {headTeachers.find((h) => h.id === edit.headTeacherId)?.assistantNames || "henüz atanmamış asistan"}
+              {headTeachers.find((h) => h.id === edit.headTeacherId)?.assistantNames || "henüz atanmamış bir öğretmen"}
             </strong>{" "}
-            girecek (baş öğretmenin asistanı).
+            girecek.
           </div>
 
           <div className="flex flex-col gap-2">

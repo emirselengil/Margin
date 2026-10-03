@@ -56,7 +56,7 @@ export function StudentTable({ students, dateISO }: { students: StudentForDay[];
             <thead>
               <tr className="text-left text-xs text-muted">
                 <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
-                <th className="px-3 py-2.5 font-medium">Baş öğretmen</th>
+                <th className="px-3 py-2.5 font-medium">Öğretmen</th>
                 <th className="px-3 py-2.5 font-medium">Ödev</th>
                 <th className="px-3 py-2.5 font-medium">Kitap</th>
                 <th className="px-3 py-2.5 font-medium">Not</th>

@@ -30,14 +30,14 @@ function linksText(t: TeacherRow, byId: Map<string, TeacherRow>): string {
     const names = t.linkedHeadTeacherIds.map((id) => byId.get(id)).filter(Boolean) as TeacherRow[];
     return names.length
       ? "Bağlı: " + names.map((n) => `${n.firstName} ${n.lastName}`).join(", ")
-      : "Henüz bağlı baş öğretmen yok";
+      : "Henüz bağlı öğretmen yok";
   }
   if (t.role === "head_teacher") {
     const assistants = Array.from(byId.values()).filter(
       (x) => x.role === "assistant" && x.linkedHeadTeacherIds.includes(t.id),
     );
     const names = assistants.map((a) => `${a.firstName} ${a.lastName}`).join(", ");
-    return `${t.studentCount} öğrenci · ${names ? "Asistan: " + names : "Asistan atanmamış"}`;
+    return `${t.studentCount} öğrenci · ${names ? "Öğretmen: " + names : "Öğretmen atanmamış"}`;
   }
   return "Tüm verilere erişim";
 }

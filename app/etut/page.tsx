@@ -101,7 +101,7 @@ export default async function EtutPage({
           <div className="rounded-[14px] border border-line bg-surface-2 p-4">
             <div className="text-[13px] text-muted">Etüde gelecek</div>
             <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em]">{total}</div>
-            <div className="mt-0.5 text-xs text-muted">{headTeacherCount} baş öğretmen</div>
+            <div className="mt-0.5 text-xs text-muted">{headTeacherCount} öğretmen</div>
           </div>
           <div className="rounded-[14px] border border-warn-line bg-warn-soft p-4">
             <div className="text-[13px] text-warn-text">Ödev eksik</div>

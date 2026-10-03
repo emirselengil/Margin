@@ -231,7 +231,7 @@ export function GroupGrid({
                 <thead>
                   <tr className="bg-surface-2 text-xs text-muted">
                     <th className="px-[18px] py-3 text-left font-medium">Öğrenci</th>
-                    <th className="px-3 py-3 text-left font-medium">Baş öğretmen</th>
+                    <th className="px-3 py-3 text-left font-medium">Öğretmen</th>
                     {WEEKDAY_SHORT.map((l) => (
                       <th
                         key={l}

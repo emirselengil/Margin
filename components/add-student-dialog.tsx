@@ -104,7 +104,7 @@ export function AddStudentDialog({
         {showHeadTeacherSelect ? (
           <div className="flex flex-col gap-1.5">
             <label htmlFor="as-bas" className="text-[13px] font-medium">
-              Baş öğretmen
+              Öğretmen
             </label>
             <select
               id="as-bas"

@@ -7,9 +7,13 @@ export const ROLE_HOME = {
 
 export type Role = keyof typeof ROLE_HOME;
 
+// head_teacher ve assistant aynı görünür etikete sahip: bu ayrım yalnızca
+// arka planda (yetki kuralları, veri modeli) var; görsel olarak kullanıcıya
+// hep tek bir "Öğretmen" kimliği gösteriliyor. Roller atanırken (yönetici
+// paneli) hâlâ ayrı ayrı seçilebiliyor, bkz. teacher-manager.tsx.
 export const ROLE_LABELS: Record<Role, string> = {
   admin: "Yönetici",
-  head_teacher: "Baş öğretmen",
-  assistant: "Asistan öğretmen",
+  head_teacher: "Öğretmen",
+  assistant: "Öğretmen",
   pending: "Onay bekliyor",
 };
