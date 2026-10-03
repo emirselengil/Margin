@@ -7,14 +7,23 @@ export type HeadTeacherChoice = { id: string; name: string };
 export function AddStudentDialog({
   open,
   headTeacherOptions,
+  showHeadTeacherSelect = headTeacherOptions.length > 1,
   pending,
   error,
   onSubmit,
   onCancel,
 }: {
   open: boolean;
-  /** Tek seçenek varsa (örn. baş öğretmenin kendisi) seçim gizlenir, otomatik seçilir. */
+  /** Seçilebilecek baş öğretmenler. Baş öğretmenin kendi öğrencisini eklediği
+   * akışta tek seçenek (kendisi) olur. */
   headTeacherOptions: HeadTeacherChoice[];
+  /**
+   * Baş öğretmen seçim kutusunu göster. Varsayılan: birden fazla seçenek
+   * varsa göster. Asistanın öğrenci eklerken hangi baş öğretmene ekleyeceğini
+   * her zaman açıkça seçebilmesi için (tek baş öğretmen olsa bile) `true`
+   * verilebilir.
+   */
+  showHeadTeacherSelect?: boolean;
   pending?: boolean;
   error?: string | null;
   onSubmit: (data: { fullName: string; className: string; headTeacherId: string }) => void;
@@ -92,7 +101,7 @@ export function AddStudentDialog({
           />
         </div>
 
-        {headTeacherOptions.length > 1 ? (
+        {showHeadTeacherSelect ? (
           <div className="flex flex-col gap-1.5">
             <label htmlFor="as-bas" className="text-[13px] font-medium">
               Baş öğretmen

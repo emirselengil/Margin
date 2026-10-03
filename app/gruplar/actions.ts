@@ -4,20 +4,25 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
-import { students, studentStudyDays } from "@/db/schema";
+import { assistantHeadTeachers, students, studentStudyDays } from "@/db/schema";
 import { canAddStudentForHeadTeacher, canEditStudentDays, PermissionError } from "@/lib/permissions";
 import { getOrCreateProfile } from "@/lib/profile";
 
 export type StudyDaysChange = { studentId: string; weekdays: number[] };
 
-/** Bağlı olduğu bir baş öğretmenin altına yeni öğrenci ekler. */
+/**
+ * Bir baş öğretmenin altına yeni öğrenci ekler. Asistan, henüz bağlı
+ * olmadığı bir baş öğretmen için öğrenci eklerse, bu işlem aynı zamanda
+ * asistan–baş öğretmen bağını da kurar; aksi halde asistan az önce kendi
+ * eklediği öğrenciyi görüntüleyemez/düzenleyemez (bkz. `visibleStudentIds`).
+ */
 export async function addStudentAction(
   headTeacherId: string,
   fullName: string,
   className: string,
 ): Promise<{ id: string }> {
   const user = await getOrCreateProfile();
-  if (!(await canAddStudentForHeadTeacher(user, headTeacherId))) {
+  if (!user || !(await canAddStudentForHeadTeacher(user, headTeacherId))) {
     throw new PermissionError("Bu baş öğretmen için öğrenci ekleme yetkiniz yok.");
   }
 
@@ -25,6 +30,13 @@ export async function addStudentAction(
     .insert(students)
     .values({ fullName, className, headTeacherId, isActive: true })
     .returning({ id: students.id });
+
+  if (user.role === "assistant") {
+    await db
+      .insert(assistantHeadTeachers)
+      .values({ assistantId: user.id, headTeacherId })
+      .onConflictDoNothing();
+  }
 
   revalidatePath("/gruplar");
   revalidatePath("/etut");

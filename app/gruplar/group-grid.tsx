@@ -272,6 +272,7 @@ export function GroupGrid({
       <AddStudentDialog
         open={addOpen}
         headTeacherOptions={allHeadTeachers}
+        showHeadTeacherSelect
         pending={addPending}
         error={addError}
         onSubmit={addStudent}
