@@ -70,12 +70,13 @@ export default async function OgrencilerimPage() {
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[820px] border-collapse">
+              <table className="w-full min-w-[980px] border-collapse">
                 <thead>
                   <tr className="text-left text-xs text-muted">
                     <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
                     <th className="px-3 py-2.5 font-medium">Etüt günleri</th>
                     <th className="px-3 py-2.5 font-medium">Son etüt</th>
+                    <th className="px-3 py-2.5 font-medium">Not</th>
                     <th className="px-[18px] py-2.5">
                       <span className="sr-only">Aç</span>
                     </th>
@@ -122,6 +123,9 @@ export default async function OgrencilerimPage() {
                         ) : (
                           <span className="text-[13px] text-muted">Henüz kayıt yok</span>
                         )}
+                      </td>
+                      <td className="max-w-[260px] px-3 py-3 text-[13px] text-ink-2">
+                        {s.latest?.note || "—"}
                       </td>
                       <td className="px-[18px] py-3 text-right">
                         <Link

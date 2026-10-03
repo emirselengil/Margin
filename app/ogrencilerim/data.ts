@@ -78,6 +78,7 @@ export type MyStudentListRow = {
     homework: "done" | "missing" | null;
     book: "brought" | "not_brought" | null;
     attendance: "came" | "absent" | null;
+    note: string | null;
   } | null;
 };
 
@@ -113,7 +114,13 @@ export async function getAllMyStudents(user: Profile): Promise<MyStudentListRow[
         className: s.className,
         days: (daysByStudent.get(s.id) ?? []).sort((a, b) => a - b),
         latest: latest
-          ? { date: latest.date, homework: latest.homework, book: latest.book, attendance: latest.attendance }
+          ? {
+              date: latest.date,
+              homework: latest.homework,
+              book: latest.book,
+              attendance: latest.attendance,
+              note: latest.note,
+            }
           : null,
       };
     })
