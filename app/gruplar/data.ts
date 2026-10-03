@@ -1,8 +1,9 @@
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { profiles, studentStudyDays, students, type Profile } from "@/db/schema";
 import { visibleStudentIds } from "@/lib/permissions";
+import { teacherDisplayName } from "@/lib/teacher-name";
 
 export type StudentWithDays = {
   id: string;
@@ -40,7 +41,7 @@ export async function getStudentsWithDays(user: Profile): Promise<StudentWithDay
       fullName: student.fullName,
       className: student.className,
       headTeacherId: headTeacher.id,
-      headTeacherName: `${headTeacher.firstName} ${headTeacher.lastName}`,
+      headTeacherName: teacherDisplayName(headTeacher, user.role),
       days: (daysByStudent.get(student.id) ?? []).sort((a, b) => a - b),
     }))
     .sort((a, b) => a.fullName.localeCompare(b.fullName, "tr"));
@@ -57,7 +58,7 @@ export async function getAllHeadTeachers(): Promise<HeadTeacherOption[]> {
   const rows = await db
     .select({ id: profiles.id, firstName: profiles.firstName, lastName: profiles.lastName })
     .from(profiles)
-    .where(eq(profiles.role, "head_teacher"))
+    .where(and(eq(profiles.role, "head_teacher"), eq(profiles.isActive, true)))
     .orderBy(profiles.firstName);
   return rows.map((r) => ({ id: r.id, name: `${r.firstName} ${r.lastName}` }));
 }

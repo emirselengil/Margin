@@ -105,6 +105,11 @@ export function EditStudentDialog({
             onChange={(e) => setHeadTeacherId(e.target.value)}
             className="h-11 rounded-[10px] border border-line-2 bg-surface px-3 text-sm font-medium text-ink"
           >
+            {headTeacherId === "" ? (
+              <option value="" disabled>
+                Öğretmen seçin
+              </option>
+            ) : null}
             {headTeacherOptions.map((ht) => (
               <option key={ht.id} value={ht.id}>
                 {ht.name}

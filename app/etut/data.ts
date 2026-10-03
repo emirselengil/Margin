@@ -11,6 +11,7 @@ import {
 } from "@/db/schema";
 import { visibleStudentIds } from "@/lib/permissions";
 import { weekdayOfISODate } from "@/lib/date";
+import { teacherDisplayName } from "@/lib/teacher-name";
 
 export type HeadTeacherSummary = {
   id: string;
@@ -28,6 +29,7 @@ export async function getLinkedHeadTeachers(assistant: Profile): Promise<HeadTea
 
   const result: HeadTeacherSummary[] = [];
   for (const { headTeacher } of links) {
+    if (!headTeacher.isActive) continue;
     const rows = await db
       .select({ id: students.id })
       .from(students)
@@ -86,7 +88,7 @@ export async function getStudentsForDate(user: Profile, dateISO: string): Promis
         fullName: student.fullName,
         className: student.className,
         headTeacherId: headTeacher.id,
-        headTeacherName: `${headTeacher.firstName} ${headTeacher.lastName}`,
+        headTeacherName: teacherDisplayName(headTeacher, user.role),
         homework: record?.homework ?? null,
         book: record?.book ?? null,
         attendance: record?.attendance ?? null,

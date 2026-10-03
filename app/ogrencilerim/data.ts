@@ -11,7 +11,7 @@ export async function getMyAssistants(headTeacher: Profile) {
     .from(assistantHeadTeachers)
     .innerJoin(profiles, eq(profiles.id, assistantHeadTeachers.assistantId))
     .where(eq(assistantHeadTeachers.headTeacherId, headTeacher.id));
-  return rows.map((r) => r.assistant);
+  return rows.map((r) => r.assistant).filter((a) => a.isActive);
 }
 
 export type MyStudentRow = {

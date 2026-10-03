@@ -3,6 +3,7 @@ import { and, desc, eq, lt } from "drizzle-orm";
 import { db } from "@/db/client";
 import { profiles, studentStudyDays, students, studyRecords, type Profile } from "@/db/schema";
 import { canViewStudent } from "@/lib/permissions";
+import { teacherDisplayName } from "@/lib/teacher-name";
 
 export type StudentDetail = {
   id: string;
@@ -34,7 +35,7 @@ export async function getStudentDetail(user: Profile, studentId: string): Promis
     fullName: row.student.fullName,
     className: row.student.className,
     headTeacherId: row.headTeacher.id,
-    headTeacherName: `${row.headTeacher.firstName} ${row.headTeacher.lastName}`,
+    headTeacherName: teacherDisplayName(row.headTeacher, user.role),
     studyDays: days.map((d) => d.weekday).sort((a, b) => a - b),
   };
 }

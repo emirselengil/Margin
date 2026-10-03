@@ -3,6 +3,8 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { profiles, studentStudyDays, students, studyRecords, type Profile } from "@/db/schema";
 import { canViewStudent } from "@/lib/permissions";
+import type { Role } from "@/lib/roles";
+import { teacherDisplayName } from "@/lib/teacher-name";
 
 export type StudentDetail = {
   id: string;
@@ -39,7 +41,7 @@ export type RecordWithAuthor = {
   enteredBy: string;
 };
 
-export async function getAllRecords(studentId: string): Promise<RecordWithAuthor[]> {
+export async function getAllRecords(studentId: string, viewerRole: Role): Promise<RecordWithAuthor[]> {
   const rows = await db
     .select({ record: studyRecords, author: profiles })
     .from(studyRecords)
@@ -53,6 +55,6 @@ export async function getAllRecords(studentId: string): Promise<RecordWithAuthor
     book: record.book,
     attendance: record.attendance,
     note: record.note,
-    enteredBy: `${author.firstName} ${author.lastName}`,
+    enteredBy: teacherDisplayName(author, viewerRole),
   }));
 }

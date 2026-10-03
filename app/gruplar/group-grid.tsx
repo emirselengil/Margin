@@ -327,7 +327,9 @@ export function GroupGrid({
         open={editingId !== null}
         initialFullName={editingStudent?.fullName ?? ""}
         initialClassName={editingStudent?.className ?? ""}
-        initialHeadTeacherId={editingStudent?.headTeacherId ?? ""}
+        initialHeadTeacherId={
+          allHeadTeachers.some((h) => h.id === editingStudent?.headTeacherId) ? editingStudent!.headTeacherId : ""
+        }
         headTeacherOptions={allHeadTeachers}
         pending={editPending}
         error={editError}

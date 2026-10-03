@@ -44,7 +44,7 @@ export default async function BasOgrenciDetayPage({
   const student = await getStudentDetail(user, ogrenciId);
   if (!student) notFound();
 
-  const [allStudentIds, records] = await Promise.all([visibleStudentIds(user), getAllRecords(ogrenciId)]);
+  const [allStudentIds, records] = await Promise.all([visibleStudentIds(user), getAllRecords(ogrenciId, user.role)]);
 
   const today = todayISODate();
   const todayRecord = records.find((r) => r.date === today);
