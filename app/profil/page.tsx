@@ -27,7 +27,7 @@ export default async function ProfilPage() {
     );
   } else if (user.role === "head_teacher") {
     const studentIds = await visibleStudentIds(user);
-    sidebar = <HeadTeacherSidebar user={user} studentCount={studentIds.length} active={false} />;
+    sidebar = <HeadTeacherSidebar user={user} studentCount={studentIds.length} active={null} />;
   } else {
     sidebar = <AssistantSidebar user={user} active={null} />;
   }

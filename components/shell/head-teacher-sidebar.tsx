@@ -1,4 +1,4 @@
-import { Users } from "lucide-react";
+import { CalendarDays, Users } from "lucide-react";
 
 import { getMyAssistants } from "@/app/ogrencilerim/data";
 import { signOutAction } from "@/app/onay-bekliyor/actions";
@@ -14,7 +14,15 @@ import {
 import type { Profile } from "@/db/schema";
 import { initialsOf } from "@/lib/avatar-colors";
 
-export async function HeadTeacherSidebar({ user, studentCount, active = true }: { user: Profile; studentCount: number; active?: boolean }) {
+export async function HeadTeacherSidebar({
+  user,
+  studentCount,
+  active = "ogrencilerim",
+}: {
+  user: Profile;
+  studentCount: number;
+  active?: "ogrencilerim" | "etutler" | null;
+}) {
   const assistants = await getMyAssistants(user);
 
   return (
@@ -24,10 +32,13 @@ export async function HeadTeacherSidebar({ user, studentCount, active = true }: 
         <SidebarNavLink
           href="/ogrencilerim"
           icon={Users}
-          active={active}
+          active={active === "ogrencilerim"}
           badge={<span className="font-mono text-xs text-muted">{studentCount}</span>}
         >
           Öğrencilerim
+        </SidebarNavLink>
+        <SidebarNavLink href="/etutler" icon={CalendarDays} active={active === "etutler"}>
+          Etütler
         </SidebarNavLink>
       </SidebarNav>
 

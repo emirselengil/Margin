@@ -143,7 +143,7 @@ export default async function BasOgrenciDetayPage({
             ) : (
               <>
                 <div className="mt-2.5 text-base font-semibold">Kayıt bekleniyor</div>
-                <div className="mt-1 text-xs text-muted">Asistan girince burada görünür</div>
+                <div className="mt-1 text-xs text-muted">Öğretmen girince burada görünür</div>
               </>
             )}
           </div>

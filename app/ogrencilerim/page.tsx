@@ -2,73 +2,34 @@ import { ChevronRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 import { AddMyStudentButton } from "@/app/ogrencilerim/add-my-student-button";
-import { getMyAssistants, getStudentsForDate, getWeekdayCounts } from "@/app/ogrencilerim/data";
+import { getAllMyStudents } from "@/app/ogrencilerim/data";
 import { Avatar } from "@/components/avatar";
-import { ProgressRing } from "@/components/progress-ring";
 import { AppShell } from "@/components/shell/app-shell";
 import { HeadTeacherSidebar } from "@/components/shell/head-teacher-sidebar";
 import { Topbar } from "@/components/shell/topbar";
 import { StatusChip } from "@/components/status-chip";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { addDaysISO, formatLong, startOfWeekISO, todayISODate, WEEKDAY_SHORT } from "@/lib/date";
+import { formatDayMonth, WEEKDAY_SHORT } from "@/lib/date";
 import { requirePageRole } from "@/lib/page-guard";
-import { visibleStudentIds } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
-const HOMEWORK_LABEL = { done: "Yapıldı", missing: "Eksik" } as const;
-const BOOK_LABEL = { brought: "Getirdi", not_brought: "Getirmedi" } as const;
+const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 
-export default async function OgrencilerimPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ date?: string }>;
-}) {
+export default async function OgrencilerimPage() {
   const user = await requirePageRole("head_teacher");
-  const { date: dateParam } = await searchParams;
-  const dateISO = dateParam || todayISODate();
-  const weekStart = startOfWeekISO(dateISO);
-
-  const [allStudentIds, todayStudents, weekdayCounts, assistants] = await Promise.all([
-    visibleStudentIds(user),
-    getStudentsForDate(user, dateISO),
-    getWeekdayCounts(user),
-    getMyAssistants(user),
-  ]);
-
-  const total = todayStudents.length;
-  const done = todayStudents.filter((s) => s.homework && s.book).length;
-  const eksik = todayStudents.filter((s) => s.homework === "missing");
-
-  let homeworkDone = 0;
-  let homeworkTotal = 0;
-  for (const s of todayStudents) {
-    for (const h of s.last4Homework) {
-      if (h === null) continue;
-      homeworkTotal++;
-      if (h === "done") homeworkDone++;
-    }
-  }
-
-  const assistantNames = assistants.map((a) => `${a.firstName} ${a.lastName}`).join(", ");
-
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const iso = addDaysISO(weekStart, i);
-    const d = new Date(`${iso}T12:00:00`);
-    const selected = iso === dateISO;
-    const dotCount = Math.min(weekdayCounts[i], 6);
-    return { iso, label: WEEKDAY_SHORT[i], num: d.getDate(), selected, dotCount };
-  });
+  const students = await getAllMyStudents(user);
 
   return (
-    <AppShell sidebar={<HeadTeacherSidebar user={user} studentCount={allStudentIds.length} />}>
+    <AppShell sidebar={<HeadTeacherSidebar user={user} studentCount={students.length} active="ogrencilerim" />}>
       <Topbar
         crumbs={
           <>
-            <span>Öğrencilerim</span>
+            <span>Öğretmen</span>
             <ChevronRight size={14} aria-hidden="true" />
-            <span className="font-medium text-ink">{formatLong(dateISO).split(",")[0]}</span>
+            <span className="font-medium text-ink">Öğrencilerim</span>
           </>
         }
         right={
@@ -85,132 +46,43 @@ export default async function OgrencilerimPage({
 
       <div className="flex flex-col gap-[22px] px-6 py-6 pb-10">
         <div>
-          <div className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-accent-text">
-            {formatLong(dateISO)}
-          </div>
-          <h1 className="mt-1.5 text-[30px] font-semibold tracking-[-0.03em]">
-            Merhaba, {user.firstName} {user.lastName}
-          </h1>
+          <h1 className="m-0 text-[30px] font-semibold tracking-[-0.03em]">Öğrencilerim</h1>
           <p className="mt-1.5 text-ink-2">
-            {assistants.length > 0
-              ? `Öğrencilerinizin etüt kayıtlarını Öğretmen ${assistantNames} giriyor. Buradan yalnızca takip edebilirsiniz.`
-              : "Henüz size bağlı bir öğretmen yok. Kayıtlar girilmeye başladığında burada görünecek."}
+            Size bağlı tüm öğrenciler. Günlük etüt durumunu görmek için{" "}
+            <Link href="/etutler" className="font-medium text-accent-text no-underline hover:underline">
+              Etütler
+            </Link>{" "}
+            sayfasına bakın.
           </p>
         </div>
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
-          <div className="rounded-[14px] border border-line bg-surface-2 p-4">
-            <div className="text-[13px] text-muted">Öğrencilerim</div>
-            <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em]">
-              {allStudentIds.length}
-            </div>
-            <div className="mt-0.5 text-xs text-muted">bugün {total}&apos;ü etütte</div>
-          </div>
-          <div className="flex items-center justify-between rounded-[14px] border border-line bg-surface-2 p-4">
-            <div>
-              <div className="text-[13px] text-muted">Bugün kayıt girildi</div>
-              <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em]">
-                {done}
-                <span className="text-muted">/{total}</span>
-              </div>
-            </div>
-            {total > 0 ? <ProgressRing done={done} total={total} /> : null}
-          </div>
-          <div className="rounded-[14px] border border-accent-line bg-accent-soft p-4">
-            <div className="text-[13px] text-accent-text">Ödev yapılma · son 4 etüt</div>
-            <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em] text-accent-text">
-              {homeworkDone}
-              <span className="opacity-60">/{homeworkTotal}</span>
-            </div>
-            <div className="mt-0.5 text-xs text-accent-text">bugün etütteki {total} öğrenci</div>
-          </div>
-          <div className="rounded-[14px] border border-warn-line bg-warn-soft p-4">
-            <div className="text-[13px] text-warn-text">Bugün ödev eksik</div>
-            <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em] text-warn-text">
-              {eksik.length}
-            </div>
-            <div className="mt-0.5 truncate text-xs text-warn-text">
-              {eksik.map((s) => s.fullName).join(", ") || "—"}
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <div className="grid min-w-[640px] grid-cols-7 gap-2">
-            {days.map((d) => (
-              <Link
-                key={d.iso}
-                href={`/ogrencilerim?date=${d.iso}`}
-                className={
-                  "flex h-[88px] flex-col items-start justify-between rounded-xl border px-3 py-2.5 text-left no-underline transition " +
-                  (d.selected
-                    ? "border-accent bg-accent text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)] hover:opacity-90 active:opacity-80"
-                    : "border-line bg-surface text-ink hover:bg-sunken hover:border-line-2 active:bg-line")
-                }
-              >
-                <span
-                  className={
-                    "font-mono text-[11px] font-medium tracking-[0.06em] " +
-                    (d.selected ? "text-white/85" : "text-muted")
-                  }
-                >
-                  {d.label}
-                </span>
-                <span className="text-[22px] font-semibold tracking-[-0.03em]">{d.num}</span>
-                <span className="flex h-1.5 gap-[3px]">
-                  {Array.from({ length: d.dotCount }, (_, i) => (
-                    <span
-                      key={i}
-                      className="h-1.5 w-1.5 rounded-[3px]"
-                      style={{ background: d.selected ? "rgba(255,255,255,0.8)" : "var(--accent)" }}
-                    />
-                  ))}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
         <div className="overflow-hidden rounded-[14px] border border-line">
-          <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-line bg-surface-2 px-[18px] py-3.5">
+          <div className="flex items-center justify-between border-b border-line bg-surface-2 px-[18px] py-3.5">
             <h2 className="m-0 text-[15px] font-semibold">
-              {formatLong(dateISO).split(",")[0]} etüdü{" "}
-              <span className="font-mono text-[13px] font-normal text-muted">{total}</span>
+              Tüm öğrenciler{" "}
+              <span className="font-mono text-[13px] font-normal text-muted">{students.length}</span>
             </h2>
-            <span className="flex gap-3.5 text-xs text-muted">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-[3px] bg-accent" />
-                Ödev yapıldı
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-[3px] border-2 border-warn" />
-                Eksik
-              </span>
-            </span>
           </div>
 
-          {total === 0 ? (
+          {students.length === 0 ? (
             <p className="px-[18px] py-10 text-center text-ink-2">
-              Bu gün etüde gelecek öğrenci yok.
+              Henüz size bağlı öğrenci yok. &ldquo;Öğrenci ekle&rdquo; ile ilk öğrencinizi ekleyebilirsiniz.
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px] border-collapse">
+              <table className="w-full min-w-[820px] border-collapse">
                 <thead>
                   <tr className="text-left text-xs text-muted">
                     <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
-                    <th className="px-3 py-2.5 font-medium">Katılım</th>
-                    <th className="px-3 py-2.5 font-medium">Bugün ödev</th>
-                    <th className="px-3 py-2.5 font-medium">Bugün kitap</th>
-                    <th className="px-3 py-2.5 font-medium">Not</th>
-                    <th className="px-3 py-2.5 font-medium">Son 4 etüt</th>
+                    <th className="px-3 py-2.5 font-medium">Etüt günleri</th>
+                    <th className="px-3 py-2.5 font-medium">Son etüt</th>
                     <th className="px-[18px] py-2.5">
                       <span className="sr-only">Aç</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {todayStudents.map((s) => (
+                  {students.map((s) => (
                     <tr key={s.id} className="border-t border-line transition-colors hover:bg-surface-2">
                       <td className="px-[18px] py-3">
                         <Link
@@ -224,38 +96,32 @@ export default async function OgrencilerimPage({
                           </span>
                         </Link>
                       </td>
-                      <td className="px-3 py-3">
-                        <StatusChip tone={s.attendance === "came" ? "pos" : s.attendance === "absent" ? "neg" : "wait"}>
-                          {s.attendance ? ATTENDANCE_LABEL[s.attendance] : "Bekleniyor"}
-                        </StatusChip>
+                      <td className="px-3 py-3 font-mono text-xs text-ink-2">
+                        {s.days.map((d) => WEEKDAY_SHORT[d]).join(" · ") || "Gün belirlenmemiş"}
                       </td>
                       <td className="px-3 py-3">
-                        <StatusChip tone={s.homework === "done" ? "pos" : s.homework === "missing" ? "neg" : "wait"}>
-                          {s.homework ? HOMEWORK_LABEL[s.homework] : "Bekleniyor"}
-                        </StatusChip>
-                      </td>
-                      <td className="px-3 py-3">
-                        <StatusChip tone={s.book === "brought" ? "pos" : s.book === "not_brought" ? "neg" : "wait"}>
-                          {s.book ? BOOK_LABEL[s.book] : "Bekleniyor"}
-                        </StatusChip>
-                      </td>
-                      <td className="max-w-[240px] px-3 py-3 text-[13px] text-ink-2">{s.note || "—"}</td>
-                      <td className="px-3 py-3">
-                        <span className="flex gap-1" aria-label="Son 4 etütte ödev durumu">
-                          {s.last4Homework.map((h, i) => (
-                            <span
-                              key={i}
-                              className="h-2 w-2.5 rounded-sm"
-                              style={
-                                h === "done"
-                                  ? { background: "var(--accent)" }
-                                  : h === "missing"
-                                    ? { border: "2px solid var(--warn)", boxSizing: "border-box" }
-                                    : { background: "var(--line)" }
-                              }
-                            />
-                          ))}
-                        </span>
+                        {s.latest ? (
+                          <span className="flex flex-wrap items-center gap-1.5">
+                            <span className="font-mono text-xs text-muted">{formatDayMonth(s.latest.date)}</span>
+                            {s.latest.attendance ? (
+                              <StatusChip tone={s.latest.attendance === "came" ? "pos" : "neg"}>
+                                {ATTENDANCE_LABEL[s.latest.attendance]}
+                              </StatusChip>
+                            ) : null}
+                            {s.latest.homework ? (
+                              <StatusChip tone={s.latest.homework === "done" ? "pos" : "neg"}>
+                                {HOMEWORK_LABEL[s.latest.homework]}
+                              </StatusChip>
+                            ) : null}
+                            {s.latest.book ? (
+                              <StatusChip tone={s.latest.book === "brought" ? "pos" : "neg"}>
+                                {BOOK_LABEL[s.latest.book]}
+                              </StatusChip>
+                            ) : null}
+                          </span>
+                        ) : (
+                          <span className="text-[13px] text-muted">Henüz kayıt yok</span>
+                        )}
                       </td>
                       <td className="px-[18px] py-3 text-right">
                         <Link

@@ -68,6 +68,58 @@ export async function getStudentsForDate(user: Profile, dateISO: string): Promis
   return result.sort((a, b) => a.fullName.localeCompare(b.fullName, "tr"));
 }
 
+export type MyStudentListRow = {
+  id: string;
+  fullName: string;
+  className: string;
+  days: number[];
+  latest: {
+    date: string;
+    homework: "done" | "missing" | null;
+    book: "brought" | "not_brought" | null;
+    attendance: "came" | "absent" | null;
+  } | null;
+};
+
+/** Baş öğretmenin tüm (aktif) öğrencileri; etüt günleri ve en son kaydıyla. */
+export async function getAllMyStudents(user: Profile): Promise<MyStudentListRow[]> {
+  const ids = await visibleStudentIds(user);
+  if (ids.length === 0) return [];
+
+  const [rows, dayRows, latestRows] = await Promise.all([
+    db.select().from(students).where(inArray(students.id, ids)),
+    db.select().from(studentStudyDays).where(inArray(studentStudyDays.studentId, ids)),
+    db
+      .selectDistinctOn([studyRecords.studentId])
+      .from(studyRecords)
+      .where(inArray(studyRecords.studentId, ids))
+      .orderBy(studyRecords.studentId, desc(studyRecords.date)),
+  ]);
+
+  const daysByStudent = new Map<string, number[]>();
+  for (const d of dayRows) {
+    const list = daysByStudent.get(d.studentId) ?? [];
+    list.push(d.weekday);
+    daysByStudent.set(d.studentId, list);
+  }
+  const latestByStudent = new Map(latestRows.map((r) => [r.studentId, r]));
+
+  return rows
+    .map((s) => {
+      const latest = latestByStudent.get(s.id);
+      return {
+        id: s.id,
+        fullName: s.fullName,
+        className: s.className,
+        days: (daysByStudent.get(s.id) ?? []).sort((a, b) => a - b),
+        latest: latest
+          ? { date: latest.date, homework: latest.homework, book: latest.book, attendance: latest.attendance }
+          : null,
+      };
+    })
+    .sort((a, b) => a.fullName.localeCompare(b.fullName, "tr"));
+}
+
 export async function getWeekdayCounts(user: Profile): Promise<number[]> {
   const ids = await visibleStudentIds(user);
   if (ids.length === 0) return [0, 0, 0, 0, 0, 0, 0];
