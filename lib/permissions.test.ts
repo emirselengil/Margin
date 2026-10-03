@@ -1,7 +1,8 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { createTestDb, type TestDb } from "@/db/test-utils";
-import { assistantHeadTeachers, profiles, students } from "@/db/schema";
+import { assistantHeadTeachers, profiles, studentStudyDays, students } from "@/db/schema";
+import { weekdayOfISODate } from "@/lib/date";
 import {
   assertKeepsOneActiveAdmin,
   assertNotSelfDelete,
@@ -10,6 +11,7 @@ import {
   canEditStudentDays,
   canViewStudent,
   canWriteRecord,
+  isStudentScheduledOn,
   PermissionError,
   requireRole,
   visibleStudentIds,
@@ -69,6 +71,7 @@ beforeEach(async () => {
   // Her testten önce tabloları temizle (FK sırasına dikkat); PGlite
   // örneğini ve migration'ları test dosyası başına bir kez kurmak,
   // her testte sıfırdan Postgres ayağa kaldırmaktan çok daha hızlı.
+  await db.delete(studentStudyDays);
   await db.delete(students);
   await db.delete(assistantHeadTeachers);
   await db.delete(profiles);
@@ -277,5 +280,29 @@ describe("canAddStudentForHeadTeacher", () => {
 
   it("pending kullanıcı öğrenci ekleyemez", async () => {
     expect(await canAddStudentForHeadTeacher(user(PENDING, "pending"), HEAD_A)).toBe(false);
+  });
+});
+
+describe("isStudentScheduledOn", () => {
+  it("öğrencinin o günün haftalık gününe atanmış olması gerekir", async () => {
+    const { studentOfA } = await seedBaseFixture(db);
+    const scheduledDate = "2026-10-05"; // Pazartesi
+    await db.insert(studentStudyDays).values({ studentId: studentOfA, weekday: weekdayOfISODate(scheduledDate) });
+
+    expect(await isStudentScheduledOn(studentOfA, scheduledDate, db)).toBe(true);
+  });
+
+  it("atanmadığı bir gün için reddeder", async () => {
+    const { studentOfA } = await seedBaseFixture(db);
+    const scheduledDate = "2026-10-05"; // Pazartesi
+    const otherDate = "2026-10-06"; // Salı
+    await db.insert(studentStudyDays).values({ studentId: studentOfA, weekday: weekdayOfISODate(scheduledDate) });
+
+    expect(await isStudentScheduledOn(studentOfA, otherDate, db)).toBe(false);
+  });
+
+  it("hiç etüt günü atanmamış öğrenci için her zaman reddeder", async () => {
+    const { studentOfA } = await seedBaseFixture(db);
+    expect(await isStudentScheduledOn(studentOfA, "2026-10-05", db)).toBe(false);
   });
 });

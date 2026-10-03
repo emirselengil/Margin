@@ -3,7 +3,8 @@ import type { PgDatabase } from "drizzle-orm/pg-core";
 
 import { db as defaultDb } from "@/db/client";
 import * as schema from "@/db/schema";
-import { assistantHeadTeachers, profiles, students } from "@/db/schema";
+import { assistantHeadTeachers, profiles, studentStudyDays, students } from "@/db/schema";
+import { weekdayOfISODate } from "@/lib/date";
 import type { Role } from "@/lib/roles";
 
 // Üretimde neon-serverless, testlerde PGlite sürücüsü kullanılıyor; ikisi de
@@ -116,6 +117,20 @@ export async function canEditStudentDays(
   database: Database = defaultDb,
 ): Promise<boolean> {
   return canWriteRecord(user, studentId, database);
+}
+
+/** `dateISO`'nun haftanın günü, öğrencinin atandığı etüt günlerinden biri mi? */
+export async function isStudentScheduledOn(
+  studentId: string,
+  dateISO: string,
+  database: Database = defaultDb,
+): Promise<boolean> {
+  const weekday = weekdayOfISODate(dateISO);
+  const rows = await database
+    .select({ weekday: studentStudyDays.weekday })
+    .from(studentStudyDays)
+    .where(and(eq(studentStudyDays.studentId, studentId), eq(studentStudyDays.weekday, weekday)));
+  return rows.length > 0;
 }
 
 /**

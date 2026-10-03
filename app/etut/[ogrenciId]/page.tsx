@@ -10,7 +10,14 @@ import { AppShell } from "@/components/shell/app-shell";
 import { AssistantSidebar } from "@/components/shell/assistant-sidebar";
 import { Topbar } from "@/components/shell/topbar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { formatBadgeDate, formatDayMonth, formatTimelineDate, todayISODate, WEEKDAY_LONG } from "@/lib/date";
+import {
+  formatBadgeDate,
+  formatDayMonth,
+  formatTimelineDate,
+  todayISODate,
+  weekdayOfISODate,
+  WEEKDAY_LONG,
+} from "@/lib/date";
 import { requirePageRole } from "@/lib/page-guard";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +53,7 @@ export default async function OgrenciDetayPage({
       ? sameDayStudents[currentIndex + 1]
       : null;
 
+  const isScheduledToday = student.studyDays.includes(weekdayOfISODate(dateISO));
   const filledPast = pastRecords.filter((r) => r.homework || r.book);
   const homeworkDoneCount = pastRecords.filter((r) => r.homework === "done").length;
   const bookBroughtCount = pastRecords.filter((r) => r.book === "brought").length;
@@ -148,14 +156,21 @@ export default async function OgrenciDetayPage({
               </div>
             </div>
 
-            <RecordForm
-              studentId={student.id}
-              dateISO={dateISO}
-              dateLabel={formatBadgeDate(dateISO)}
-              initialHomework={todayRecord?.homework ?? null}
-              initialBook={todayRecord?.book ?? null}
-              initialNote={todayRecord?.note ?? ""}
-            />
+            {isScheduledToday ? (
+              <RecordForm
+                studentId={student.id}
+                dateISO={dateISO}
+                dateLabel={formatBadgeDate(dateISO)}
+                initialHomework={todayRecord?.homework ?? null}
+                initialBook={todayRecord?.book ?? null}
+                initialNote={todayRecord?.note ?? ""}
+              />
+            ) : (
+              <div className="rounded-2xl border border-line bg-surface-2 p-5 text-ink-2">
+                {student.fullName}, {formatBadgeDate(dateISO)} için etüde atanmamış. Bu tarihe kayıt
+                eklenemez.
+              </div>
+            )}
 
             <div>
               <div className="mb-3.5 flex flex-wrap items-baseline justify-between gap-2.5">

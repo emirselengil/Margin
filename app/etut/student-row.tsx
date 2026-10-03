@@ -42,7 +42,7 @@ export function StudentRow({ student, dateISO }: { student: StudentForDay; dateI
     <tr className="border-t border-line transition-colors hover:bg-surface-2">
       <td className="px-[18px] py-2.5">
         <Link
-          href={`/etut/${student.id}`}
+          href={`/etut/${student.id}?date=${dateISO}`}
           className="flex items-center gap-3 text-ink no-underline transition-colors hover:text-accent-text"
         >
           <Avatar name={student.fullName} colorId={student.headTeacherId} />
@@ -68,14 +68,17 @@ export function StudentRow({ student, dateISO }: { student: StudentForDay; dateI
         {student.note ? (
           <span className="text-ink-2">{student.note}</span>
         ) : (
-          <Link href={`/etut/${student.id}`} className="font-medium text-accent-text no-underline hover:underline">
+          <Link
+            href={`/etut/${student.id}?date=${dateISO}`}
+            className="font-medium text-accent-text no-underline hover:underline"
+          >
             + Not ekle
           </Link>
         )}
       </td>
       <td className="px-[18px] py-2.5 text-right">
         <Link
-          href={`/etut/${student.id}`}
+          href={`/etut/${student.id}?date=${dateISO}`}
           aria-label="Öğrenciyi aç"
           className="inline-flex h-9 w-9 items-center justify-center rounded-[9px] text-muted transition-colors hover:bg-sunken hover:text-ink"
         >

@@ -4,16 +4,20 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
 import { bookStatusEnum, homeworkStatusEnum, studyRecords } from "@/db/schema";
-import { canWriteRecord, PermissionError } from "@/lib/permissions";
+import { canWriteRecord, isStudentScheduledOn, PermissionError } from "@/lib/permissions";
 import { getOrCreateProfile } from "@/lib/profile";
 
 type Homework = (typeof homeworkStatusEnum.enumValues)[number];
 type Book = (typeof bookStatusEnum.enumValues)[number];
 
-async function requireWriteAccess(studentId: string) {
+/** Öğrenciye yalnızca etüde geldiği günler için kayıt eklenebilir. */
+async function requireWriteAccess(studentId: string, dateISO: string) {
   const user = await getOrCreateProfile();
   if (!(await canWriteRecord(user, studentId))) {
     throw new PermissionError("Bu öğrenciye kayıt girme yetkiniz yok.");
+  }
+  if (!(await isStudentScheduledOn(studentId, dateISO))) {
+    throw new PermissionError("Öğrenci bu gün için etüde atanmamış, kayıt eklenemez.");
   }
   return user!;
 }
@@ -34,14 +38,14 @@ async function upsertRecord(
 }
 
 export async function setHomeworkAction(studentId: string, dateISO: string, value: Homework) {
-  const user = await requireWriteAccess(studentId);
+  const user = await requireWriteAccess(studentId, dateISO);
   await upsertRecord(studentId, dateISO, { homework: value }, user.id);
   revalidatePath("/etut");
   revalidatePath(`/etut/${studentId}`);
 }
 
 export async function setBookAction(studentId: string, dateISO: string, value: Book) {
-  const user = await requireWriteAccess(studentId);
+  const user = await requireWriteAccess(studentId, dateISO);
   await upsertRecord(studentId, dateISO, { book: value }, user.id);
   revalidatePath("/etut");
   revalidatePath(`/etut/${studentId}`);
@@ -52,7 +56,7 @@ export async function saveRecordAction(
   dateISO: string,
   patch: { homework: Homework | null; book: Book | null; note: string | null },
 ) {
-  const user = await requireWriteAccess(studentId);
+  const user = await requireWriteAccess(studentId, dateISO);
   await upsertRecord(
     studentId,
     dateISO,
