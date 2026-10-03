@@ -1,4 +1,4 @@
-import { ChevronRight, ShieldCheck } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 import { getMyAssistants, getStudentsForDate, getWeekdayCounts } from "@/app/ogrencilerim/data";
@@ -82,18 +82,42 @@ export default async function EtutlerPage({
       />
 
       <div className="flex flex-col gap-[22px] px-6 py-6 pb-10">
-        <div>
-          <div className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-accent-text">
-            {formatLong(dateISO)}
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="font-mono text-xs font-medium uppercase tracking-[0.06em] text-accent-text">
+              {formatLong(dateISO)}
+            </div>
+            <h1 className="mt-1.5 text-[30px] font-semibold tracking-[-0.03em]">
+              Merhaba, {user.firstName} {user.lastName}
+            </h1>
+            <p className="mt-1.5 text-ink-2">
+              {assistants.length > 0
+                ? `Öğrencilerinizin etüt kayıtlarını Öğretmen ${assistantNames} giriyor. Buradan yalnızca takip edebilirsiniz.`
+                : "Henüz size bağlı bir öğretmen yok. Kayıtlar girilmeye başladığında burada görünecek."}
+            </p>
           </div>
-          <h1 className="mt-1.5 text-[30px] font-semibold tracking-[-0.03em]">
-            Merhaba, {user.firstName} {user.lastName}
-          </h1>
-          <p className="mt-1.5 text-ink-2">
-            {assistants.length > 0
-              ? `Öğrencilerinizin etüt kayıtlarını Öğretmen ${assistantNames} giriyor. Buradan yalnızca takip edebilirsiniz.`
-              : "Henüz size bağlı bir öğretmen yok. Kayıtlar girilmeye başladığında burada görünecek."}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <Link
+              href={`/etutler?date=${addDaysISO(weekStart, -7)}`}
+              aria-label="Önceki hafta"
+              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
+            >
+              <ChevronLeft size={16} aria-hidden="true" />
+            </Link>
+            <Link
+              href="/etutler"
+              className="flex h-9 items-center rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink no-underline transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
+            >
+              Bu hafta
+            </Link>
+            <Link
+              href={`/etutler?date=${addDaysISO(weekStart, 7)}`}
+              aria-label="Sonraki hafta"
+              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
+            >
+              <ChevronRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
@@ -102,11 +126,11 @@ export default async function EtutlerPage({
             <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em]">
               {allStudentIds.length}
             </div>
-            <div className="mt-0.5 text-xs text-muted">bugün {total}&apos;ü etütte</div>
+            <div className="mt-0.5 text-xs text-muted">seçili günde {total}&apos;ü etütte</div>
           </div>
           <div className="flex items-center justify-between rounded-[14px] border border-line bg-surface-2 p-4">
             <div>
-              <div className="text-[13px] text-muted">Bugün kayıt girildi</div>
+              <div className="text-[13px] text-muted">Kayıt girildi</div>
               <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em]">
                 {done}
                 <span className="text-muted">/{total}</span>
@@ -120,10 +144,10 @@ export default async function EtutlerPage({
               {homeworkDone}
               <span className="opacity-60">/{homeworkTotal}</span>
             </div>
-            <div className="mt-0.5 text-xs text-accent-text">bugün etütteki {total} öğrenci</div>
+            <div className="mt-0.5 text-xs text-accent-text">o gün etütteki {total} öğrenci</div>
           </div>
           <div className="rounded-[14px] border border-warn-line bg-warn-soft p-4">
-            <div className="text-[13px] text-warn-text">Bugün ödev eksik</div>
+            <div className="text-[13px] text-warn-text">Ödev eksik</div>
             <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em] text-warn-text">
               {eksik.length}
             </div>
@@ -198,8 +222,8 @@ export default async function EtutlerPage({
                   <tr className="text-left text-xs text-muted">
                     <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
                     <th className="px-3 py-2.5 font-medium">Katılım</th>
-                    <th className="px-3 py-2.5 font-medium">Bugün ödev</th>
-                    <th className="px-3 py-2.5 font-medium">Bugün kitap</th>
+                    <th className="px-3 py-2.5 font-medium">Ödev</th>
+                    <th className="px-3 py-2.5 font-medium">Kitap</th>
                     <th className="px-3 py-2.5 font-medium">Not</th>
                     <th className="px-3 py-2.5 font-medium">Son 4 etüt</th>
                     <th className="px-[18px] py-2.5">
