@@ -8,6 +8,7 @@ import { saveRecordAction } from "@/app/etut/actions";
 
 type Homework = "done" | "missing";
 type Book = "brought" | "not_brought";
+type Attendance = "came" | "absent";
 
 const NOTE_SHORTCUTS = ["Derse aktif katıldı", "Geç geldi", "Eksiği tamamlayacak"];
 
@@ -66,6 +67,7 @@ export function RecordForm({
   dateLabel,
   initialHomework,
   initialBook,
+  initialAttendance,
   initialNote,
 }: {
   studentId: string;
@@ -73,11 +75,13 @@ export function RecordForm({
   dateLabel: string;
   initialHomework: Homework | null;
   initialBook: Book | null;
+  initialAttendance: Attendance | null;
   initialNote: string;
 }) {
   const router = useRouter();
   const [homework, setHomework] = useState<Homework | null>(initialHomework);
   const [book, setBook] = useState<Book | null>(initialBook);
+  const [attendance, setAttendance] = useState<Attendance | null>(initialAttendance);
   const [note, setNote] = useState(initialNote);
   const [pending, startTransition] = useTransition();
 
@@ -87,7 +91,7 @@ export function RecordForm({
 
   function save() {
     startTransition(async () => {
-      await saveRecordAction(studentId, dateISO, { homework, book, note: note || null });
+      await saveRecordAction(studentId, dateISO, { homework, book, attendance, note: note || null });
       router.push("/etut");
     });
   }
@@ -102,6 +106,26 @@ export function RecordForm({
       </div>
 
       <div className="flex flex-col gap-5 p-5">
+        <fieldset className="m-0 min-w-0 border-0 p-0">
+          <legend className="mb-2.5 font-semibold">Katılım</legend>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
+            <OptionCard
+              selected={attendance === "came"}
+              tone="pos"
+              title="Geldi"
+              subtitle="Etüde katıldı"
+              onClick={() => setAttendance("came")}
+            />
+            <OptionCard
+              selected={attendance === "absent"}
+              tone="neg"
+              title="Gelmedi"
+              subtitle="Etüde katılmadı"
+              onClick={() => setAttendance("absent")}
+            />
+          </div>
+        </fieldset>
+
         <fieldset className="m-0 min-w-0 border-0 p-0">
           <legend className="mb-2.5 font-semibold">Ödev durumu</legend>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">

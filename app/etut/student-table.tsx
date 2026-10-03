@@ -52,11 +52,12 @@ export function StudentTable({ students, dateISO }: { students: StudentForDay[];
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] border-collapse">
+          <table className="w-full min-w-[1100px] border-collapse">
             <thead>
               <tr className="text-left text-xs text-muted">
                 <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
                 <th className="px-3 py-2.5 font-medium">Öğretmen</th>
+                <th className="px-3 py-2.5 font-medium">Katılım</th>
                 <th className="px-3 py-2.5 font-medium">Ödev</th>
                 <th className="px-3 py-2.5 font-medium">Kitap</th>
                 <th className="px-3 py-2.5 font-medium">Not</th>

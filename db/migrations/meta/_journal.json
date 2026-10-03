@@ -15,6 +15,13 @@
       "when": 1790982898771,
       "tag": "0001_soft_nebula",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791044125012,
+      "tag": "0002_tired_natasha_romanoff",
+      "breakpoints": true
     }
   ]
 }

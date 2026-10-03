@@ -43,6 +43,7 @@ export type PastRecord = {
   date: string;
   homework: "done" | "missing" | null;
   book: "brought" | "not_brought" | null;
+  attendance: "came" | "absent" | null;
   note: string | null;
 };
 
@@ -53,7 +54,7 @@ export async function getPastRecords(studentId: string, beforeDateISO: string, l
     .where(and(eq(studyRecords.studentId, studentId), lt(studyRecords.date, beforeDateISO)))
     .orderBy(desc(studyRecords.date))
     .limit(limit);
-  return rows.map((r) => ({ date: r.date, homework: r.homework, book: r.book, note: r.note }));
+  return rows.map((r) => ({ date: r.date, homework: r.homework, book: r.book, attendance: r.attendance, note: r.note }));
 }
 
 export async function getTodayRecord(studentId: string, dateISO: string) {

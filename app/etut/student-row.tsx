@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 
-import { setBookAction, setHomeworkAction } from "@/app/etut/actions";
+import { setAttendanceAction, setBookAction, setHomeworkAction } from "@/app/etut/actions";
 import type { StudentForDay } from "@/app/etut/data";
 import { Avatar, ColorDot } from "@/components/avatar";
 import { StatusToggle } from "@/components/status-toggle";
@@ -12,6 +12,11 @@ import { StatusToggle } from "@/components/status-toggle";
 const HOMEWORK_OPTIONS = [
   { value: "done", label: "Yapıldı", tone: "pos" },
   { value: "missing", label: "Eksik", tone: "neg" },
+] as const;
+
+const ATTENDANCE_OPTIONS = [
+  { value: "came", label: "Geldi", tone: "pos" },
+  { value: "absent", label: "Gelmedi", tone: "neg" },
 ] as const;
 
 const BOOK_OPTIONS = [
@@ -22,12 +27,20 @@ const BOOK_OPTIONS = [
 export function StudentRow({ student, dateISO }: { student: StudentForDay; dateISO: string }) {
   const [homework, setHomework] = useState(student.homework);
   const [book, setBook] = useState(student.book);
+  const [attendance, setAttendance] = useState(student.attendance);
   const [pending, startTransition] = useTransition();
 
   function handleHomework(value: string) {
     setHomework(value as typeof homework);
     startTransition(async () => {
       await setHomeworkAction(student.id, dateISO, value as "done" | "missing");
+    });
+  }
+
+  function handleAttendance(value: string) {
+    setAttendance(value as typeof attendance);
+    startTransition(async () => {
+      await setAttendanceAction(student.id, dateISO, value as "came" | "absent");
     });
   }
 
@@ -57,6 +70,9 @@ export function StudentRow({ student, dateISO }: { student: StudentForDay; dateI
           <ColorDot colorId={student.headTeacherId} />
           {student.headTeacherName}
         </span>
+      </td>
+      <td className="px-3 py-1.5">
+        <StatusToggle value={attendance} options={ATTENDANCE_OPTIONS} onSelect={handleAttendance} pending={pending} />
       </td>
       <td className="px-3 py-1.5">
         <StatusToggle value={homework} options={HOMEWORK_OPTIONS} onSelect={handleHomework} pending={pending} />

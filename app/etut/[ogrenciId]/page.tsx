@@ -23,6 +23,7 @@ import { requirePageRole } from "@/lib/page-guard";
 export const dynamic = "force-dynamic";
 
 const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 
 export default async function OgrenciDetayPage({
@@ -54,7 +55,7 @@ export default async function OgrenciDetayPage({
       : null;
 
   const isScheduledToday = student.studyDays.includes(weekdayOfISODate(dateISO));
-  const filledPast = pastRecords.filter((r) => r.homework || r.book);
+  const filledPast = pastRecords.filter((r) => r.homework || r.book || r.attendance);
   const homeworkDoneCount = pastRecords.filter((r) => r.homework === "done").length;
   const bookBroughtCount = pastRecords.filter((r) => r.book === "brought").length;
 
@@ -163,6 +164,7 @@ export default async function OgrenciDetayPage({
                 dateLabel={formatBadgeDate(dateISO)}
                 initialHomework={todayRecord?.homework ?? null}
                 initialBook={todayRecord?.book ?? null}
+                initialAttendance={todayRecord?.attendance ?? null}
                 initialNote={todayRecord?.note ?? ""}
               />
             ) : (
@@ -211,6 +213,18 @@ export default async function OgrenciDetayPage({
                           {formatTimelineDate(r.date)}
                         </div>
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {r.attendance ? (
+                            <span
+                              className={
+                                "inline-flex h-6 items-center rounded-md px-2 text-xs font-medium " +
+                                (r.attendance === "came"
+                                  ? "bg-accent-soft text-accent-text"
+                                  : "bg-warn-soft text-warn-text")
+                              }
+                            >
+                              {ATTENDANCE_LABEL[r.attendance]}
+                            </span>
+                          ) : null}
                           {r.homework ? (
                             <span
                               className={

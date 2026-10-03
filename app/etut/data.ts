@@ -49,6 +49,7 @@ export type StudentForDay = {
   headTeacherName: string;
   homework: "done" | "missing" | null;
   book: "brought" | "not_brought" | null;
+  attendance: "came" | "absent" | null;
   note: string | null;
 };
 
@@ -88,6 +89,7 @@ export async function getStudentsForDate(user: Profile, dateISO: string): Promis
         headTeacherName: `${headTeacher.firstName} ${headTeacher.lastName}`,
         homework: record?.homework ?? null,
         book: record?.book ?? null,
+        attendance: record?.attendance ?? null,
         note: record?.note ?? null,
       };
     })

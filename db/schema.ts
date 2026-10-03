@@ -23,6 +23,7 @@ export const roleEnum = pgEnum("role", [
 
 export const homeworkStatusEnum = pgEnum("homework_status", ["done", "missing"]);
 export const bookStatusEnum = pgEnum("book_status", ["brought", "not_brought"]);
+export const attendanceStatusEnum = pgEnum("attendance_status", ["came", "absent"]);
 
 // `id` Neon Auth kullanıcı kimliğiyle eşleşir; Neon Auth'un ürettiği kimlik
 // her zaman UUID formatında olmayabileceği için text olarak tutulur.
@@ -96,6 +97,7 @@ export const studyRecords = pgTable(
     // olabilir (yalnızca biri seçilmiş olabilir).
     homework: homeworkStatusEnum("homework"),
     book: bookStatusEnum("book"),
+    attendance: attendanceStatusEnum("attendance"),
     note: text("note"),
     createdBy: text("created_by")
       .notNull()
