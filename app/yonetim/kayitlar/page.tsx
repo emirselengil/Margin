@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Download } from "lucide-react";
 
 import { getHeadTeacherOptions, getRecordsAdmin } from "@/app/yonetim/kayitlar/data";
 import { RecordsManager } from "@/app/yonetim/kayitlar/records-manager";
@@ -7,6 +7,7 @@ import { getPendingTeachers } from "@/app/yonetim/ogretmenler/data";
 import { AdminSidebar } from "@/components/shell/admin-sidebar";
 import { AppShell } from "@/components/shell/app-shell";
 import { Topbar } from "@/components/shell/topbar";
+import { ComingSoonButton } from "@/components/coming-soon-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { addDaysISO, todayISODate } from "@/lib/date";
 import { requirePageRole } from "@/lib/page-guard";
@@ -49,7 +50,12 @@ export default async function YonetimKayitlarPage({
             <span className="font-medium text-ink">Etüt kayıtları</span>
           </>
         }
-        right={<ThemeToggle />}
+        right={
+          <>
+            <ComingSoonButton icon={Download}>Excel&apos;e aktar</ComingSoonButton>
+            <ThemeToggle />
+          </>
+        }
       />
       <RecordsManager initialRecords={records} headTeachers={headTeachers} initialFilters={{ from, to }} />
     </AppShell>

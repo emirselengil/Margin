@@ -6,6 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 import { saveStudyDaysAction } from "@/app/gruplar/actions";
 import type { StudentWithDays } from "@/app/gruplar/data";
 import { Avatar, ColorDot } from "@/components/avatar";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { WEEKDAY_LONG, WEEKDAY_SHORT } from "@/lib/date";
 
 export function GroupGrid({
@@ -73,6 +74,7 @@ export function GroupGrid({
               Kaydedilmemiş değişiklik
             </span>
           ) : null}
+          <ThemeToggle />
           <button
             type="button"
             onClick={save}

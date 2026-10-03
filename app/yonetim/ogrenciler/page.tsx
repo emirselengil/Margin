@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Upload } from "lucide-react";
 
 import { getAllStudentsAdmin, getHeadTeacherOptions } from "@/app/yonetim/ogrenciler/data";
 import { StudentManager } from "@/app/yonetim/ogrenciler/student-manager";
@@ -6,6 +6,7 @@ import { getPendingTeachers } from "@/app/yonetim/ogretmenler/data";
 import { AdminSidebar } from "@/components/shell/admin-sidebar";
 import { AppShell } from "@/components/shell/app-shell";
 import { Topbar } from "@/components/shell/topbar";
+import { ComingSoonButton } from "@/components/coming-soon-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { requirePageRole } from "@/lib/page-guard";
 
@@ -38,7 +39,12 @@ export default async function YonetimOgrencilerPage() {
             <span className="font-medium text-ink">Öğrenciler</span>
           </>
         }
-        right={<ThemeToggle />}
+        right={
+          <>
+            <ComingSoonButton icon={Upload}>Excel&apos;den içe aktar</ComingSoonButton>
+            <ThemeToggle />
+          </>
+        }
       />
       <StudentManager initialStudents={students} headTeachers={headTeachers} />
     </AppShell>

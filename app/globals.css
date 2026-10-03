@@ -85,9 +85,14 @@
   --avatar-6-bg: #072A26; --avatar-6-fg: #5EEAD4; --avatar-6-dot: #2DD4BF;
 }
 
+html,
 body {
   background: var(--bg);
   color: var(--ink);
+  /* İç içe overflow-x: auto kapsayıcıları (tablolar, gün şeridi) bazı
+     tarayıcılarda sayfanın kendisini de yatay kaydırılabilir
+     yapabiliyor; bunu burada kesin olarak engelliyoruz. */
+  overflow-x: hidden;
 }
 
 * {
