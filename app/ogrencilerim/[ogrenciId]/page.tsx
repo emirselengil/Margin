@@ -66,7 +66,7 @@ export default async function BasOgrenciDetayPage({
       <Topbar
         crumbs={
           <>
-            <Link href="/ogrencilerim" className="text-muted no-underline">
+            <Link href="/ogrencilerim" className="text-muted no-underline hover:text-ink hover:underline">
               Öğrencilerim
             </Link>
             <ChevronRight size={14} aria-hidden="true" />

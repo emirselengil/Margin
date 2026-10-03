@@ -35,7 +35,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={isDark ? "Açık temaya geç" : "Koyu temaya geç"}
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 cursor-pointer"
+      className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
     >
       {isDark ? <Sun size={17} /> : <Moon size={17} />}
     </button>

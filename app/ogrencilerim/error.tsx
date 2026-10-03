@@ -12,7 +12,7 @@ export default function OgrencilerimError({ reset }: { error: Error & { digest?:
         <button
           type="button"
           onClick={reset}
-          className="mt-1 h-10 rounded-[9px] bg-accent px-4 text-sm font-medium text-white"
+          className="mt-1 h-10 cursor-pointer rounded-[9px] bg-accent px-4 text-sm font-medium text-white transition hover:opacity-90 active:scale-[0.98] active:opacity-80"
         >
           Tekrar dene
         </button>

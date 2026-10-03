@@ -63,7 +63,7 @@ export default async function OnayBekliyorPage() {
           <form action={signOutAction}>
             <button
               type="submit"
-              className="flex h-10 items-center gap-2 rounded-[9px] border border-line bg-surface px-4 text-sm font-medium text-ink"
+              className="flex h-10 cursor-pointer items-center gap-2 rounded-[9px] border border-line bg-surface px-4 text-sm font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
             >
               <LogOut size={15} aria-hidden="true" />
               Çıkış yap

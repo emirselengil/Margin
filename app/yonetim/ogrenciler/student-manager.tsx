@@ -145,7 +145,7 @@ export function StudentManager({
             type="button"
             onClick={addStudent}
             disabled={isPending || headTeachers.length === 0}
-            className="flex h-9 shrink-0 items-center gap-1.5 rounded-[9px] bg-accent px-3.5 text-[13px] font-medium text-white disabled:opacity-60"
+            className="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-[9px] bg-accent px-3.5 text-[13px] font-medium text-white transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-default disabled:opacity-60 disabled:hover:opacity-60"
           >
             <Plus size={15} aria-hidden="true" />
             Öğrenci ekle
@@ -172,8 +172,10 @@ export function StudentManager({
               type="button"
               onClick={() => setFilter("all")}
               className={
-                "h-[30px] rounded-[7px] border-0 px-2.5 text-xs font-medium " +
-                (filter === "all" ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]" : "bg-transparent text-muted")
+                "h-[30px] cursor-pointer rounded-[7px] border-0 px-2.5 text-xs font-medium transition-colors " +
+                (filter === "all"
+                  ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]"
+                  : "bg-transparent text-muted hover:text-ink active:bg-line")
               }
             >
               Tümü
@@ -184,8 +186,10 @@ export function StudentManager({
                 type="button"
                 onClick={() => setFilter(ht.id)}
                 className={
-                  "h-[30px] rounded-[7px] border-0 px-2.5 text-xs font-medium " +
-                  (filter === ht.id ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]" : "bg-transparent text-muted")
+                  "h-[30px] cursor-pointer rounded-[7px] border-0 px-2.5 text-xs font-medium transition-colors " +
+                  (filter === ht.id
+                    ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]"
+                    : "bg-transparent text-muted hover:text-ink active:bg-line")
                 }
               >
                 {ht.firstName} {ht.lastName}
@@ -211,12 +215,18 @@ export function StudentManager({
                 </thead>
                 <tbody>
                   {shown.map((s) => (
-                    <tr key={s.id} className={"border-t border-line " + (s.id === selectedId ? "bg-accent-soft" : "")}>
+                    <tr
+                      key={s.id}
+                      className={
+                        "border-t border-line transition-colors " +
+                        (s.id === selectedId ? "bg-accent-soft" : "hover:bg-surface-2")
+                      }
+                    >
                       <td className="px-4 py-2.5">
                         <button
                           type="button"
                           onClick={() => setSelectedId(s.id)}
-                          className="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left text-sm font-medium text-ink"
+                          className="flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left text-sm font-medium text-ink"
                         >
                           <Avatar name={s.fullName} colorId={s.headTeacherId} size={32} />
                           {s.fullName}
@@ -327,8 +337,10 @@ export function StudentManager({
                     aria-label={WEEKDAY_LONG[di]}
                     onClick={() => toggleDay(di)}
                     className={
-                      "h-10 rounded-[9px] border-0 text-xs font-medium " +
-                      (on ? "bg-accent text-white" : "border border-line bg-surface text-ink-2")
+                      "h-10 cursor-pointer rounded-[9px] border-0 text-xs font-medium transition-colors " +
+                      (on
+                        ? "bg-accent text-white hover:opacity-85 active:opacity-70"
+                        : "border border-line bg-surface text-ink-2 hover:bg-sunken hover:border-line-2 active:bg-line")
                     }
                   >
                     {label}
@@ -345,7 +357,7 @@ export function StudentManager({
               type="button"
               onClick={() => setConfirmDeleteId(selected.id)}
               disabled={isPending || !selected.isActive}
-              className="h-10 rounded-[9px] border border-warn-line bg-transparent px-3 text-[13px] font-medium text-warn-text disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-10 cursor-pointer rounded-[9px] border border-warn-line bg-transparent px-3 text-[13px] font-medium text-warn-text transition-colors hover:bg-warn-soft active:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
             >
               Sil
             </button>
@@ -353,7 +365,7 @@ export function StudentManager({
               type="button"
               onClick={save}
               disabled={isPending || !dirty}
-              className="h-10 flex-1 rounded-[9px] bg-accent text-[13px] font-medium text-white disabled:opacity-50"
+              className="h-10 flex-1 cursor-pointer rounded-[9px] bg-accent text-[13px] font-medium text-white transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-default disabled:opacity-50 disabled:hover:opacity-50"
             >
               {isPending ? "Kaydediliyor…" : "Değişiklikleri kaydet"}
             </button>

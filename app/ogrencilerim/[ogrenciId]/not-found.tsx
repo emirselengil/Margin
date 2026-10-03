@@ -10,7 +10,7 @@ export default function OgrenciNotFound() {
         <p className="text-ink-2">Bu öğrenci mevcut değil veya görüntüleme yetkiniz yok.</p>
         <Link
           href="/ogrencilerim"
-          className="mt-1 flex h-10 items-center rounded-[9px] bg-accent px-4 text-sm font-medium text-white no-underline"
+          className="mt-1 flex h-10 items-center rounded-[9px] bg-accent px-4 text-sm font-medium text-white no-underline transition hover:opacity-90 active:scale-[0.98] active:opacity-80"
         >
           Öğrencilerime dön
         </Link>

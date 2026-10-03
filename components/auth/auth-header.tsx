@@ -17,7 +17,7 @@ export function AuthHeader({ prompt, linkHref, linkLabel }: AuthHeaderProps) {
         <span className="hidden text-[13px] text-muted sm:inline">{prompt}</span>
         <Link
           href={linkHref}
-          className="flex h-9 items-center rounded-[9px] border border-line bg-surface px-3.5 font-medium text-ink no-underline"
+          className="flex h-9 items-center rounded-[9px] border border-line bg-surface px-3.5 font-medium text-ink no-underline transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
         >
           {linkLabel}
         </Link>

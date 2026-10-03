@@ -45,10 +45,10 @@ export function SidebarNavLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={
-        "flex h-[38px] items-center gap-2.5 rounded-[9px] px-2.5 no-underline " +
+        "flex h-[38px] cursor-pointer items-center gap-2.5 rounded-[9px] px-2.5 no-underline transition-colors " +
         (active
           ? "bg-surface font-medium text-ink shadow-[0_0_0_1px_var(--line),0_1px_2px_rgba(0,0,0,0.04)]"
-          : "text-ink-2")
+          : "text-ink-2 hover:bg-sunken hover:text-ink active:bg-line")
       }
     >
       <Icon size={17} stroke={active ? "var(--accent)" : "currentColor"} aria-hidden="true" />
@@ -105,7 +105,7 @@ export function SidebarUserCard({
           <button
             type="submit"
             aria-label="Çıkış yap"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-muted"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-muted transition-colors hover:bg-warn-soft hover:text-warn-text active:bg-warn-soft"
           >
             <svg
               width="16"

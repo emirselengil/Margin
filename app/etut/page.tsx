@@ -67,20 +67,20 @@ export default async function EtutPage({
             <Link
               href={`/etut?date=${addDaysISO(weekStart, -7)}`}
               aria-label="Önceki hafta"
-              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2"
+              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
             >
               <ChevronLeft size={16} aria-hidden="true" />
             </Link>
             <Link
               href="/etut"
-              className="flex h-9 items-center rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink no-underline"
+              className="flex h-9 items-center rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink no-underline transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
             >
               Bu hafta
             </Link>
             <Link
               href={`/etut?date=${addDaysISO(weekStart, 7)}`}
               aria-label="Sonraki hafta"
-              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2"
+              className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
             >
               <ChevronRight size={16} aria-hidden="true" />
             </Link>
@@ -126,10 +126,10 @@ export default async function EtutPage({
                 key={d.iso}
                 href={`/etut?date=${d.iso}`}
                 className={
-                  "flex h-[88px] flex-col items-start justify-between rounded-xl border px-3 py-2.5 text-left no-underline " +
+                  "flex h-[88px] flex-col items-start justify-between rounded-xl border px-3 py-2.5 text-left no-underline transition " +
                   (d.selected
-                    ? "border-accent bg-accent text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)]"
-                    : "border-line bg-surface text-ink")
+                    ? "border-accent bg-accent text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)] hover:opacity-90 active:opacity-80"
+                    : "border-line bg-surface text-ink hover:bg-sunken hover:border-line-2 active:bg-line")
                 }
               >
                 <span

@@ -139,10 +139,10 @@ export default async function OgrencilerimPage({
                 key={d.iso}
                 href={`/ogrencilerim?date=${d.iso}`}
                 className={
-                  "flex h-[88px] flex-col items-start justify-between rounded-xl border px-3 py-2.5 text-left no-underline " +
+                  "flex h-[88px] flex-col items-start justify-between rounded-xl border px-3 py-2.5 text-left no-underline transition " +
                   (d.selected
-                    ? "border-accent bg-accent text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)]"
-                    : "border-line bg-surface text-ink")
+                    ? "border-accent bg-accent text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)] hover:opacity-90 active:opacity-80"
+                    : "border-line bg-surface text-ink hover:bg-sunken hover:border-line-2 active:bg-line")
                 }
               >
                 <span
@@ -207,11 +207,11 @@ export default async function OgrencilerimPage({
                 </thead>
                 <tbody>
                   {todayStudents.map((s) => (
-                    <tr key={s.id} className="border-t border-line">
+                    <tr key={s.id} className="border-t border-line transition-colors hover:bg-surface-2">
                       <td className="px-[18px] py-3">
                         <Link
                           href={`/ogrencilerim/${s.id}`}
-                          className="flex items-center gap-3 text-ink no-underline"
+                          className="flex items-center gap-3 text-ink no-underline transition-colors hover:text-accent-text"
                         >
                           <Avatar name={s.fullName} colorId={s.id} />
                           <span className="flex flex-col gap-0.5">
@@ -252,7 +252,7 @@ export default async function OgrencilerimPage({
                         <Link
                           href={`/ogrencilerim/${s.id}`}
                           aria-label="Öğrenciyi aç"
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-[9px] text-muted"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-[9px] text-muted transition-colors hover:bg-sunken hover:text-ink"
                         >
                           <ChevronRight size={16} aria-hidden="true" />
                         </Link>

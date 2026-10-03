@@ -79,7 +79,7 @@ export function GroupGrid({
             type="button"
             onClick={save}
             disabled={!dirty || pending}
-            className="flex h-9 items-center rounded-[9px] bg-accent px-4 font-medium text-white disabled:opacity-50"
+            className="flex h-9 cursor-pointer items-center rounded-[9px] bg-accent px-4 font-medium text-white transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-default disabled:opacity-50 disabled:hover:opacity-50"
           >
             {pending ? "Kaydediliyor…" : "Kaydet"}
           </button>
@@ -102,8 +102,10 @@ export function GroupGrid({
                 type="button"
                 onClick={() => setFilter("all")}
                 className={
-                  "h-[34px] rounded-[7px] border-0 px-3 text-[13px] font-medium " +
-                  (filter === "all" ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]" : "bg-transparent text-muted")
+                  "h-[34px] cursor-pointer rounded-[7px] border-0 px-3 text-[13px] font-medium transition-colors " +
+                  (filter === "all"
+                    ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]"
+                    : "bg-transparent text-muted hover:text-ink active:bg-line")
                 }
               >
                 Tümü · {students.length}
@@ -114,8 +116,10 @@ export function GroupGrid({
                   type="button"
                   onClick={() => setFilter(ht.id)}
                   className={
-                    "h-[34px] rounded-[7px] border-0 px-3 text-[13px] font-medium " +
-                    (filter === ht.id ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]" : "bg-transparent text-muted")
+                    "h-[34px] cursor-pointer rounded-[7px] border-0 px-3 text-[13px] font-medium transition-colors " +
+                    (filter === ht.id
+                      ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]"
+                      : "bg-transparent text-muted hover:text-ink active:bg-line")
                   }
                 >
                   {ht.name} · {students.filter((s) => s.headTeacherId === ht.id).length}
@@ -198,10 +202,10 @@ export function GroupGrid({
                               aria-pressed={on}
                               onClick={() => toggleDay(s.id, di)}
                               className={
-                                "inline-flex h-[42px] w-[42px] items-center justify-center rounded-[10px] border-0 p-0 " +
+                                "inline-flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-[10px] border-0 p-0 transition " +
                                 (on
-                                  ? "bg-accent text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)]"
-                                  : "border border-dashed border-line-2 bg-sunken")
+                                  ? "bg-accent text-white shadow-[0_2px_8px_rgba(79,70,229,0.3)] hover:opacity-85 active:opacity-70"
+                                  : "border border-dashed border-line-2 bg-sunken hover:border-accent hover:bg-accent-soft active:bg-line")
                               }
                             >
                               {on ? <Check size={16} strokeWidth={3} aria-hidden="true" /> : null}

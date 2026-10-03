@@ -55,7 +55,7 @@ export default async function OgrenciDetayPage({
       <div className="flex min-w-0 flex-1 flex-wrap overflow-hidden">
         <section className="flex max-w-full flex-[1_1_280px] flex-col border-r border-line bg-surface-2">
           <div className="box-border flex min-h-14 items-center gap-2 border-b border-line px-[18px] text-muted">
-            <Link href={`/etut?date=${dateISO}`} className="text-muted no-underline">
+            <Link href={`/etut?date=${dateISO}`} className="text-muted no-underline hover:text-ink hover:underline">
               Etüt listesi
             </Link>
             <ChevronRight size={14} aria-hidden="true" />
@@ -70,8 +70,10 @@ export default async function OgrenciDetayPage({
                   key={s.id}
                   href={`/etut/${s.id}?date=${dateISO}`}
                   className={
-                    "flex min-h-[52px] items-center gap-2.5 rounded-[10px] px-2.5 text-ink no-underline " +
-                    (active ? "bg-surface shadow-[0_0_0_1px_var(--line),0_1px_3px_rgba(0,0,0,0.06)]" : "")
+                    "flex min-h-[52px] items-center gap-2.5 rounded-[10px] px-2.5 text-ink no-underline transition-colors " +
+                    (active
+                      ? "bg-surface shadow-[0_0_0_1px_var(--line),0_1px_3px_rgba(0,0,0,0.06)]"
+                      : "hover:bg-surface/60 active:bg-surface")
                   }
                 >
                   <Avatar name={s.fullName} colorId={s.headTeacherId} size={30} />
@@ -101,8 +103,10 @@ export default async function OgrenciDetayPage({
                   aria-label="Önceki öğrenci"
                   aria-disabled={!prevStudent}
                   className={
-                    "flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 " +
-                    (prevStudent ? "" : "pointer-events-none opacity-40")
+                    "flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 transition-colors " +
+                    (prevStudent
+                      ? "hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
+                      : "pointer-events-none opacity-40")
                   }
                 >
                   <ChevronUp size={16} aria-hidden="true" />
@@ -112,8 +116,10 @@ export default async function OgrenciDetayPage({
                   aria-label="Sonraki öğrenci"
                   aria-disabled={!nextStudent}
                   className={
-                    "flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 " +
-                    (nextStudent ? "" : "pointer-events-none opacity-40")
+                    "flex h-9 w-9 items-center justify-center rounded-[9px] border border-line bg-surface text-ink-2 transition-colors " +
+                    (nextStudent
+                      ? "hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
+                      : "pointer-events-none opacity-40")
                   }
                 >
                   <ChevronDown size={16} aria-hidden="true" />

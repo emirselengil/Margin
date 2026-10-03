@@ -47,7 +47,7 @@ export function ConfirmDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="h-10 rounded-[9px] border border-line bg-surface px-4 text-sm font-medium text-ink"
+            className="h-10 cursor-pointer rounded-[9px] border border-line bg-surface px-4 text-sm font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
           >
             {cancelLabel}
           </button>
@@ -55,7 +55,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={pending}
-            className="h-10 rounded-[9px] bg-warn px-4 text-sm font-medium text-white disabled:opacity-60"
+            className="h-10 cursor-pointer rounded-[9px] bg-warn px-4 text-sm font-medium text-white transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-default disabled:opacity-60 disabled:hover:opacity-60"
           >
             {pending ? "…" : confirmLabel}
           </button>

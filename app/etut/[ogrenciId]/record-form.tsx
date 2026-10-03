@@ -25,10 +25,10 @@ function OptionCard({
   onClick: () => void;
 }) {
   const toneClasses = !selected
-    ? "border-line bg-surface text-ink"
+    ? "border-line bg-surface text-ink hover:border-line-2 hover:bg-sunken active:bg-line"
     : tone === "pos"
-      ? "border-accent bg-accent-soft text-accent-text"
-      : "border-warn bg-warn-soft text-warn-text";
+      ? "border-accent bg-accent-soft text-accent-text hover:opacity-85 active:opacity-70"
+      : "border-warn bg-warn-soft text-warn-text hover:opacity-85 active:opacity-70";
   const iconClasses = !selected
     ? "bg-sunken text-muted"
     : tone === "pos"
@@ -39,7 +39,7 @@ function OptionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex min-h-[68px] items-center gap-3 rounded-xl border-[1.5px] px-3.5 py-3 text-left ${toneClasses}`}
+      className={`flex min-h-[68px] cursor-pointer items-center gap-3 rounded-xl border-[1.5px] px-3.5 py-3 text-left transition active:scale-[0.98] ${toneClasses}`}
     >
       <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl ${iconClasses}`}>
         {selected ? (
@@ -152,7 +152,7 @@ export function RecordForm({
                 key={s}
                 type="button"
                 onClick={() => addShortcut(s)}
-                className="h-8 rounded-2xl border border-line bg-surface-2 px-2.5 text-xs font-medium text-ink-2"
+                className="h-8 cursor-pointer rounded-2xl border border-line bg-surface-2 px-2.5 text-xs font-medium text-ink-2 transition-colors hover:border-line-2 hover:bg-sunken hover:text-ink active:bg-line"
               >
                 + {s}
               </button>
@@ -175,7 +175,7 @@ export function RecordForm({
           <button
             type="button"
             onClick={() => router.push("/etut")}
-            className="flex h-[38px] items-center rounded-[9px] border border-line bg-surface px-3.5 font-medium text-ink"
+            className="flex h-[38px] cursor-pointer items-center rounded-[9px] border border-line bg-surface px-3.5 font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
           >
             Vazgeç
           </button>
@@ -183,7 +183,7 @@ export function RecordForm({
             type="button"
             onClick={save}
             disabled={pending}
-            className="flex h-[38px] items-center rounded-[9px] bg-accent px-4 font-medium text-white disabled:opacity-70"
+            className="flex h-[38px] cursor-pointer items-center rounded-[9px] bg-accent px-4 font-medium text-white transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-default disabled:opacity-70"
           >
             {pending ? "Kaydediliyor…" : "Kaydet"}
           </button>

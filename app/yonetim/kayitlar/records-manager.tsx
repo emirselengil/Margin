@@ -130,7 +130,7 @@ export function RecordsManager({
         <button
           type="button"
           onClick={applyDateRange}
-          className="h-9 rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink"
+          className="h-9 cursor-pointer rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
         >
           Uygula
         </button>
@@ -140,8 +140,10 @@ export function RecordsManager({
             type="button"
             onClick={() => setHeadTeacherId("all")}
             className={
-              "h-[30px] rounded-[7px] border-0 px-2.5 text-xs font-medium " +
-              (headTeacherId === "all" ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]" : "bg-transparent text-muted")
+              "h-[30px] cursor-pointer rounded-[7px] border-0 px-2.5 text-xs font-medium transition-colors " +
+              (headTeacherId === "all"
+                ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]"
+                : "bg-transparent text-muted hover:text-ink active:bg-line")
             }
           >
             Tümü
@@ -152,8 +154,10 @@ export function RecordsManager({
               type="button"
               onClick={() => setHeadTeacherId(ht.id)}
               className={
-                "h-[30px] rounded-[7px] border-0 px-2.5 text-xs font-medium " +
-                (headTeacherId === ht.id ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]" : "bg-transparent text-muted")
+                "h-[30px] cursor-pointer rounded-[7px] border-0 px-2.5 text-xs font-medium transition-colors " +
+                (headTeacherId === ht.id
+                  ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]"
+                  : "bg-transparent text-muted hover:text-ink active:bg-line")
               }
             >
               {ht.firstName} {ht.lastName}
@@ -166,7 +170,7 @@ export function RecordsManager({
           role="switch"
           aria-checked={onlyMissing}
           onClick={() => setOnlyMissing((v) => !v)}
-          className="flex h-9 items-center gap-2 rounded-[9px] border border-line bg-surface px-2.5 text-[13px] font-medium text-ink"
+          className="flex h-9 cursor-pointer items-center gap-2 rounded-[9px] border border-line bg-surface px-2.5 text-[13px] font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line"
         >
           <span
             className="flex h-[18px] w-[30px] items-center rounded-full p-0.5"
@@ -201,7 +205,7 @@ export function RecordsManager({
               </thead>
               <tbody>
                 {shown.map((r) => (
-                  <tr key={r.id} className="border-t border-line">
+                  <tr key={r.id} className="border-t border-line transition-colors hover:bg-surface-2">
                     <td className="whitespace-nowrap px-4 py-2.5 font-mono text-xs text-ink-2">
                       {formatBadgeDate(r.date).slice(0, -5)}
                     </td>
@@ -243,10 +247,20 @@ export function RecordsManager({
                             }}
                             className="h-8 w-full rounded-md border border-line-2 bg-surface px-2 text-[13px] text-ink outline-none focus:border-accent"
                           />
-                          <button type="button" aria-label="Kaydet" onClick={() => saveNote(r)} className="text-accent-text">
+                          <button
+                            type="button"
+                            aria-label="Kaydet"
+                            onClick={() => saveNote(r)}
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-accent-text transition-colors hover:bg-accent-soft active:bg-accent-soft"
+                          >
                             <Check size={15} aria-hidden="true" />
                           </button>
-                          <button type="button" aria-label="Vazgeç" onClick={() => setEditingNoteId(null)} className="text-muted">
+                          <button
+                            type="button"
+                            aria-label="Vazgeç"
+                            onClick={() => setEditingNoteId(null)}
+                            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-sunken hover:text-ink active:bg-line"
+                          >
                             <X size={15} aria-hidden="true" />
                           </button>
                         </span>
@@ -267,7 +281,7 @@ export function RecordsManager({
                         type="button"
                         aria-label="Notu düzenle"
                         onClick={() => startEditNote(r)}
-                        className="inline-flex h-[34px] w-[34px] items-center justify-center rounded-lg border border-line bg-surface text-ink-2"
+                        className="inline-flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-lg border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
                       >
                         <Pencil size={15} aria-hidden="true" />
                       </button>
@@ -275,7 +289,7 @@ export function RecordsManager({
                         type="button"
                         aria-label="Kaydı sil"
                         onClick={() => setConfirmDeleteId(r.id)}
-                        className="ml-1 inline-flex h-[34px] w-[34px] items-center justify-center rounded-lg border border-warn-line bg-transparent text-warn-text"
+                        className="ml-1 inline-flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-lg border border-warn-line bg-transparent text-warn-text transition-colors hover:bg-warn-soft active:opacity-70"
                       >
                         <Trash2 size={15} aria-hidden="true" />
                       </button>

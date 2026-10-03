@@ -63,7 +63,7 @@ export function SignInForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-1 flex h-[46px] items-center justify-center gap-2 rounded-[10px] bg-accent font-medium text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)] disabled:opacity-70"
+        className="mt-1 flex h-[46px] cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-accent font-medium text-white shadow-[0_6px_18px_rgba(79,70,229,0.28)] transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-default disabled:opacity-70 disabled:hover:opacity-70"
       >
         {pending ? "Giriş yapılıyor…" : "Giriş yap"}
         <ArrowRight size={16} aria-hidden="true" />

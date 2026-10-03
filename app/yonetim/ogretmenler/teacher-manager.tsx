@@ -195,7 +195,7 @@ export function TeacherManager({
                   type="button"
                   onClick={() => reject(p)}
                   disabled={isPending}
-                  className="h-9 rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink-2"
+                  className="h-9 cursor-pointer rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 active:bg-line disabled:cursor-default disabled:opacity-60"
                 >
                   Reddet
                 </button>
@@ -203,7 +203,7 @@ export function TeacherManager({
                   type="button"
                   onClick={() => approve(p)}
                   disabled={isPending}
-                  className="h-9 rounded-[9px] bg-accent px-3.5 text-[13px] font-medium text-white"
+                  className="h-9 cursor-pointer rounded-[9px] bg-accent px-3.5 text-[13px] font-medium text-white transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-default disabled:opacity-60"
                 >
                   Onayla
                 </button>
@@ -250,13 +250,16 @@ export function TeacherManager({
                   {filtered.map((t) => (
                     <tr
                       key={t.id}
-                      className={"border-t border-line " + (t.id === selectedId ? "bg-accent-soft" : "")}
+                      className={
+                        "border-t border-line transition-colors " +
+                        (t.id === selectedId ? "bg-accent-soft" : "hover:bg-surface-2")
+                      }
                     >
                       <td className="px-4 py-2.5">
                         <button
                           type="button"
                           onClick={() => setSelectedId(t.id)}
-                          className="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left text-ink"
+                          className="flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left text-ink"
                         >
                           <Avatar name={`${t.firstName} ${t.lastName}`} colorId={t.id} />
                           <span className="flex flex-col gap-0.5">
@@ -332,8 +335,10 @@ export function TeacherManager({
                     disabled={disabled}
                     onClick={() => changeRole(r)}
                     className={
-                      "h-[34px] rounded-[7px] border-0 font-sans text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 " +
-                      (on ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line),0_1px_2px_rgba(0,0,0,0.06)]" : "bg-transparent text-muted")
+                      "h-[34px] cursor-pointer rounded-[7px] border-0 font-sans text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-muted disabled:active:bg-transparent " +
+                      (on
+                        ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line),0_1px_2px_rgba(0,0,0,0.06)]"
+                        : "bg-transparent text-muted hover:text-ink active:bg-line")
                     }
                   >
                     {ROLE_SHORT_LABEL[r]}
@@ -362,7 +367,7 @@ export function TeacherManager({
                       aria-checked={on}
                       onClick={() => toggleLink(ht.id)}
                       className={
-                        "flex min-h-11 items-center gap-2.5 rounded-[10px] border bg-surface px-3 text-[13px] font-medium text-ink " +
+                        "flex min-h-11 cursor-pointer items-center gap-2.5 rounded-[10px] border bg-surface px-3 text-[13px] font-medium text-ink transition-colors hover:bg-sunken active:bg-line " +
                         (on ? "border-accent" : "border-line")
                       }
                     >
@@ -401,7 +406,7 @@ export function TeacherManager({
                   </div>
                 </div>
               </div>
-              <a href="/yonetim/ogrenciler" className="text-[13px] font-medium text-accent-text no-underline">
+              <a href="/yonetim/ogrenciler" className="text-[13px] font-medium text-accent-text no-underline hover:underline">
                 Öğrenci atamalarını düzenle →
               </a>
             </div>
@@ -419,7 +424,7 @@ export function TeacherManager({
               aria-label="Hesap aktif"
               disabled={isPending || isSelf || isLastActiveAdmin}
               onClick={toggleActive}
-              className="flex h-[26px] w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-[26px] w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-[3px] transition hover:opacity-90 active:scale-[0.98] active:opacity-80 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:opacity-50"
               style={{
                 justifyContent: selected.isActive ? "flex-end" : "flex-start",
                 background: selected.isActive ? "var(--accent)" : "var(--line-2)",
@@ -434,7 +439,7 @@ export function TeacherManager({
               type="button"
               onClick={requestPasswordReset}
               disabled={isPending}
-              className="h-10 rounded-[9px] border border-line bg-surface text-[13px] font-medium text-ink"
+              className="h-10 cursor-pointer rounded-[9px] border border-line bg-surface text-[13px] font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line disabled:cursor-default disabled:opacity-60"
             >
               Şifre sıfırlama bağlantısı gönder
             </button>
@@ -443,7 +448,7 @@ export function TeacherManager({
               type="button"
               onClick={() => setConfirmDeleteId(selected.id)}
               disabled={isSelf || isLastActiveAdmin}
-              className="h-10 rounded-[9px] border border-warn-line bg-transparent text-[13px] font-medium text-warn-text disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-10 cursor-pointer rounded-[9px] border border-warn-line bg-transparent text-[13px] font-medium text-warn-text transition-colors hover:bg-warn-soft active:opacity-70 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
             >
               Hesabı sil
             </button>

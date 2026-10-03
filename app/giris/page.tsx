@@ -22,14 +22,22 @@ export default function GirisPage() {
           <div className="grid grid-cols-3 gap-0.5 rounded-[11px] border border-line bg-sunken p-[3px]">
             <button
               type="button"
-              className="h-[38px] rounded-[8px] bg-surface text-[13px] font-medium text-ink shadow-[0_0_0_1px_var(--line),0_1px_2px_rgba(0,0,0,0.06)]"
+              className="h-[38px] cursor-default rounded-[8px] bg-surface text-[13px] font-medium text-ink shadow-[0_0_0_1px_var(--line),0_1px_2px_rgba(0,0,0,0.06)]"
             >
               Öğretmen
             </button>
-            <button type="button" disabled className="h-[38px] rounded-[8px] text-[13px] font-medium text-muted">
+            <button
+              type="button"
+              disabled
+              className="h-[38px] cursor-not-allowed rounded-[8px] text-[13px] font-medium text-muted"
+            >
               Veli · yakında
             </button>
-            <button type="button" disabled className="h-[38px] rounded-[8px] text-[13px] font-medium text-muted">
+            <button
+              type="button"
+              disabled
+              className="h-[38px] cursor-not-allowed rounded-[8px] text-[13px] font-medium text-muted"
+            >
               Öğrenci · yakında
             </button>
           </div>
@@ -38,7 +46,7 @@ export default function GirisPage() {
 
           <p className="border-t border-line pt-4 text-center text-[13px] text-muted">
             Hesabınız yok mu?{" "}
-            <Link href="/kayit" className="font-medium text-accent-text no-underline">
+            <Link href="/kayit" className="font-medium text-accent-text no-underline hover:underline">
               Kayıt olun
             </Link>
           </p>
