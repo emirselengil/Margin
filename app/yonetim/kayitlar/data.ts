@@ -14,6 +14,7 @@ export type AdminRecordRow = {
   headTeacherName: string;
   homework: "done" | "missing" | null;
   book: "brought" | "not_brought" | null;
+  attendance: "came" | "absent" | null;
   note: string | null;
   createdByName: string;
   editedByAdmin: boolean;
@@ -45,6 +46,7 @@ export async function getRecordsAdmin(filters: RecordFilters): Promise<AdminReco
     headTeacherName: `${headTeacher.firstName} ${headTeacher.lastName}`,
     homework: record.homework,
     book: record.book,
+    attendance: record.attendance,
     note: record.note,
     createdByName: `${creator.firstName} ${creator.lastName}`,
     editedByAdmin: record.editedByAdmin,

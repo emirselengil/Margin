@@ -6,6 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 
 import {
   adminDeleteRecordAction,
+  adminSetAttendanceAction,
   adminSetBookAction,
   adminSetHomeworkAction,
   adminUpdateNoteAction,
@@ -19,6 +20,11 @@ import { formatBadgeDate } from "@/lib/date";
 const HOMEWORK_OPTIONS = [
   { value: "done", label: "Yapıldı", tone: "pos" },
   { value: "missing", label: "Eksik", tone: "neg" },
+] as const;
+
+const ATTENDANCE_OPTIONS = [
+  { value: "came", label: "Geldi", tone: "pos" },
+  { value: "absent", label: "Gelmedi", tone: "neg" },
 ] as const;
 
 const BOOK_OPTIONS = [
@@ -62,6 +68,13 @@ export function RecordsManager({
     setRecords((prev) => prev.map((x) => (x.id === r.id ? { ...x, homework: value, editedByAdmin: true } : x)));
     startTransition(async () => {
       await adminSetHomeworkAction(r.id, value);
+    });
+  }
+
+  function setAttendance(r: AdminRecordRow, value: "came" | "absent") {
+    setRecords((prev) => prev.map((x) => (x.id === r.id ? { ...x, attendance: value, editedByAdmin: true } : x)));
+    startTransition(async () => {
+      await adminSetAttendanceAction(r.id, value);
     });
   }
 
@@ -189,11 +202,12 @@ export function RecordsManager({
           <p className="px-4 py-10 text-center text-ink-2">Bu filtrelerle eşleşen kayıt yok.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1040px] border-collapse">
+            <table className="w-full min-w-[1240px] border-collapse">
               <thead>
                 <tr className="bg-surface-2 text-left text-xs text-muted">
                   <th className="px-4 py-2.5 font-medium">Tarih</th>
                   <th className="px-3 py-2.5 font-medium">Öğrenci</th>
+                  <th className="px-3 py-2.5 font-medium">Katılım</th>
                   <th className="px-3 py-2.5 font-medium">Ödev</th>
                   <th className="px-3 py-2.5 font-medium">Kitap</th>
                   <th className="px-3 py-2.5 font-medium">Not</th>
@@ -217,6 +231,14 @@ export function RecordsManager({
                           <span className="text-xs text-muted">{r.headTeacherName}</span>
                         </span>
                       </span>
+                    </td>
+                    <td className="py-1.5 px-3">
+                      <StatusToggle
+                        value={r.attendance}
+                        options={ATTENDANCE_OPTIONS}
+                        onSelect={(v) => setAttendance(r, v as "came" | "absent")}
+                        pending={isPending}
+                      />
                     </td>
                     <td className="py-1.5 px-3">
                       <StatusToggle

@@ -18,6 +18,7 @@ export const dynamic = "force-dynamic";
 
 const HOMEWORK_LABEL = { done: "Yapıldı", missing: "Eksik" } as const;
 const BOOK_LABEL = { brought: "Getirdi", not_brought: "Getirmedi" } as const;
+const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 
 export default async function OgrencilerimPage({
   searchParams,
@@ -92,8 +93,8 @@ export default async function OgrencilerimPage({
           </h1>
           <p className="mt-1.5 text-ink-2">
             {assistants.length > 0
-              ? `Öğrencilerinizin etüt kayıtlarını asistanınız ${assistantNames} giriyor. Buradan yalnızca takip edebilirsiniz.`
-              : "Henüz size bağlı bir asistan yok. Kayıtlar girilmeye başladığında burada görünecek."}
+              ? `Öğrencilerinizin etüt kayıtlarını Öğretmen ${assistantNames} giriyor. Buradan yalnızca takip edebilirsiniz.`
+              : "Henüz size bağlı bir öğretmen yok. Kayıtlar girilmeye başladığında burada görünecek."}
           </p>
         </div>
 
@@ -194,10 +195,11 @@ export default async function OgrencilerimPage({
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[860px] border-collapse">
+              <table className="w-full min-w-[980px] border-collapse">
                 <thead>
                   <tr className="text-left text-xs text-muted">
                     <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
+                    <th className="px-3 py-2.5 font-medium">Katılım</th>
                     <th className="px-3 py-2.5 font-medium">Bugün ödev</th>
                     <th className="px-3 py-2.5 font-medium">Bugün kitap</th>
                     <th className="px-3 py-2.5 font-medium">Not</th>
@@ -221,6 +223,11 @@ export default async function OgrencilerimPage({
                             <span className="font-mono text-xs text-muted">{s.className}</span>
                           </span>
                         </Link>
+                      </td>
+                      <td className="px-3 py-3">
+                        <StatusChip tone={s.attendance === "came" ? "pos" : s.attendance === "absent" ? "neg" : "wait"}>
+                          {s.attendance ? ATTENDANCE_LABEL[s.attendance] : "Bekleniyor"}
+                        </StatusChip>
                       </td>
                       <td className="px-3 py-3">
                         <StatusChip tone={s.homework === "done" ? "pos" : s.homework === "missing" ? "neg" : "wait"}>

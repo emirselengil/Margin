@@ -20,6 +20,7 @@ export type MyStudentRow = {
   className: string;
   homework: "done" | "missing" | null;
   book: "brought" | "not_brought" | null;
+  attendance: "came" | "absent" | null;
   note: string | null;
   last4Homework: ("done" | "missing" | null)[];
 };
@@ -59,6 +60,7 @@ export async function getStudentsForDate(user: Profile, dateISO: string): Promis
       className: s.className,
       homework: today?.homework ?? null,
       book: today?.book ?? null,
+      attendance: today?.attendance ?? null,
       note: today?.note ?? null,
       last4Homework: past.map((p) => p.homework).reverse(),
     });

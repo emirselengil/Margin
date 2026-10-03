@@ -34,6 +34,7 @@ export type RecordWithAuthor = {
   date: string;
   homework: "done" | "missing" | null;
   book: "brought" | "not_brought" | null;
+  attendance: "came" | "absent" | null;
   note: string | null;
   enteredBy: string;
 };
@@ -50,6 +51,7 @@ export async function getAllRecords(studentId: string): Promise<RecordWithAuthor
     date: record.date,
     homework: record.homework,
     book: record.book,
+    attendance: record.attendance,
     note: record.note,
     enteredBy: `${author.firstName} ${author.lastName}`,
   }));

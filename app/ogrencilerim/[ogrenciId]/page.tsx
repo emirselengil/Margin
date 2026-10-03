@@ -15,6 +15,7 @@ import { visibleStudentIds } from "@/lib/permissions";
 export const dynamic = "force-dynamic";
 
 const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 
 function Square({ pos }: { pos: boolean | null }) {
@@ -129,7 +130,10 @@ export default async function BasOgrenciDetayPage({
             <div className="text-[13px] text-muted">Bugün · {formatDayMonth(today)}</div>
             {todayRecord ? (
               <>
-                <div className="mt-2.5 text-base font-semibold">
+                <div className="mt-2.5 text-xs text-muted">
+                  {todayRecord.attendance ? ATTENDANCE_LABEL[todayRecord.attendance] : "Katılım bekleniyor"}
+                </div>
+                <div className="mt-1 text-base font-semibold">
                   {todayRecord.homework ? HOMEWORK_LABEL[todayRecord.homework] : "Ödev bekleniyor"}
                 </div>
                 <div className="mt-1 text-xs text-muted">
@@ -173,6 +177,18 @@ export default async function BasOgrenciDetayPage({
                         {formatTimelineDate(r.date)}
                       </div>
                       <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {r.attendance ? (
+                          <span
+                            className={
+                              "inline-flex h-6 items-center rounded-md px-2 text-xs font-medium " +
+                              (r.attendance === "came"
+                                ? "bg-accent-soft text-accent-text"
+                                : "bg-warn-soft text-warn-text")
+                            }
+                          >
+                            {ATTENDANCE_LABEL[r.attendance]}
+                          </span>
+                        ) : null}
                         {r.homework ? (
                           <span
                             className={
