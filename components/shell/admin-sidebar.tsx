@@ -12,7 +12,7 @@ export function AdminSidebar({
   studentCount,
 }: {
   user: Profile;
-  active: "ogretmenler" | "ogrenciler" | "kayitlar";
+  active: "ogretmenler" | "ogrenciler" | "kayitlar" | null;
   pendingCount: number;
   studentCount: number;
 }) {
@@ -53,6 +53,7 @@ export function AdminSidebar({
         avatarClassName="bg-ink text-bg"
         name={`${user.firstName} ${user.lastName}`}
         roleLabel="Tam yetki"
+        profileHref="/profil"
         signOutAction={signOutAction}
       />
     </>

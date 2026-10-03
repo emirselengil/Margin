@@ -14,7 +14,7 @@ import {
 import type { Profile } from "@/db/schema";
 import { initialsOf } from "@/lib/avatar-colors";
 
-export async function HeadTeacherSidebar({ user, studentCount }: { user: Profile; studentCount: number }) {
+export async function HeadTeacherSidebar({ user, studentCount, active = true }: { user: Profile; studentCount: number; active?: boolean }) {
   const assistants = await getMyAssistants(user);
 
   return (
@@ -24,7 +24,7 @@ export async function HeadTeacherSidebar({ user, studentCount }: { user: Profile
         <SidebarNavLink
           href="/ogrencilerim"
           icon={Users}
-          active
+          active={active}
           badge={<span className="font-mono text-xs text-muted">{studentCount}</span>}
         >
           Öğrencilerim
@@ -47,6 +47,7 @@ export async function HeadTeacherSidebar({ user, studentCount }: { user: Profile
         initials={initialsOf(`${user.firstName} ${user.lastName}`)}
         name={`${user.firstName} ${user.lastName}`}
         roleLabel="Öğretmen"
+        profileHref="/profil"
         signOutAction={signOutAction}
       />
     </>

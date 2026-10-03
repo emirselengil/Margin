@@ -78,28 +78,47 @@ export function SidebarUserCard({
   avatarClassName,
   name,
   roleLabel,
+  profileHref,
   signOutAction,
 }: {
   initials: string;
   avatarClassName?: string;
   name: string;
   roleLabel: string;
+  profileHref?: string;
   signOutAction?: () => void;
 }) {
   return (
     <div className="flex items-center gap-2.5 rounded-xl border border-line bg-surface p-2.5">
-      <div
-        className={
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold text-white " +
-          (avatarClassName ?? "bg-accent")
-        }
-      >
-        {initials}
-      </div>
-      <div className="min-w-0 flex-1 leading-tight">
-        <div className="truncate font-medium">{name}</div>
-        <div className="truncate text-xs text-muted">{roleLabel}</div>
-      </div>
+      {(() => {
+        const content = (
+          <>
+            <div
+              className={
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-xs font-semibold text-white " +
+                (avatarClassName ?? "bg-accent")
+              }
+            >
+              {initials}
+            </div>
+            <div className="min-w-0 flex-1 leading-tight">
+              <div className="truncate font-medium">{name}</div>
+              <div className="truncate text-xs text-muted">{roleLabel}</div>
+            </div>
+          </>
+        );
+        return profileHref ? (
+          <Link
+            href={profileHref}
+            aria-label="Profilim"
+            className="-m-1 flex min-w-0 flex-1 items-center gap-2.5 rounded-lg p-1 text-ink no-underline transition-colors hover:bg-sunken active:bg-line"
+          >
+            {content}
+          </Link>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">{content}</div>
+        );
+      })()}
       {signOutAction ? (
         <form action={signOutAction}>
           <button

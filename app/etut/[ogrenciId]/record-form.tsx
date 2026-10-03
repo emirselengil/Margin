@@ -10,7 +10,7 @@ type Homework = "done" | "missing";
 type Book = "brought" | "not_brought";
 type Attendance = "came" | "absent";
 
-const NOTE_SHORTCUTS = ["Derse aktif katıldı", "Geç geldi", "Eksiği tamamlayacak"];
+const NOTE_SHORTCUTS = ["Derse aktif katıldı", "Eksiği tamamlayacak"];
 
 function OptionCard({
   selected,

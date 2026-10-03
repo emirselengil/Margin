@@ -8,7 +8,7 @@ import type { Profile } from "@/db/schema";
 import { todayISODate } from "@/lib/date";
 import { initialsOf } from "@/lib/avatar-colors";
 
-export async function AssistantSidebar({ user, active }: { user: Profile; active: "etut" | "gruplar" }) {
+export async function AssistantSidebar({ user, active }: { user: Profile; active: "etut" | "gruplar" | null }) {
   const [headTeachers, pendingCount] = await Promise.all([
     getLinkedHeadTeachers(user),
     getTodayPendingCount(user, todayISODate()),
@@ -54,6 +54,7 @@ export async function AssistantSidebar({ user, active }: { user: Profile; active
         initials={initialsOf(`${user.firstName} ${user.lastName}`)}
         name={`${user.firstName} ${user.lastName}`}
         roleLabel="Öğretmen"
+        profileHref="/profil"
         signOutAction={signOutAction}
       />
     </>
