@@ -1,6 +1,7 @@
 import { ChevronRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
+import { AddMyStudentButton } from "@/app/ogrencilerim/add-my-student-button";
 import { getMyAssistants, getStudentsForDate, getWeekdayCounts } from "@/app/ogrencilerim/data";
 import { Avatar } from "@/components/avatar";
 import { ProgressRing } from "@/components/progress-ring";
@@ -75,6 +76,7 @@ export default async function OgrencilerimPage({
               <ShieldCheck size={13} aria-hidden="true" />
               Salt görüntüleme
             </span>
+            <AddMyStudentButton headTeacherId={user.id} headTeacherName={`${user.firstName} ${user.lastName}`} />
             <ThemeToggle />
           </>
         }

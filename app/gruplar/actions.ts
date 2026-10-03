@@ -4,11 +4,34 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
-import { studentStudyDays } from "@/db/schema";
-import { canEditStudentDays, PermissionError } from "@/lib/permissions";
+import { students, studentStudyDays } from "@/db/schema";
+import { canAddStudentForHeadTeacher, canEditStudentDays, PermissionError } from "@/lib/permissions";
 import { getOrCreateProfile } from "@/lib/profile";
 
 export type StudyDaysChange = { studentId: string; weekdays: number[] };
+
+/** Bağlı olduğu bir baş öğretmenin altına yeni öğrenci ekler. */
+export async function addStudentAction(
+  headTeacherId: string,
+  fullName: string,
+  className: string,
+): Promise<{ id: string }> {
+  const user = await getOrCreateProfile();
+  if (!(await canAddStudentForHeadTeacher(user, headTeacherId))) {
+    throw new PermissionError("Bu baş öğretmen için öğrenci ekleme yetkiniz yok.");
+  }
+
+  const [created] = await db
+    .insert(students)
+    .values({ fullName, className, headTeacherId, isActive: true })
+    .returning({ id: students.id });
+
+  revalidatePath("/gruplar");
+  revalidatePath("/etut");
+  revalidatePath("/ogrencilerim");
+  revalidatePath("/yonetim/ogrenciler");
+  return created;
+}
 
 export async function saveStudyDaysAction(changes: StudyDaysChange[]) {
   const user = await getOrCreateProfile();

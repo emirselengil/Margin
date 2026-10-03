@@ -118,6 +118,30 @@ export async function canEditStudentDays(
   return canWriteRecord(user, studentId, database);
 }
 
+/**
+ * `headTeacherId`'ye bağlı yeni bir öğrenci ekleyebilir mi?
+ * - admin: her zaman
+ * - head_teacher: yalnızca kendi altına (kendi id'si verilmişse)
+ * - assistant: yalnızca bağlı olduğu baş öğretmenlerden birine
+ */
+export async function canAddStudentForHeadTeacher(
+  user: CurrentUser | null,
+  headTeacherId: string,
+  database: Database = defaultDb,
+): Promise<boolean> {
+  if (!user || !user.isActive) return false;
+  if (user.role === "admin") return true;
+  if (user.role === "head_teacher") return user.id === headTeacherId;
+  if (user.role === "assistant") {
+    const links = await database
+      .select({ headTeacherId: assistantHeadTeachers.headTeacherId })
+      .from(assistantHeadTeachers)
+      .where(eq(assistantHeadTeachers.assistantId, user.id));
+    return links.some((l) => l.headTeacherId === headTeacherId);
+  }
+  return false;
+}
+
 // --- Yönetici hesap yönetimi kuralları ---
 // "Bir yönetici kendi rolünü düşüremesin, kendi hesabını silemesin;
 // en az bir aktif yönetici kalsın."

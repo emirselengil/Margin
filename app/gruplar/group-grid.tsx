@@ -1,10 +1,11 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 
-import { saveStudyDaysAction } from "@/app/gruplar/actions";
+import { addStudentAction, saveStudyDaysAction } from "@/app/gruplar/actions";
 import type { StudentWithDays } from "@/app/gruplar/data";
+import { AddStudentDialog } from "@/components/add-student-dialog";
 import { Avatar, ColorDot } from "@/components/avatar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { WEEKDAY_LONG, WEEKDAY_SHORT } from "@/lib/date";
@@ -21,6 +22,9 @@ export function GroupGrid({
   const [filter, setFilter] = useState<string>("all");
   const [pending, startTransition] = useTransition();
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [addPending, setAddPending] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
 
   const shown = useMemo(
     () => (filter === "all" ? students : students.filter((s) => s.headTeacherId === filter)),
@@ -62,6 +66,34 @@ export function GroupGrid({
 
   const dirty = dirtyIds.size > 0;
 
+  function addStudent(data: { fullName: string; className: string; headTeacherId: string }) {
+    setAddPending(true);
+    setAddError(null);
+    startTransition(async () => {
+      try {
+        const { id } = await addStudentAction(data.headTeacherId, data.fullName, data.className);
+        const headTeacher = headTeachers.find((h) => h.id === data.headTeacherId);
+        setStudents((prev) => [
+          ...prev,
+          {
+            id,
+            fullName: data.fullName,
+            className: data.className,
+            headTeacherId: data.headTeacherId,
+            headTeacherName: headTeacher?.name ?? "",
+            days: [],
+          },
+        ]);
+        setFilter("all");
+        setAddOpen(false);
+      } catch {
+        setAddError("Öğrenci eklenemedi, lütfen tekrar deneyin.");
+      } finally {
+        setAddPending(false);
+      }
+    });
+  }
+
   return (
     <>
       <div className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-2">
@@ -74,6 +106,15 @@ export function GroupGrid({
               Kaydedilmemiş değişiklik
             </span>
           ) : null}
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            disabled={headTeachers.length === 0}
+            className="flex h-9 cursor-pointer items-center gap-1.5 rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line disabled:cursor-default disabled:opacity-50"
+          >
+            <Plus size={15} aria-hidden="true" />
+            Öğrenci ekle
+          </button>
           <ThemeToggle />
           <button
             type="button"
@@ -224,6 +265,18 @@ export function GroupGrid({
           </div>
         )}
       </div>
+
+      <AddStudentDialog
+        open={addOpen}
+        headTeacherOptions={headTeachers}
+        pending={addPending}
+        error={addError}
+        onSubmit={addStudent}
+        onCancel={() => {
+          setAddOpen(false);
+          setAddError(null);
+        }}
+      />
     </>
   );
 }
