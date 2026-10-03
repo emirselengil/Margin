@@ -41,7 +41,13 @@ export async function signUpAction(
     password,
   });
   if (error) {
-    return { error: "Kayıt oluşturulamadı. Bu e-posta zaten kullanılıyor olabilir." };
+    console.error("signUp.email başarısız:", error);
+    if (error.status === 422) {
+      return { error: "Bu e-posta zaten kullanılıyor." };
+    }
+    return {
+      error: `Kayıt oluşturulamadı${error.message ? `: ${error.message}` : "."} Lütfen tekrar deneyin.`,
+    };
   }
 
   const { data: session } = await auth.getSession();
