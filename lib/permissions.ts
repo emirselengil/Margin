@@ -1,9 +1,9 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
 import { db as defaultDb } from "@/db/client";
 import * as schema from "@/db/schema";
-import { assistantHeadTeachers, students } from "@/db/schema";
+import { assistantHeadTeachers, profiles, students } from "@/db/schema";
 import type { Role } from "@/lib/roles";
 
 // Üretimde neon-serverless, testlerde PGlite sürücüsü kullanılıyor; ikisi de
@@ -116,4 +116,54 @@ export async function canEditStudentDays(
   database: Database = defaultDb,
 ): Promise<boolean> {
   return canWriteRecord(user, studentId, database);
+}
+
+// --- Yönetici hesap yönetimi kuralları ---
+// "Bir yönetici kendi rolünü düşüremesin, kendi hesabını silemesin;
+// en az bir aktif yönetici kalsın."
+
+/** Yönetici kendi rolünü admin dışında bir şeye düşüremez. */
+export function assertNotSelfRoleDemotion(actingUserId: string, targetId: string, newRole: Role) {
+  if (actingUserId === targetId && newRole !== "admin") {
+    throw new PermissionError("Kendi rolünüzü düşüremezsiniz.");
+  }
+}
+
+/** Yönetici kendi hesabını silemez. */
+export function assertNotSelfDelete(actingUserId: string, targetId: string) {
+  if (actingUserId === targetId) {
+    throw new PermissionError("Kendi hesabınızı silemezsiniz.");
+  }
+}
+
+/**
+ * `targetId` dışındaki aktif yönetici sayısını döner. Bir yöneticinin
+ * rolünü değiştirmeden / devre dışı bırakmadan / silmeden önce, bu sayının
+ * en az 1 olduğu (yani en az bir BAŞKA aktif yönetici kaldığı) ya da işlemin
+ * targetId'yi yönetici-dışı bırakmadığı doğrulanmalıdır.
+ */
+async function countOtherActiveAdmins(
+  database: Database,
+  targetId: string,
+): Promise<number> {
+  const rows = await database
+    .select({ id: profiles.id })
+    .from(profiles)
+    .where(and(eq(profiles.role, "admin"), eq(profiles.isActive, true), ne(profiles.id, targetId)));
+  return rows.length;
+}
+
+/**
+ * `targetId`'nin yönetici+aktif durumunu kaybetmesine yol açacak bir işlemden
+ * (rol değişikliği, devre dışı bırakma, silme) önce çağrılır. Bu, sistemde
+ * en az bir aktif yönetici kalmasını garanti eder.
+ */
+export async function assertKeepsOneActiveAdmin(
+  targetId: string,
+  database: Database = defaultDb,
+): Promise<void> {
+  const others = await countOtherActiveAdmins(database, targetId);
+  if (others === 0) {
+    throw new PermissionError("Sistemde en az bir aktif yönetici kalmalı.");
+  }
 }

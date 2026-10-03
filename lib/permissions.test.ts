@@ -3,6 +3,9 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createTestDb, type TestDb } from "@/db/test-utils";
 import { assistantHeadTeachers, profiles, students } from "@/db/schema";
 import {
+  assertKeepsOneActiveAdmin,
+  assertNotSelfDelete,
+  assertNotSelfRoleDemotion,
   canEditStudentDays,
   canViewStudent,
   canWriteRecord,
@@ -22,6 +25,7 @@ const ASSISTANT_OF_A = "44444444-4444-4444-4444-444444444444";
 const ASSISTANT_OF_NONE = "55555555-5555-5555-5555-555555555555";
 const PENDING = "66666666-6666-6666-6666-666666666666";
 const INACTIVE_ASSISTANT = "77777777-7777-7777-7777-777777777777";
+const ADMIN_2 = "88888888-8888-8888-8888-888888888888";
 
 async function seedBaseFixture(database: TestDb) {
   await database.insert(profiles).values([
@@ -193,5 +197,62 @@ describe("canEditStudentDays", () => {
     expect(await canEditStudentDays(user(ADMIN, "admin"), studentOfA, db)).toBe(true);
     expect(await canEditStudentDays(user(ASSISTANT_OF_A, "assistant"), studentOfA, db)).toBe(true);
     expect(await canEditStudentDays(user(HEAD_A, "head_teacher"), studentOfA, db)).toBe(false);
+  });
+});
+
+describe("assertNotSelfRoleDemotion", () => {
+  it("yönetici kendi rolünü düşüremez", () => {
+    expect(() => assertNotSelfRoleDemotion(ADMIN, ADMIN, "head_teacher")).toThrow(PermissionError);
+  });
+
+  it("yönetici kendini tekrar admin yapmaya çalışırsa (no-op) engellenmez", () => {
+    expect(() => assertNotSelfRoleDemotion(ADMIN, ADMIN, "admin")).not.toThrow();
+  });
+
+  it("yönetici BAŞKA birinin rolünü değiştirebilir", () => {
+    expect(() => assertNotSelfRoleDemotion(ADMIN, HEAD_A, "assistant")).not.toThrow();
+  });
+});
+
+describe("assertNotSelfDelete", () => {
+  it("yönetici kendi hesabını silemez", () => {
+    expect(() => assertNotSelfDelete(ADMIN, ADMIN)).toThrow(PermissionError);
+  });
+
+  it("yönetici başka bir hesabı silebilir", () => {
+    expect(() => assertNotSelfDelete(ADMIN, HEAD_A)).not.toThrow();
+  });
+});
+
+describe("assertKeepsOneActiveAdmin", () => {
+  it("tek aktif yönetici varken onu devre dışı bırakmak/silmek engellenir", async () => {
+    await seedBaseFixture(db);
+    await expect(assertKeepsOneActiveAdmin(ADMIN, db)).rejects.toThrow(PermissionError);
+  });
+
+  it("başka bir aktif yönetici varsa işlem serbest bırakılır", async () => {
+    await seedBaseFixture(db);
+    await db.insert(profiles).values({
+      id: ADMIN_2,
+      firstName: "İkinci",
+      lastName: "Yönetici",
+      email: "admin2@test.local",
+      role: "admin",
+      isActive: true,
+    });
+    await expect(assertKeepsOneActiveAdmin(ADMIN, db)).resolves.toBeUndefined();
+  });
+
+  it("diğer yönetici pasifse yine de son aktif yönetici sayılır ve engellenir", async () => {
+    await seedBaseFixture(db);
+    await db.insert(profiles).values({
+      id: ADMIN_2,
+      firstName: "Pasif",
+      lastName: "Yönetici",
+      email: "admin2-inactive@test.local",
+      role: "admin",
+      isActive: false,
+    });
+    await expect(assertKeepsOneActiveAdmin(ADMIN, db)).rejects.toThrow(PermissionError);
   });
 });
