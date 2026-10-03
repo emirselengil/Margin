@@ -6,6 +6,8 @@ export function EditStudentDialog({
   open,
   initialFullName,
   initialClassName,
+  initialHeadTeacherId,
+  headTeacherOptions,
   pending,
   error,
   onSubmit,
@@ -14,14 +16,17 @@ export function EditStudentDialog({
   open: boolean;
   initialFullName: string;
   initialClassName: string;
+  initialHeadTeacherId: string;
+  headTeacherOptions: { id: string; name: string }[];
   pending?: boolean;
   error?: string | null;
-  onSubmit: (data: { fullName: string; className: string }) => void;
+  onSubmit: (data: { fullName: string; className: string; headTeacherId: string }) => void;
   onCancel: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [fullName, setFullName] = useState(initialFullName);
   const [className, setClassName] = useState(initialClassName);
+  const [headTeacherId, setHeadTeacherId] = useState(initialHeadTeacherId);
 
   useEffect(() => {
     const el = ref.current;
@@ -29,6 +34,7 @@ export function EditStudentDialog({
     if (open && !el.open) {
       setFullName(initialFullName);
       setClassName(initialClassName);
+      setHeadTeacherId(initialHeadTeacherId);
       el.showModal();
     }
     if (!open && el.open) el.close();
@@ -36,8 +42,8 @@ export function EditStudentDialog({
   }, [open]);
 
   function submit() {
-    if (!fullName.trim() || !className.trim()) return;
-    onSubmit({ fullName: fullName.trim(), className: className.trim() });
+    if (!fullName.trim() || !className.trim() || !headTeacherId) return;
+    onSubmit({ fullName: fullName.trim(), className: className.trim(), headTeacherId });
   }
 
   return (
@@ -87,6 +93,24 @@ export function EditStudentDialog({
             onChange={(e) => setClassName(e.target.value)}
             className="h-11 rounded-[10px] border border-line-2 bg-surface px-3 text-sm text-ink outline-none focus:border-accent"
           />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="es-ogretmen" className="text-[13px] font-medium">
+            Öğretmen
+          </label>
+          <select
+            id="es-ogretmen"
+            value={headTeacherId}
+            onChange={(e) => setHeadTeacherId(e.target.value)}
+            className="h-11 rounded-[10px] border border-line-2 bg-surface px-3 text-sm font-medium text-ink"
+          >
+            {headTeacherOptions.map((ht) => (
+              <option key={ht.id} value={ht.id}>
+                {ht.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {error ? (

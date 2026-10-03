@@ -103,15 +103,26 @@ export function GroupGrid({
 
   const editingStudent = editingId ? students.find((s) => s.id === editingId) : undefined;
 
-  function updateStudent(data: { fullName: string; className: string }) {
+  function updateStudent(data: { fullName: string; className: string; headTeacherId: string }) {
     if (!editingId) return;
     setEditPending(true);
     setEditError(null);
     startTransition(async () => {
       try {
         await updateStudentInfoAction(editingId, data);
+        const headTeacher = allHeadTeachers.find((h) => h.id === data.headTeacherId);
         setStudents((prev) =>
-          prev.map((s) => (s.id === editingId ? { ...s, fullName: data.fullName, className: data.className } : s)),
+          prev.map((s) =>
+            s.id === editingId
+              ? {
+                  ...s,
+                  fullName: data.fullName,
+                  className: data.className,
+                  headTeacherId: data.headTeacherId,
+                  headTeacherName: headTeacher?.name ?? s.headTeacherName,
+                }
+              : s,
+          ),
         );
         setEditingId(null);
       } catch {
@@ -316,6 +327,8 @@ export function GroupGrid({
         open={editingId !== null}
         initialFullName={editingStudent?.fullName ?? ""}
         initialClassName={editingStudent?.className ?? ""}
+        initialHeadTeacherId={editingStudent?.headTeacherId ?? ""}
+        headTeacherOptions={allHeadTeachers}
         pending={editPending}
         error={editError}
         onSubmit={updateStudent}

@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
-import { assistantHeadTeachers, students, studentStudyDays } from "@/db/schema";
+import { assistantHeadTeachers, profiles, students, studentStudyDays } from "@/db/schema";
 import {
   canAddStudentForHeadTeacher,
   canEditStudentDays,
@@ -50,17 +50,40 @@ export async function addStudentAction(
   return created;
 }
 
-/** Öğrencinin ad/sınıf bilgilerini düzenler. admin ve bağlı assistant kullanabilir. */
+/**
+ * Öğrencinin ad/sınıf/öğretmen bilgilerini düzenler. admin ve bağlı assistant
+ * kullanabilir. Asistan öğrenciyi, henüz bağlı olmadığı bir öğretmene de
+ * atayabilir; bu durumda (eklemede olduğu gibi) bağ otomatik kurulur, aksi
+ * halde öğrenci asistanın listesinden kaybolurdu.
+ */
 export async function updateStudentInfoAction(
   studentId: string,
-  patch: { fullName: string; className: string },
+  patch: { fullName: string; className: string; headTeacherId: string },
 ) {
   const user = await getOrCreateProfile();
-  if (!(await canEditStudentInfo(user, studentId))) {
+  if (!user || !(await canEditStudentInfo(user, studentId))) {
     throw new PermissionError("Bu öğrencinin bilgilerini düzenleme yetkiniz yok.");
+  }
+  if (!(await canAddStudentForHeadTeacher(user, patch.headTeacherId))) {
+    throw new PermissionError("Öğrenciyi bu öğretmene atama yetkiniz yok.");
+  }
+  const [target] = await db
+    .select({ role: profiles.role })
+    .from(profiles)
+    .where(eq(profiles.id, patch.headTeacherId))
+    .limit(1);
+  if (target?.role !== "head_teacher") {
+    throw new PermissionError("Seçilen kişi bir öğretmen değil.");
   }
 
   await db.update(students).set(patch).where(eq(students.id, studentId));
+
+  if (user.role === "assistant") {
+    await db
+      .insert(assistantHeadTeachers)
+      .values({ assistantId: user.id, headTeacherId: patch.headTeacherId })
+      .onConflictDoNothing();
+  }
 
   revalidatePath("/gruplar");
   revalidatePath("/etut");
