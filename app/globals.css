@@ -89,10 +89,19 @@ html,
 body {
   background: var(--bg);
   color: var(--ink);
-  /* İç içe overflow-x: auto kapsayıcıları (tablolar, gün şeridi) bazı
-     tarayıcılarda sayfanın kendisini de yatay kaydırılabilir
-     yapabiliyor; bunu burada kesin olarak engelliyoruz. */
+}
+
+/* İç içe overflow-x: auto kapsayıcıları (tablolar, gün şeridi) bazı
+   tarayıcılarda sayfanın kendisini de yatay kaydırılabilir yapabiliyor;
+   bunu kesin olarak engelliyoruz. body'de hidden yerine clip kullanılıyor:
+   hidden, body'yi bir kaydırma kapsayıcısına çevirir ve sol menünün
+   position: sticky davranışını bozar. */
+html {
   overflow-x: hidden;
+}
+
+body {
+  overflow-x: clip;
 }
 
 * {
