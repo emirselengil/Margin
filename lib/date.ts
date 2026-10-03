@@ -70,6 +70,11 @@ export function startOfWeekISO(iso: string): string {
   return addDaysISO(iso, -weekdayOfISODate(iso));
 }
 
+/** 'YYYY-MM-DD' tarihinin kısa ay adı (örn. "Eki"). */
+export function monthShortOfISO(iso: string): string {
+  return MONTHS_SHORT[new Date(`${iso}T12:00:00`).getMonth()];
+}
+
 export function formatShort(iso: string): string {
   const d = new Date(`${iso}T12:00:00`);
   return `${WEEKDAY_SHORT[weekdayOfISODate(iso)]} ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;

@@ -8,7 +8,7 @@ import { AssistantSidebar } from "@/components/shell/assistant-sidebar";
 import { Topbar } from "@/components/shell/topbar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ProgressRing } from "@/components/progress-ring";
-import { addDaysISO, formatLong, startOfWeekISO, todayISODate, WEEKDAY_SHORT } from "@/lib/date";
+import { addDaysISO, monthShortOfISO, formatLong, startOfWeekISO, todayISODate, WEEKDAY_SHORT } from "@/lib/date";
 import { requirePageRole } from "@/lib/page-guard";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,7 @@ export default async function EtutPage({
     const d = new Date(`${iso}T12:00:00`);
     const selected = iso === dateISO;
     const dotCount = Math.min(weekdayCounts[i], 6);
-    return { iso, label: WEEKDAY_SHORT[i], num: d.getDate(), selected, dotCount };
+    return { iso, label: WEEKDAY_SHORT[i], num: d.getDate(), month: monthShortOfISO(iso), selected, dotCount };
   });
 
   return (
@@ -140,7 +140,16 @@ export default async function EtutPage({
                 >
                   {d.label}
                 </span>
-                <span className="text-[22px] font-semibold tracking-[-0.03em]">{d.num}</span>
+                <span className="flex items-baseline gap-1.5">
+                  <span className="text-[22px] font-semibold tracking-[-0.03em]">{d.num}</span>
+                  <span
+                    className={
+                      "text-xs font-medium " + (d.selected ? "text-white/85" : "text-muted")
+                    }
+                  >
+                    {d.month}
+                  </span>
+                </span>
                 <span className="flex h-1.5 gap-[3px]">
                   {Array.from({ length: d.dotCount }, (_, i) => (
                     <span
