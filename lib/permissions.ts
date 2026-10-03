@@ -122,23 +122,19 @@ export async function canEditStudentDays(
  * `headTeacherId`'ye bağlı yeni bir öğrenci ekleyebilir mi?
  * - admin: her zaman
  * - head_teacher: yalnızca kendi altına (kendi id'si verilmişse)
- * - assistant: yalnızca bağlı olduğu baş öğretmenlerden birine
+ * - assistant: herhangi bir baş öğretmene — yeni öğrenci eklemek, henüz
+ *   bağlı olmadığı bir baş öğretmenle ilk ilişkiyi kurmanın yolu olabilir,
+ *   bu yüzden bu tek işlemde bağlı olma şartı aranmaz (yalnızca head_teacher
+ *   rolündeki aktif bir kullanıcıya atanabilir; bunu veritabanı FK'si zaten
+ *   garanti eder)
  */
 export async function canAddStudentForHeadTeacher(
   user: CurrentUser | null,
   headTeacherId: string,
-  database: Database = defaultDb,
 ): Promise<boolean> {
   if (!user || !user.isActive) return false;
-  if (user.role === "admin") return true;
+  if (user.role === "admin" || user.role === "assistant") return true;
   if (user.role === "head_teacher") return user.id === headTeacherId;
-  if (user.role === "assistant") {
-    const links = await database
-      .select({ headTeacherId: assistantHeadTeachers.headTeacherId })
-      .from(assistantHeadTeachers)
-      .where(eq(assistantHeadTeachers.assistantId, user.id));
-    return links.some((l) => l.headTeacherId === headTeacherId);
-  }
   return false;
 }
 

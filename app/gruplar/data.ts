@@ -45,3 +45,19 @@ export async function getStudentsWithDays(user: Profile): Promise<StudentWithDay
     }))
     .sort((a, b) => a.fullName.localeCompare(b.fullName, "tr"));
 }
+
+export type HeadTeacherOption = { id: string; name: string };
+
+/**
+ * Sistemdeki tüm baş öğretmenler — asistanın henüz bağlı olmadığı biri de
+ * dahil. Yeni öğrenci eklerken "bunu bir baş öğretmene atayabilmeli" kuralı
+ * için: asistan, ilk bağlantıyı bu ekranda kurabilir.
+ */
+export async function getAllHeadTeachers(): Promise<HeadTeacherOption[]> {
+  const rows = await db
+    .select({ id: profiles.id, firstName: profiles.firstName, lastName: profiles.lastName })
+    .from(profiles)
+    .where(eq(profiles.role, "head_teacher"))
+    .orderBy(profiles.firstName);
+  return rows.map((r) => ({ id: r.id, name: `${r.firstName} ${r.lastName}` }));
+}

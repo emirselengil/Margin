@@ -13,9 +13,12 @@ import { WEEKDAY_LONG, WEEKDAY_SHORT } from "@/lib/date";
 export function GroupGrid({
   initialStudents,
   headTeachers,
+  allHeadTeachers,
 }: {
   initialStudents: StudentWithDays[];
   headTeachers: { id: string; name: string }[];
+  /** Yeni öğrenci eklerken seçilebilecek tüm baş öğretmenler (yalnızca bağlı olanlar değil). */
+  allHeadTeachers: { id: string; name: string }[];
 }) {
   const [students, setStudents] = useState(initialStudents);
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
@@ -72,7 +75,7 @@ export function GroupGrid({
     startTransition(async () => {
       try {
         const { id } = await addStudentAction(data.headTeacherId, data.fullName, data.className);
-        const headTeacher = headTeachers.find((h) => h.id === data.headTeacherId);
+        const headTeacher = allHeadTeachers.find((h) => h.id === data.headTeacherId);
         setStudents((prev) => [
           ...prev,
           {
@@ -109,7 +112,7 @@ export function GroupGrid({
           <button
             type="button"
             onClick={() => setAddOpen(true)}
-            disabled={headTeachers.length === 0}
+            disabled={allHeadTeachers.length === 0}
             className="flex h-9 cursor-pointer items-center gap-1.5 rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink transition-colors hover:bg-sunken hover:border-line-2 active:bg-line disabled:cursor-default disabled:opacity-50"
           >
             <Plus size={15} aria-hidden="true" />
@@ -268,7 +271,7 @@ export function GroupGrid({
 
       <AddStudentDialog
         open={addOpen}
-        headTeacherOptions={headTeachers}
+        headTeacherOptions={allHeadTeachers}
         pending={addPending}
         error={addError}
         onSubmit={addStudent}

@@ -1,4 +1,4 @@
-import { getStudentsWithDays } from "@/app/gruplar/data";
+import { getAllHeadTeachers, getStudentsWithDays } from "@/app/gruplar/data";
 import { GroupGrid } from "@/app/gruplar/group-grid";
 import { AppShell } from "@/components/shell/app-shell";
 import { AssistantSidebar } from "@/components/shell/assistant-sidebar";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function GruplarPage() {
   const user = await requirePageRole("assistant");
-  const students = await getStudentsWithDays(user);
+  const [students, allHeadTeachers] = await Promise.all([getStudentsWithDays(user), getAllHeadTeachers()]);
 
   const headTeacherMap = new Map<string, string>();
   for (const s of students) headTeacherMap.set(s.headTeacherId, s.headTeacherName);
@@ -16,7 +16,7 @@ export default async function GruplarPage() {
 
   return (
     <AppShell sidebar={<AssistantSidebar user={user} active="gruplar" />}>
-      <GroupGrid initialStudents={students} headTeachers={headTeachers} />
+      <GroupGrid initialStudents={students} headTeachers={headTeachers} allHeadTeachers={allHeadTeachers} />
     </AppShell>
   );
 }

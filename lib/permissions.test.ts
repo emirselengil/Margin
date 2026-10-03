@@ -260,30 +260,22 @@ describe("assertKeepsOneActiveAdmin", () => {
 
 describe("canAddStudentForHeadTeacher", () => {
   it("admin herhangi bir baş öğretmen için öğrenci ekleyebilir", async () => {
-    await seedBaseFixture(db);
-    expect(await canAddStudentForHeadTeacher(user(ADMIN, "admin"), HEAD_A, db)).toBe(true);
-    expect(await canAddStudentForHeadTeacher(user(ADMIN, "admin"), HEAD_B, db)).toBe(true);
+    expect(await canAddStudentForHeadTeacher(user(ADMIN, "admin"), HEAD_A)).toBe(true);
+    expect(await canAddStudentForHeadTeacher(user(ADMIN, "admin"), HEAD_B)).toBe(true);
   });
 
   it("baş öğretmen yalnızca kendi altına öğrenci ekleyebilir", async () => {
-    await seedBaseFixture(db);
-    expect(await canAddStudentForHeadTeacher(user(HEAD_A, "head_teacher"), HEAD_A, db)).toBe(true);
-    expect(await canAddStudentForHeadTeacher(user(HEAD_A, "head_teacher"), HEAD_B, db)).toBe(false);
+    expect(await canAddStudentForHeadTeacher(user(HEAD_A, "head_teacher"), HEAD_A)).toBe(true);
+    expect(await canAddStudentForHeadTeacher(user(HEAD_A, "head_teacher"), HEAD_B)).toBe(false);
   });
 
-  it("asistan yalnızca bağlı olduğu baş öğretmene öğrenci ekleyebilir", async () => {
-    await seedBaseFixture(db);
-    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_A, "assistant"), HEAD_A, db)).toBe(true);
-    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_A, "assistant"), HEAD_B, db)).toBe(false);
-  });
-
-  it("bağlı olmayan asistan hiçbir baş öğretmene öğrenci ekleyemez", async () => {
-    await seedBaseFixture(db);
-    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_NONE, "assistant"), HEAD_A, db)).toBe(false);
+  it("asistan, bağlı olmasa bile herhangi bir baş öğretmene öğrenci ekleyebilir (ilk bağlantıyı kurmanın yolu)", async () => {
+    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_A, "assistant"), HEAD_A)).toBe(true);
+    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_A, "assistant"), HEAD_B)).toBe(true);
+    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_NONE, "assistant"), HEAD_A)).toBe(true);
   });
 
   it("pending kullanıcı öğrenci ekleyemez", async () => {
-    await seedBaseFixture(db);
-    expect(await canAddStudentForHeadTeacher(user(PENDING, "pending"), HEAD_A, db)).toBe(false);
+    expect(await canAddStudentForHeadTeacher(user(PENDING, "pending"), HEAD_A)).toBe(false);
   });
 });
