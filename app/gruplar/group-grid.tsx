@@ -3,10 +3,11 @@
 import { Check, Plus } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 
-import { addStudentAction, saveStudyDaysAction } from "@/app/gruplar/actions";
+import { addStudentAction, saveStudyDaysAction, updateStudentInfoAction } from "@/app/gruplar/actions";
 import type { StudentWithDays } from "@/app/gruplar/data";
 import { AddStudentDialog } from "@/components/add-student-dialog";
 import { Avatar, ColorDot } from "@/components/avatar";
+import { EditStudentDialog } from "@/components/edit-student-dialog";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { WEEKDAY_LONG, WEEKDAY_SHORT } from "@/lib/date";
 
@@ -28,6 +29,9 @@ export function GroupGrid({
   const [addOpen, setAddOpen] = useState(false);
   const [addPending, setAddPending] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editPending, setEditPending] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
   const shown = useMemo(
     () => (filter === "all" ? students : students.filter((s) => s.headTeacherId === filter)),
@@ -93,6 +97,27 @@ export function GroupGrid({
         setAddError("Öğrenci eklenemedi, lütfen tekrar deneyin.");
       } finally {
         setAddPending(false);
+      }
+    });
+  }
+
+  const editingStudent = editingId ? students.find((s) => s.id === editingId) : undefined;
+
+  function updateStudent(data: { fullName: string; className: string }) {
+    if (!editingId) return;
+    setEditPending(true);
+    setEditError(null);
+    startTransition(async () => {
+      try {
+        await updateStudentInfoAction(editingId, data);
+        setStudents((prev) =>
+          prev.map((s) => (s.id === editingId ? { ...s, fullName: data.fullName, className: data.className } : s)),
+        );
+        setEditingId(null);
+      } catch {
+        setEditError("Kaydedilemedi, lütfen tekrar deneyin.");
+      } finally {
+        setEditPending(false);
       }
     });
   }
@@ -222,13 +247,18 @@ export function GroupGrid({
                   {shown.map((s) => (
                     <tr key={s.id} className="border-t border-line">
                       <td className="px-[18px] py-2">
-                        <span className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setEditingId(s.id)}
+                          aria-label={`${s.fullName} bilgilerini düzenle`}
+                          className="flex w-full cursor-pointer items-center gap-3 rounded-[8px] border-0 bg-transparent p-1 -m-1 text-left transition-colors hover:bg-sunken active:bg-line"
+                        >
                           <Avatar name={s.fullName} colorId={s.headTeacherId} size={32} />
                           <span className="flex flex-col">
                             <span className="font-medium">{s.fullName}</span>
                             <span className="font-mono text-xs text-muted">{s.className}</span>
                           </span>
-                        </span>
+                        </button>
                       </td>
                       <td className="px-3 py-2 text-ink-2">
                         <span className="inline-flex items-center gap-2">
@@ -279,6 +309,19 @@ export function GroupGrid({
         onCancel={() => {
           setAddOpen(false);
           setAddError(null);
+        }}
+      />
+
+      <EditStudentDialog
+        open={editingId !== null}
+        initialFullName={editingStudent?.fullName ?? ""}
+        initialClassName={editingStudent?.className ?? ""}
+        pending={editPending}
+        error={editError}
+        onSubmit={updateStudent}
+        onCancel={() => {
+          setEditingId(null);
+          setEditError(null);
         }}
       />
     </>

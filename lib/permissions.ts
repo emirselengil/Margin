@@ -119,6 +119,15 @@ export async function canEditStudentDays(
   return canWriteRecord(user, studentId, database);
 }
 
+/** Bu öğrencinin ad/sınıf bilgilerini düzenleyebilir mi? admin ve bağlı assistant. */
+export async function canEditStudentInfo(
+  user: CurrentUser | null,
+  studentId: string,
+  database: Database = defaultDb,
+): Promise<boolean> {
+  return canWriteRecord(user, studentId, database);
+}
+
 /** `dateISO`'nun haftanın günü, öğrencinin atandığı etüt günlerinden biri mi? */
 export async function isStudentScheduledOn(
   studentId: string,

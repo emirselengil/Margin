@@ -5,7 +5,12 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
 import { assistantHeadTeachers, students, studentStudyDays } from "@/db/schema";
-import { canAddStudentForHeadTeacher, canEditStudentDays, PermissionError } from "@/lib/permissions";
+import {
+  canAddStudentForHeadTeacher,
+  canEditStudentDays,
+  canEditStudentInfo,
+  PermissionError,
+} from "@/lib/permissions";
 import { getOrCreateProfile } from "@/lib/profile";
 
 export type StudyDaysChange = { studentId: string; weekdays: number[] };
@@ -43,6 +48,24 @@ export async function addStudentAction(
   revalidatePath("/ogrencilerim");
   revalidatePath("/yonetim/ogrenciler");
   return created;
+}
+
+/** Öğrencinin ad/sınıf bilgilerini düzenler. admin ve bağlı assistant kullanabilir. */
+export async function updateStudentInfoAction(
+  studentId: string,
+  patch: { fullName: string; className: string },
+) {
+  const user = await getOrCreateProfile();
+  if (!(await canEditStudentInfo(user, studentId))) {
+    throw new PermissionError("Bu öğrencinin bilgilerini düzenleme yetkiniz yok.");
+  }
+
+  await db.update(students).set(patch).where(eq(students.id, studentId));
+
+  revalidatePath("/gruplar");
+  revalidatePath("/etut");
+  revalidatePath("/ogrencilerim");
+  revalidatePath("/yonetim/ogrenciler");
 }
 
 export async function saveStudyDaysAction(changes: StudyDaysChange[]) {

@@ -9,6 +9,7 @@ import {
   assertNotSelfRoleDemotion,
   canAddStudentForHeadTeacher,
   canEditStudentDays,
+  canEditStudentInfo,
   canViewStudent,
   canWriteRecord,
   isStudentScheduledOn,
@@ -201,6 +202,16 @@ describe("canEditStudentDays", () => {
     expect(await canEditStudentDays(user(ADMIN, "admin"), studentOfA, db)).toBe(true);
     expect(await canEditStudentDays(user(ASSISTANT_OF_A, "assistant"), studentOfA, db)).toBe(true);
     expect(await canEditStudentDays(user(HEAD_A, "head_teacher"), studentOfA, db)).toBe(false);
+  });
+});
+
+describe("canEditStudentInfo", () => {
+  it("admin ve bağlı asistan düzenleyebilir, baş öğretmen ve bağlı olmayan asistan düzenleyemez", async () => {
+    const { studentOfA } = await seedBaseFixture(db);
+    expect(await canEditStudentInfo(user(ADMIN, "admin"), studentOfA, db)).toBe(true);
+    expect(await canEditStudentInfo(user(ASSISTANT_OF_A, "assistant"), studentOfA, db)).toBe(true);
+    expect(await canEditStudentInfo(user(HEAD_A, "head_teacher"), studentOfA, db)).toBe(false);
+    expect(await canEditStudentInfo(user(ASSISTANT_OF_NONE, "assistant"), studentOfA, db)).toBe(false);
   });
 });
 
