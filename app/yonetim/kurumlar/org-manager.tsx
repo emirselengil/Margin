@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Check, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
@@ -10,6 +10,7 @@ import {
   deleteBranchAction,
   deleteInstitutionAction,
   renameInstitutionAction,
+  setInstitutionBranchesAction,
 } from "@/app/yonetim/kurumlar/actions";
 import type { BranchRow, InstitutionRow } from "@/app/yonetim/kurumlar/data";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -45,6 +46,7 @@ export function OrgManager({
 
   const [confirm, setConfirm] = useState<{ kind: "institution" | "branch"; id: string; label: string } | null>(null);
   const labels = institutionLabels(initialInstitutions);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   function run(task: () => Promise<Result>, onDone?: () => void) {
     setError(null);
@@ -64,9 +66,10 @@ export function OrgManager({
       <div>
         <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Kurumlar ve dallar</h1>
         <p className="mt-1.5 max-w-[640px] text-ink-2">
-          Kurumları ve dalları (branş + seviye) yalnızca siz oluşturur ve öğretmenlere siz atarsınız. Aynı adlı iki
-          kurum açabilirsiniz; her kurumun ayrı bir kimliği vardır. Atama, Öğretmenler sayfasındaki öğretmen panelinden
-          yapılır.
+          Kurumları ve dalları (branş + seviye) yalnızca siz oluşturur ve atarsınız. Her kuruma hangi dalların ait
+          olduğunu kurum satırındaki &ldquo;Dallar&rdquo; düğmesinden seçersiniz; öğretmenlere dal ve kurum ataması
+          Öğretmenler sayfasındaki öğretmen panelinden yapılır. Aynı adlı iki kurum açabilirsiniz; her kurumun ayrı
+          bir kimliği vardır.
         </p>
         {error ? (
           <p role="alert" className="mt-3 text-[13px] font-medium text-warn-text">
@@ -137,6 +140,20 @@ export function OrgManager({
                       <span className="font-mono text-xs text-muted">{inst.teacherCount} öğretmen</span>
                       <button
                         type="button"
+                        aria-expanded={openId === inst.id}
+                        aria-label={`${labels[inst.id]} kurumunun dalları`}
+                        onClick={() => setOpenId(openId === inst.id ? null : inst.id)}
+                        className="flex h-9 cursor-pointer items-center gap-1.5 rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink-2 transition-colors hover:bg-sunken hover:text-ink active:bg-line"
+                      >
+                        Dallar · {inst.branchIds.length}
+                        <ChevronDown
+                          size={14}
+                          aria-hidden="true"
+                          className={"transition-transform " + (openId === inst.id ? "rotate-180" : "")}
+                        />
+                      </button>
+                      <button
+                        type="button"
                         aria-label={`${labels[inst.id]} kurumunu yeniden adlandır`}
                         onClick={() => {
                           setEditingId(inst.id);
@@ -154,6 +171,49 @@ export function OrgManager({
                       >
                         <Trash2 size={14} aria-hidden="true" />
                       </button>
+                      {openId === inst.id ? (
+                        <div className="flex basis-full flex-col gap-2 rounded-[12px] bg-surface-2 p-3">
+                          <div className="text-xs text-muted">
+                            Bu kurumda bulunan dallar. Asistanlar bir kurumda yalnızca buraya eklediğiniz dalları
+                            görebilir ve talep edebilir.
+                          </div>
+                          {initialBranches.length === 0 ? (
+                            <p className="m-0 text-[13px] text-ink-2">Önce aşağıdan dal oluşturun.</p>
+                          ) : (
+                            <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-2">
+                              {initialBranches.map((b) => {
+                                const on = inst.branchIds.includes(b.id);
+                                const next = on ? inst.branchIds.filter((id) => id !== b.id) : [...inst.branchIds, b.id];
+                                return (
+                                  <button
+                                    key={b.id}
+                                    type="button"
+                                    role="checkbox"
+                                    aria-checked={on}
+                                    disabled={isPending}
+                                    onClick={() => run(() => setInstitutionBranchesAction(inst.id, next))}
+                                    className={
+                                      "flex min-h-11 cursor-pointer items-center gap-2.5 rounded-[10px] border bg-surface px-3 text-[13px] font-medium text-ink transition-colors hover:bg-sunken active:bg-line disabled:cursor-default disabled:opacity-60 " +
+                                      (on ? "border-accent" : "border-line")
+                                    }
+                                  >
+                                    <span
+                                      className={
+                                        "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] " +
+                                        (on ? "bg-accent" : "border-[1.5px] border-line-2 bg-surface")
+                                      }
+                                    >
+                                      {on ? <Check size={12} strokeWidth={3.5} color="#fff" aria-hidden="true" /> : null}
+                                    </span>
+                                    <span className="flex-1 text-left">{b.name}</span>
+                                    <span className="text-xs text-muted">{LEVEL_LABELS[b.level as Level] ?? b.level}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      ) : null}
                     </>
                   )}
                 </li>

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { createTestDb, type TestDb } from "@/db/test-utils";
@@ -6,6 +6,7 @@ import {
   assistantHeadTeachers,
   branchAccessRequests,
   branches,
+  institutionBranches,
   institutions,
   profiles,
   studentStudyDays,
@@ -89,6 +90,7 @@ beforeEach(async () => {
   await db.delete(assistantHeadTeachers);
   await db.delete(branchAccessRequests);
   await db.delete(teacherInstitutions);
+  await db.delete(institutionBranches);
   await db.delete(profiles);
   await db.delete(branches);
   await db.delete(institutions);
@@ -353,6 +355,14 @@ async function seedOrg(database: TestDb) {
   const [matLise] = await database.insert(branches).values({ name: "Matematik", level: "lise" }).returning({ id: branches.id });
   const [trkLise] = await database.insert(branches).values({ name: "Türkçe", level: "lise" }).returning({ id: branches.id });
   const [matOrta] = await database.insert(branches).values({ name: "Matematik", level: "ortaokul" }).returning({ id: branches.id });
+  const [fizLise] = await database.insert(branches).values({ name: "Fizik", level: "lise" }).returning({ id: branches.id });
+  // Kurum A'da Matematik(lise), Türkçe(lise), Matematik(ortaokul) var; Fizik hiçbir kuruma atanmamış.
+  await database.insert(institutionBranches).values([
+    { institutionId: kurumA.id, branchId: matLise.id },
+    { institutionId: kurumA.id, branchId: trkLise.id },
+    { institutionId: kurumA.id, branchId: matOrta.id },
+    { institutionId: kurumB.id, branchId: matLise.id },
+  ]);
 
   await database.insert(profiles).values([
     { id: HEAD_C, firstName: "Baş C", lastName: "Öğretmen", email: "head-c@test.local", role: "head_teacher", isActive: true },
@@ -387,6 +397,7 @@ async function seedOrg(database: TestDb) {
     matLise: matLise.id,
     trkLise: trkLise.id,
     matOrta: matOrta.id,
+    fizLise: fizLise.id,
     headD: HEAD_D,
   };
 }
@@ -426,6 +437,18 @@ describe("visibleHeadTeacherIds", () => {
     expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).toEqual([HEAD_A]);
     await db.update(branchAccessRequests).set({ status: "rejected" });
     expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).toEqual([HEAD_A]);
+  });
+
+  it("dal kurumdan çıkarılırsa onaylı talep de geçerliliğini yitirir", async () => {
+    const org = await seedOrg(db);
+    await db
+      .insert(branchAccessRequests)
+      .values({ assistantId: ASSISTANT_OF_A, institutionId: org.kurumA, branchId: org.trkLise, status: "approved" });
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).toContain(HEAD_C);
+    await db
+      .delete(institutionBranches)
+      .where(and(eq(institutionBranches.institutionId, org.kurumA), eq(institutionBranches.branchId, org.trkLise)));
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).not.toContain(HEAD_C);
   });
 
   it("onaylı talep başka bir kurum içinse öğretmeni açmaz", async () => {
@@ -473,6 +496,14 @@ describe("assertCanRequestBranchAccess", () => {
     await expect(assertCanRequestBranchAccess(a, org.kurumB, org.trkLise, db)).rejects.toThrow(PermissionError);
     await expect(assertCanRequestBranchAccess(a, org.kurumA, org.matOrta, db)).rejects.toThrow(PermissionError);
     await expect(assertCanRequestBranchAccess(a, org.kurumA, org.matLise, db)).rejects.toThrow(PermissionError);
+  });
+
+  it("kuruma atanmamış bir dal için talep açılamaz", async () => {
+    const org = await seedOrg(db);
+    // Fizik (lise) hiçbir kuruma atanmamış; Türkçe yalnızca Kurum A'da var
+    await expect(
+      assertCanRequestBranchAccess(user(ASSISTANT_OF_A, "assistant"), org.kurumA, org.fizLise, db),
+    ).rejects.toThrow(PermissionError);
   });
 
   it("asistan olmayanlar ve dalı olmayan asistan talep açamaz", async () => {

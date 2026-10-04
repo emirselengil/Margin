@@ -70,6 +70,21 @@ export const profiles = pgTable("profiles", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Kurum ↔ dal (çoka çok): hangi dallar hangi kurumda var; yalnızca yönetici atar.
+// Asistanlar bir kurumda yalnızca o kuruma atanmış dalları görebilir/talep edebilir.
+export const institutionBranches = pgTable(
+  "institution_branches",
+  {
+    institutionId: uuid("institution_id")
+      .notNull()
+      .references(() => institutions.id),
+    branchId: uuid("branch_id")
+      .notNull()
+      .references(() => branches.id),
+  },
+  (table) => [primaryKey({ columns: [table.institutionId, table.branchId] })],
+);
+
 // Öğretmen ↔ kurum (çoka çok); kurumları yalnızca yönetici atar.
 export const teacherInstitutions = pgTable(
   "teacher_institutions",

@@ -7,6 +7,7 @@ import {
   assistantHeadTeachers,
   branchAccessRequests,
   branches,
+  institutionBranches,
   profiles,
   studentStudyDays,
   students,
@@ -223,10 +224,18 @@ export async function visibleHeadTeacherIds(
     sharedByTeacher.set(row.teacherId, set);
   }
 
-  const approved = await database
+  const approvedRows = await database
     .select({ institutionId: branchAccessRequests.institutionId, branchId: branchAccessRequests.branchId })
     .from(branchAccessRequests)
     .where(and(eq(branchAccessRequests.assistantId, user.id), eq(branchAccessRequests.status, "approved")));
+
+  // Onaylı talep, dal hâlâ o kuruma atanmışsa geçerlidir (yönetici dalı kurumdan çıkarırsa erişim de kalkar).
+  const assignedRows = await database
+    .select({ institutionId: institutionBranches.institutionId, branchId: institutionBranches.branchId })
+    .from(institutionBranches)
+    .where(inArray(institutionBranches.institutionId, myInstitutions));
+  const assigned = new Set(assignedRows.map((r) => `${r.institutionId}:${r.branchId}`));
+  const approved = approvedRows.filter((a) => assigned.has(`${a.institutionId}:${a.branchId}`));
 
   return candidates
     .filter((c) => {
@@ -240,8 +249,9 @@ export async function visibleHeadTeacherIds(
 
 /**
  * Asistan, kendi kurumundaki farklı bir dal için erişim talebi açabilir mi?
- * Kurallar: aktif asistan; dalı vardır; kurum kendisinin kurumlarından biri;
- * hedef dal kendi seviyesinde ve kendi dalından farklı. Uymazsa Türkçe hata.
+ * Kurallar: aktif asistan; dalı vardır; kurum kendisinin kurumlarından biri
+ * (başka kurum adına talep açılamaz); hedef dal o kuruma atanmış, kendi
+ * seviyesinde ve kendi dalından farklı. Uymazsa Türkçe hata.
  */
 export async function assertCanRequestBranchAccess(
   user: CurrentUser | null,
@@ -276,6 +286,14 @@ export async function assertCanRequestBranchAccess(
   }
   if (target.id === me.branchId) {
     throw new PermissionError("Bu zaten sizin dalınız.");
+  }
+  const [offered] = await database
+    .select({ branchId: institutionBranches.branchId })
+    .from(institutionBranches)
+    .where(and(eq(institutionBranches.institutionId, institutionId), eq(institutionBranches.branchId, branchId)))
+    .limit(1);
+  if (!offered) {
+    throw new PermissionError("Bu dal seçtiğiniz kurumda tanımlı değil.");
   }
 }
 

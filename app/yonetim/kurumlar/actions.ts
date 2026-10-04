@@ -1,10 +1,17 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
-import { branchAccessRequests, branches, institutions, profiles, teacherInstitutions } from "@/db/schema";
+import {
+  branchAccessRequests,
+  branches,
+  institutionBranches,
+  institutions,
+  profiles,
+  teacherInstitutions,
+} from "@/db/schema";
 import { runAction } from "@/lib/action-result";
 import { isLevel } from "@/lib/levels";
 import { PermissionError, requireRole } from "@/lib/permissions";
@@ -62,8 +69,43 @@ export async function deleteInstitutionAction(id: string) {
     if (member || request) {
       throw new PermissionError("Bu kuruma bağlı öğretmen veya talep var; önce onları kaldırın.");
     }
-    await db.delete(institutions).where(eq(institutions.id, id));
+    await db.transaction(async (tx) => {
+      await tx.delete(institutionBranches).where(eq(institutionBranches.institutionId, id));
+      await tx.delete(institutions).where(eq(institutions.id, id));
+    });
     revalidatePath("/yonetim/kurumlar");
+  });
+}
+
+/**
+ * Kurumda hangi dalların bulunduğunu belirler (yalnızca yönetici). Asistanlar
+ * bir kurumda yalnızca o kuruma atanmış dalları görebilir/talep edebilir.
+ */
+export async function setInstitutionBranchesAction(institutionId: string, branchIds: string[]) {
+  return runAction(async () => {
+    await requireAdmin();
+    const [institution] = await db
+      .select({ id: institutions.id })
+      .from(institutions)
+      .where(eq(institutions.id, institutionId))
+      .limit(1);
+    if (!institution) throw new PermissionError("Kurum bulunamadı.");
+
+    const unique = Array.from(new Set(branchIds));
+    if (unique.length > 0) {
+      const found = await db.select({ id: branches.id }).from(branches).where(inArray(branches.id, unique));
+      if (found.length !== unique.length) throw new PermissionError("Seçilen dallardan biri bulunamadı.");
+    }
+    await db.transaction(async (tx) => {
+      await tx.delete(institutionBranches).where(eq(institutionBranches.institutionId, institutionId));
+      if (unique.length > 0) {
+        await tx.insert(institutionBranches).values(unique.map((branchId) => ({ institutionId, branchId })));
+      }
+    });
+    revalidatePath("/yonetim/kurumlar");
+    revalidatePath("/yonetim/talepler");
+    revalidatePath("/taleplerim");
+    revalidatePath("/gruplar");
   });
 }
 
@@ -101,7 +143,10 @@ export async function deleteBranchAction(id: string) {
     if (teacher || request) {
       throw new PermissionError("Bu dala bağlı öğretmen veya talep var; önce onları kaldırın.");
     }
-    await db.delete(branches).where(eq(branches.id, id));
+    await db.transaction(async (tx) => {
+      await tx.delete(institutionBranches).where(eq(institutionBranches.branchId, id));
+      await tx.delete(branches).where(eq(branches.id, id));
+    });
     revalidatePath("/yonetim/kurumlar");
   });
 }

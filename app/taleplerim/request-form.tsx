@@ -25,6 +25,7 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
 
   const canRequest = !!info.branch && info.institutions.length > 0;
+  const requestable = info.institutions.find((i) => i.id === institutionId)?.requestableBranches ?? [];
 
   function submit() {
     setMessage(null);
@@ -55,8 +56,6 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
         <h2 className="m-0 text-base font-semibold">Yeni talep</h2>
         {!canRequest ? (
           <p className="m-0 text-ink-2">Talep açabilmek için yöneticinin size bir dal ve en az bir kurum atamış olması gerekir.</p>
-        ) : info.requestableBranches.length === 0 ? (
-          <p className="m-0 text-ink-2">Kendi seviyenizde talep edebileceğiniz başka bir dal yok.</p>
         ) : (
           <form
             className="flex flex-wrap items-end gap-3"
@@ -69,7 +68,12 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
               <label htmlFor="talep-kurum" className="text-[13px] font-medium">
                 Kurum
               </label>
-              <select id="talep-kurum" value={institutionId} onChange={(e) => setInstitutionId(e.target.value)} className={selectClass}>
+              <select id="talep-kurum" value={institutionId} onChange={(e) => {
+                  setInstitutionId(e.target.value);
+                  setBranchId("");
+                }}
+                className={selectClass}
+              >
                 {info.institutions.map((i) => (
                   <option key={i.id} value={i.id}>
                     {i.name}
@@ -83,7 +87,7 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
               </label>
               <select id="talep-dal" value={branchId} onChange={(e) => setBranchId(e.target.value)} className={selectClass}>
                 <option value="">Dal seçin</option>
-                {info.requestableBranches.map((b) => (
+                {requestable.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name} · {LEVEL_LABELS[b.level as Level] ?? b.level}
                   </option>
@@ -99,6 +103,11 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
             </button>
           </form>
         )}
+        {canRequest && requestable.length === 0 ? (
+          <p className="m-0 text-[13px] text-muted">
+            Bu kurumda, kendi seviyenizde talep edebileceğiniz başka bir dal tanımlı değil.
+          </p>
+        ) : null}
         {message ? (
           <p role={message.ok ? "status" : "alert"} className={"m-0 text-[13px] font-medium " + (message.ok ? "text-accent-text" : "text-warn-text")}>
             {message.text}
