@@ -225,13 +225,20 @@ Expo (React Native) ile Android uygulaması; web ile aynı sunucuyu ve aynı yet
 ## Komutlar
 
 ```
-npm run dev          # geliştirme sunucusu
-npm run build        # üretim derlemesi
-npm run test         # Vitest
-npm run db:generate  # drizzle-kit generate
-npm run db:migrate   # drizzle-kit migrate
-npm run db:seed      # örnek veri
+npm run dev              # geliştirme sunucusu (Neon "dev" dalına bağlı)
+npm run build            # üretim derlemesi
+npm run test             # Vitest
+npm run db:generate      # drizzle-kit generate
+npm run db:migrate       # migration'ı GELİŞTİRME (dev dalı) veritabanına uygular
+npm run db:migrate:prod  # migration'ı CANLI veritabanına uygular (bilerek, deploy öncesi)
+npm run db:seed          # örnek veri (yalnızca dev; canlıda reddedilir)
 ```
+
+### Geliştirme ve canlı ayrımı
+
+- `.env.local` CANLI veritabanı ve Auth adreslerini tutar (Vercel ile aynı). `.env.development.local` Neon'daki `dev` dalını gösterir; `npm run dev` ve `db:*` komutları ve tek seferlik betikler (`db/load-env.ts`) varsayılan olarak bunu kullanır. Dosya yoksa canlıya düşmek yerine durur.
+- Canlıya yalnızca `npm run db:migrate:prod` bağlanır (şema değişikliğinde: önce `db:migrate` ile dev'de dene, kodu push et, sonra canlıya `db:migrate:prod`).
+- Her iki dosya da git'e girmez. Test için geçici hesap/veri gerekirse dev dalında oluştur.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

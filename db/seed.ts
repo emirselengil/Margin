@@ -119,6 +119,9 @@ const SAMPLE_NOTES = [
 ];
 
 async function main() {
+  if (process.env.DB_TARGET === "production") {
+    throw new Error("Örnek veri (seed) canlı veritabanına yazılamaz.");
+  }
   console.log("Neon Auth hesapları oluşturuluyor / doğrulanıyor...");
   const authUsers = new Map<string, { id: string; email: string }>();
   for (const t of TEACHERS) {
