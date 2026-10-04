@@ -14,6 +14,8 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+import { LEVELS } from "../lib/levels";
+
 export const roleEnum = pgEnum("role", [
   "admin",
   "head_teacher",
@@ -21,9 +23,33 @@ export const roleEnum = pgEnum("role", [
   "pending",
 ]);
 
+export const branchRequestStatusEnum = pgEnum("branch_request_status", ["pending", "approved", "rejected"]);
+
 export const homeworkStatusEnum = pgEnum("homework_status", ["done", "missing"]);
 export const bookStatusEnum = pgEnum("book_status", ["brought", "not_brought"]);
 export const attendanceStatusEnum = pgEnum("attendance_status", ["came", "absent"]);
+
+// Kurum: aynı adlı iki kurum olabilir, ayırt eden `id`dir (ad benzersiz değildir).
+export const institutions = pgTable("institutions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Dal = branş (ders alanı) + seviye. Bir öğretmenin tek dalı olur.
+export const branches = pgTable(
+  "branches",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    level: text("level").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("branches_name_level_unique").on(table.name, table.level),
+    check("branches_level_check", sql`${table.level} in (${sql.raw(LEVELS.map((l) => `'${l}'`).join(", "))})`),
+  ],
+);
 
 // `id` Neon Auth kullanıcı kimliğiyle eşleşir; Neon Auth'un ürettiği kimlik
 // her zaman UUID formatında olmayabileceği için text olarak tutulur.
@@ -39,8 +65,47 @@ export const profiles = pgTable("profiles", {
   // diye); is_active=false olur ve deletedAt damgalanır, hesap bir
   // daha asla aktifleştirilemez.
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  // Öğretmenin dalı (branş + seviye); yalnızca yönetici atar.
+  branchId: uuid("branch_id").references(() => branches.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Öğretmen ↔ kurum (çoka çok); kurumları yalnızca yönetici atar.
+export const teacherInstitutions = pgTable(
+  "teacher_institutions",
+  {
+    teacherId: text("teacher_id")
+      .notNull()
+      .references(() => profiles.id),
+    institutionId: uuid("institution_id")
+      .notNull()
+      .references(() => institutions.id),
+  },
+  (table) => [primaryKey({ columns: [table.teacherId, table.institutionId] })],
+);
+
+// Asistanın, kendi kurumundaki farklı bir daldaki (aynı seviye) öğretmenleri
+// görme talebi. Yönetici onaylarsa o daldaki öğretmenler görünür olur.
+export const branchAccessRequests = pgTable(
+  "branch_access_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    assistantId: text("assistant_id")
+      .notNull()
+      .references(() => profiles.id),
+    institutionId: uuid("institution_id")
+      .notNull()
+      .references(() => institutions.id),
+    branchId: uuid("branch_id")
+      .notNull()
+      .references(() => branches.id),
+    status: branchRequestStatusEnum("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    decidedBy: text("decided_by").references(() => profiles.id),
+  },
+  (table) => [unique("branch_access_requests_unique").on(table.assistantId, table.institutionId, table.branchId)],
+);
 
 export const assistantHeadTeachers = pgTable(
   "assistant_head_teachers",
@@ -182,6 +247,9 @@ export const recordHistoryRelations = relations(recordHistory, ({ one }) => ({
 
 export type Profile = typeof profiles.$inferSelect;
 export type NewProfile = typeof profiles.$inferInsert;
+export type Institution = typeof institutions.$inferSelect;
+export type Branch = typeof branches.$inferSelect;
+export type BranchAccessRequest = typeof branchAccessRequests.$inferSelect;
 export type Student = typeof students.$inferSelect;
 export type NewStudent = typeof students.$inferInsert;
 export type StudentStudyDay = typeof studentStudyDays.$inferSelect;

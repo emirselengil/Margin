@@ -1,8 +1,8 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { profiles, studentStudyDays, students, type Profile } from "@/db/schema";
-import { visibleStudentIds } from "@/lib/permissions";
+import { visibleHeadTeacherIds, visibleStudentIds } from "@/lib/permissions";
 import { teacherDisplayName } from "@/lib/teacher-name";
 
 export type StudentWithDays = {
@@ -50,15 +50,18 @@ export async function getStudentsWithDays(user: Profile): Promise<StudentWithDay
 export type HeadTeacherOption = { id: string; name: string };
 
 /**
- * Sistemdeki tüm baş öğretmenler — asistanın henüz bağlı olmadığı biri de
- * dahil. Yeni öğrenci eklerken "bunu bir baş öğretmene atayabilmeli" kuralı
- * için: asistan, ilk bağlantıyı bu ekranda kurabilir.
+ * Kullanıcının seçebileceği / görebileceği baş öğretmenler (asistan için:
+ * aynı kurum + aynı seviye + aynı dal ya da onaylı talep; bkz.
+ * `visibleHeadTeacherIds`). Yeni öğrenci eklerken ve öğrenciyi başka
+ * öğretmene atarken seçim listesi olarak kullanılır.
  */
-export async function getAllHeadTeachers(): Promise<HeadTeacherOption[]> {
+export async function getAllHeadTeachers(user: Profile): Promise<HeadTeacherOption[]> {
+  const ids = await visibleHeadTeacherIds(user);
+  if (ids.length === 0) return [];
   const rows = await db
     .select({ id: profiles.id, firstName: profiles.firstName, lastName: profiles.lastName })
     .from(profiles)
-    .where(and(eq(profiles.role, "head_teacher"), eq(profiles.isActive, true)))
+    .where(inArray(profiles.id, ids))
     .orderBy(profiles.firstName);
   return rows.map((r) => ({ id: r.id, name: `${r.firstName} ${r.lastName}` }));
 }

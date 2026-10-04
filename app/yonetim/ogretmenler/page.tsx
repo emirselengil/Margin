@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 
+import { getBranches, getInstitutions } from "@/app/yonetim/kurumlar/data";
 import { getAllTeachers, getPendingTeachers } from "@/app/yonetim/ogretmenler/data";
 import { TeacherManager } from "@/app/yonetim/ogretmenler/teacher-manager";
 import { AppShell } from "@/components/shell/app-shell";
@@ -13,10 +14,12 @@ export const dynamic = "force-dynamic";
 
 export default async function YonetimOgretmenlerPage() {
   const user = await requirePageRole("admin");
-  const [pending, teachers, studentIds] = await Promise.all([
+  const [pending, teachers, studentIds, branches, institutions] = await Promise.all([
     getPendingTeachers(),
     getAllTeachers(),
     visibleStudentIds(user),
+    getBranches(),
+    getInstitutions(),
   ]);
 
   return (
@@ -40,7 +43,13 @@ export default async function YonetimOgretmenlerPage() {
         }
         right={<ThemeToggle />}
       />
-      <TeacherManager currentAdminId={user.id} initialPending={pending} initialTeachers={teachers} />
+      <TeacherManager
+        currentAdminId={user.id}
+        initialPending={pending}
+        initialTeachers={teachers}
+        branches={branches}
+        institutions={institutions}
+      />
     </AppShell>
   );
 }

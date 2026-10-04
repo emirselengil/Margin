@@ -122,6 +122,12 @@ export function GroupGrid({
   }
 
   const editingStudent = editingId ? students.find((s) => s.id === editingId) : undefined;
+  // Mevcut öğretmen "görebildiği" listede olmasa da (örn. farklı dal) seçenek olarak kalır;
+  // böylece yalnızca ad/sınıf düzenlemek mümkün olur. Yeni öğretmen yalnızca listeden seçilebilir.
+  const editTeacherOptions =
+    editingStudent && !allHeadTeachers.some((h) => h.id === editingStudent.headTeacherId)
+      ? [...allHeadTeachers, { id: editingStudent.headTeacherId, name: editingStudent.headTeacherName }]
+      : allHeadTeachers;
 
   function updateStudent(data: { fullName: string; className: string; headTeacherId: string }) {
     if (!editingId) return;
@@ -429,10 +435,8 @@ export function GroupGrid({
         open={editingId !== null}
         initialFullName={editingStudent?.fullName ?? ""}
         initialClassName={editingStudent?.className ?? ""}
-        initialHeadTeacherId={
-          allHeadTeachers.some((h) => h.id === editingStudent?.headTeacherId) ? editingStudent!.headTeacherId : ""
-        }
-        headTeacherOptions={allHeadTeachers}
+        initialHeadTeacherId={editingStudent?.headTeacherId ?? ""}
+        headTeacherOptions={editTeacherOptions}
         pending={editPending}
         error={editError}
         onSubmit={updateStudent}

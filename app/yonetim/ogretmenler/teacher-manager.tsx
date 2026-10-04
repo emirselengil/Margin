@@ -11,11 +11,16 @@ import {
   setActiveAction,
   setAssistantLinksAction,
   setRoleAction,
+  setTeacherBranchAction,
+  setTeacherInstitutionsAction,
 } from "@/app/yonetim/ogretmenler/actions";
+import type { BranchRow, InstitutionRow } from "@/app/yonetim/kurumlar/data";
 import type { PendingTeacher, TeacherRow } from "@/app/yonetim/ogretmenler/data";
 import { Avatar } from "@/components/avatar";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { formatBadgeDate } from "@/lib/date";
+import { institutionLabels } from "@/lib/institutions";
+import { LEVEL_LABELS, type Level } from "@/lib/levels";
 import { ROLE_LABELS, type Role } from "@/lib/roles";
 
 const ASSIGNABLE_ROLES: Exclude<Role, "pending">[] = ["assistant", "head_teacher", "admin"];
@@ -46,10 +51,14 @@ export function TeacherManager({
   currentAdminId,
   initialPending,
   initialTeachers,
+  branches,
+  institutions,
 }: {
   currentAdminId: string;
   initialPending: PendingTeacher[];
   initialTeachers: TeacherRow[];
+  branches: BranchRow[];
+  institutions: InstitutionRow[];
 }) {
   const [pending, setPending] = useState(initialPending);
   const [teachers, setTeachers] = useState(initialTeachers);
@@ -58,8 +67,10 @@ export function TeacherManager({
   const [pendingRoles, setPendingRoles] = useState<Record<string, Exclude<Role, "pending">>>({});
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [orgError, setOrgError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const institutionName = useMemo(() => institutionLabels(institutions), [institutions]);
   const byId = useMemo(() => new Map(teachers.map((t) => [t.id, t])), [teachers]);
   const headTeachers = useMemo(() => teachers.filter((t) => t.role === "head_teacher"), [teachers]);
   const activeAdminCount = useMemo(
@@ -86,7 +97,7 @@ export function TeacherManager({
       setPending((prev) => prev.filter((x) => x.id !== p.id));
       setTeachers((prev) => [
         ...prev,
-        { id: p.id, firstName: p.firstName, lastName: p.lastName, email: p.email, role, isActive: true, linkedHeadTeacherIds: [], studentCount: 0 },
+        { id: p.id, firstName: p.firstName, lastName: p.lastName, email: p.email, role, isActive: true, linkedHeadTeacherIds: [], studentCount: 0, branchId: null, institutionIds: [] },
       ]);
       setSelectedId(p.id);
     });
@@ -106,6 +117,34 @@ export function TeacherManager({
       setTeachers((prev) =>
         prev.map((t) => (t.id === selected.id ? { ...t, role, linkedHeadTeacherIds: role === "assistant" ? t.linkedHeadTeacherIds : [] } : t)),
       );
+    });
+  }
+
+  function changeBranch(branchId: string | null) {
+    if (!selected) return;
+    setOrgError(null);
+    startTransition(async () => {
+      const result = await setTeacherBranchAction(selected.id, branchId);
+      if (!result.ok) {
+        setOrgError(result.message);
+        return;
+      }
+      setTeachers((prev) => prev.map((t) => (t.id === selected.id ? { ...t, branchId } : t)));
+    });
+  }
+
+  function toggleInstitution(institutionId: string) {
+    if (!selected) return;
+    const on = selected.institutionIds.includes(institutionId);
+    const next = on ? selected.institutionIds.filter((id) => id !== institutionId) : [...selected.institutionIds, institutionId];
+    setOrgError(null);
+    startTransition(async () => {
+      const result = await setTeacherInstitutionsAction(selected.id, next);
+      if (!result.ok) {
+        setOrgError(result.message);
+        return;
+      }
+      setTeachers((prev) => prev.map((t) => (t.id === selected.id ? { ...t, institutionIds: next } : t)));
     });
   }
 
@@ -347,6 +386,75 @@ export function TeacherManager({
               })}
             </div>
           </div>
+
+          {selected.role !== "admin" ? (
+            <div className="flex flex-col gap-2.5">
+              <div className="text-[13px] font-semibold">Dal ve kurumlar</div>
+              <div className="text-xs text-muted">
+                Dal (branş + seviye) tek olur; kurum birden fazla olabilir. Asistan, yalnızca aynı seviyedeki ve ortak
+                kurumdaki öğretmenleri görür (aynı dal ya da onaylı talep gerekir).
+              </div>
+              <label htmlFor="t-dal" className="text-xs font-medium text-ink-2">
+                Dal
+              </label>
+              <select
+                id="t-dal"
+                value={selected.branchId ?? ""}
+                disabled={isPending}
+                onChange={(e) => changeBranch(e.target.value || null)}
+                className="h-[42px] rounded-[10px] border border-line-2 bg-surface px-2.5 text-sm font-medium text-ink"
+              >
+                <option value="">Dal atanmamış</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name} · {LEVEL_LABELS[b.level as Level] ?? b.level}
+                  </option>
+                ))}
+              </select>
+              <div className="mt-1 text-xs font-medium text-ink-2">Kurumlar</div>
+              {institutions.length === 0 ? (
+                <p className="m-0 text-xs text-muted">
+                  Henüz kurum yok.{" "}
+                  <a href="/yonetim/kurumlar" className="font-medium text-accent-text no-underline hover:underline">
+                    Kurum oluşturun →
+                  </a>
+                </p>
+              ) : (
+                institutions.map((inst) => {
+                  const on = selected.institutionIds.includes(inst.id);
+                  return (
+                    <button
+                      key={inst.id}
+                      type="button"
+                      role="checkbox"
+                      aria-checked={on}
+                      disabled={isPending}
+                      onClick={() => toggleInstitution(inst.id)}
+                      className={
+                        "flex min-h-11 cursor-pointer items-center gap-2.5 rounded-[10px] border bg-surface px-3 text-[13px] font-medium text-ink transition-colors hover:bg-sunken active:bg-line disabled:cursor-default disabled:opacity-60 " +
+                        (on ? "border-accent" : "border-line")
+                      }
+                    >
+                      <span
+                        className={
+                          "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] " +
+                          (on ? "bg-accent" : "border-[1.5px] border-line-2 bg-surface")
+                        }
+                      >
+                        {on ? <Check size={12} strokeWidth={3.5} color="#fff" aria-hidden="true" /> : null}
+                      </span>
+                      <span className="flex-1 text-left">{institutionName[inst.id]}</span>
+                    </button>
+                  );
+                })
+              )}
+              {orgError ? (
+                <p role="alert" className="m-0 text-xs font-medium text-warn-text">
+                  {orgError}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
 
           {selected.role === "assistant" ? (
             <div className="flex flex-col gap-2">

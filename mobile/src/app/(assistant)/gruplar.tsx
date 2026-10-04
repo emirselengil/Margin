@@ -48,12 +48,13 @@ export default function GruplarScreen() {
     setStudents(q.data.students);
   }
 
-  const allTeachers = q.data?.allHeadTeachers ?? [];
+  const allTeachers = useMemo(() => q.data?.allHeadTeachers ?? [], [q.data]);
   const filterTeachers = useMemo(() => {
     const map = new Map<string, string>();
     for (const s of students) if (s.headTeacherName !== "—") map.set(s.headTeacherId, s.headTeacherName);
-    return Array.from(map, ([id, name]) => ({ id, name }));
-  }, [students]);
+    const selectable = new Set(allTeachers.map((t) => t.id));
+    return Array.from(map, ([id, name]) => ({ id, name })).filter((t) => selectable.has(t.id));
+  }, [students, allTeachers]);
   const byTeacher = filter === "all" ? students : students.filter((s) => s.headTeacherId === filter);
   const needle = query.trim().toLocaleLowerCase("tr");
   const shown = needle ? byTeacher.filter((s) => s.fullName.toLocaleLowerCase("tr").includes(needle)) : byTeacher;
@@ -97,6 +98,11 @@ export default function GruplarScreen() {
   }
 
   const editing = sheet?.mode === "edit" ? students.find((s) => s.id === sheet.id) : undefined;
+  // Mevcut öğretmen "görebildiği" listede olmasa da seçenek olarak kalır (yalnızca ad/sınıf düzenlenebilsin).
+  const sheetTeachers =
+    editing && !allTeachers.some((t) => t.id === editing.headTeacherId)
+      ? [...allTeachers, { id: editing.headTeacherId, name: editing.headTeacherName }]
+      : allTeachers;
   const totals = [0, 0, 0, 0, 0, 0, 0];
   for (const s of byTeacher) for (const d of s.days) totals[d]++;
   // Çubuklar en kalabalık güne göre oranlanır; öğrenci sayısı ne olursa olsun kutuya sığar.
@@ -384,14 +390,13 @@ export default function GruplarScreen() {
       <StudentSheet
         open={sheet !== null}
         mode={sheet?.mode ?? "add"}
-        teachers={allTeachers}
+        teachers={sheetTeachers}
         initial={
           editing
             ? {
                 fullName: editing.fullName,
                 className: editing.className,
-                // Pasif/artık seçilemeyen öğretmen: yeniden seçtir
-                headTeacherId: allTeachers.some((t) => t.id === editing.headTeacherId) ? editing.headTeacherId : "",
+                headTeacherId: editing.headTeacherId,
               }
             : { fullName: "", className: "", headTeacherId: allTeachers[0]?.id ?? "" }
         }

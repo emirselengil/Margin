@@ -1,7 +1,7 @@
 import { and, eq, isNull } from "drizzle-orm";
 
 import { db } from "@/db/client";
-import { assistantHeadTeachers, profiles, students } from "@/db/schema";
+import { assistantHeadTeachers, profiles, students, teacherInstitutions } from "@/db/schema";
 
 export type PendingTeacher = {
   id: string;
@@ -35,6 +35,8 @@ export type TeacherRow = {
   isActive: boolean;
   linkedHeadTeacherIds: string[];
   studentCount: number;
+  branchId: string | null;
+  institutionIds: string[];
 };
 
 export async function getAllTeachers(): Promise<TeacherRow[]> {
@@ -52,6 +54,14 @@ export async function getAllTeachers(): Promise<TeacherRow[]> {
     const list = linksByAssistant.get(l.assistantId) ?? [];
     list.push(l.headTeacherId);
     linksByAssistant.set(l.assistantId, list);
+  }
+
+  const membershipRows = await db.select().from(teacherInstitutions);
+  const institutionsByTeacher = new Map<string, string[]>();
+  for (const m of membershipRows) {
+    const list = institutionsByTeacher.get(m.teacherId) ?? [];
+    list.push(m.institutionId);
+    institutionsByTeacher.set(m.teacherId, list);
   }
 
   const studentRows = await db
@@ -72,5 +82,7 @@ export async function getAllTeachers(): Promise<TeacherRow[]> {
     isActive: r.isActive,
     linkedHeadTeacherIds: linksByAssistant.get(r.id) ?? [],
     studentCount: countByHeadTeacher.get(r.id) ?? 0,
+    branchId: r.branchId,
+    institutionIds: institutionsByTeacher.get(r.id) ?? [],
   }));
 }

@@ -9,7 +9,7 @@ import {
   studyRecords,
   type Profile,
 } from "@/db/schema";
-import { visibleStudentIds } from "@/lib/permissions";
+import { visibleHeadTeacherIds, visibleStudentIds } from "@/lib/permissions";
 import { weekdayOfISODate } from "@/lib/date";
 import { teacherDisplayName } from "@/lib/teacher-name";
 
@@ -27,9 +27,10 @@ export async function getLinkedHeadTeachers(assistant: Profile): Promise<HeadTea
     .innerJoin(profiles, eq(profiles.id, assistantHeadTeachers.headTeacherId))
     .where(eq(assistantHeadTeachers.assistantId, assistant.id));
 
+  const visible = new Set(await visibleHeadTeacherIds(assistant));
   const result: HeadTeacherSummary[] = [];
   for (const { headTeacher } of links) {
-    if (!headTeacher.isActive) continue;
+    if (!headTeacher.isActive || !visible.has(headTeacher.id)) continue;
     const rows = await db
       .select({ id: students.id })
       .from(students)

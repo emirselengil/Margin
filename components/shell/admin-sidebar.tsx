@@ -1,21 +1,24 @@
-import { ClipboardList, UserCog, Users } from "lucide-react";
+import { Building2, ClipboardList, Inbox, UserCog, Users } from "lucide-react";
 
 import { signOutAction } from "@/app/onay-bekliyor/actions";
+import { countPendingBranchRequests } from "@/app/yonetim/talepler/data";
 import { SidebarBrand, SidebarNav, SidebarNavLink, SidebarSpacer, SidebarUserCard } from "@/components/shell/sidebar";
 import type { Profile } from "@/db/schema";
 import { initialsOf } from "@/lib/avatar-colors";
 
-export function AdminSidebar({
+export async function AdminSidebar({
   user,
   active,
   pendingCount,
   studentCount,
 }: {
   user: Profile;
-  active: "ogretmenler" | "ogrenciler" | "kayitlar" | null;
+  active: "ogretmenler" | "ogrenciler" | "kayitlar" | "kurumlar" | "talepler" | null;
   pendingCount: number;
   studentCount: number;
 }) {
+  const requestCount = await countPendingBranchRequests();
+
   return (
     <>
       <SidebarBrand subtitle="Yönetim paneli" />
@@ -41,6 +44,23 @@ export function AdminSidebar({
           badge={<span className="font-mono text-xs text-muted">{studentCount}</span>}
         >
           Öğrenciler
+        </SidebarNavLink>
+        <SidebarNavLink href="/yonetim/kurumlar" icon={Building2} active={active === "kurumlar"}>
+          Kurumlar ve dallar
+        </SidebarNavLink>
+        <SidebarNavLink
+          href="/yonetim/talepler"
+          icon={Inbox}
+          active={active === "talepler"}
+          badge={
+            requestCount > 0 ? (
+              <span className="rounded-[5px] bg-warn-soft px-1.5 py-0.5 font-mono text-[11px] font-medium text-warn-text">
+                {requestCount}
+              </span>
+            ) : undefined
+          }
+        >
+          Dal talepleri
         </SidebarNavLink>
         <SidebarNavLink href="/yonetim/kayitlar" icon={ClipboardList} active={active === "kayitlar"}>
           Etüt kayıtları

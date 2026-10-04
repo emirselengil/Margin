@@ -1,4 +1,4 @@
-import { CalendarDays, ListChecks } from "lucide-react";
+import { CalendarDays, ListChecks, Send } from "lucide-react";
 
 import { getLinkedHeadTeachers, getTodayPendingCount } from "@/app/etut/data";
 import { signOutAction } from "@/app/onay-bekliyor/actions";
@@ -8,7 +8,7 @@ import type { Profile } from "@/db/schema";
 import { todayISODate } from "@/lib/date";
 import { initialsOf } from "@/lib/avatar-colors";
 
-export async function AssistantSidebar({ user, active }: { user: Profile; active: "etut" | "gruplar" | null }) {
+export async function AssistantSidebar({ user, active }: { user: Profile; active: "etut" | "gruplar" | "talepler" | null }) {
   const [headTeachers, pendingCount] = await Promise.all([
     getLinkedHeadTeachers(user),
     getTodayPendingCount(user, todayISODate()),
@@ -34,6 +34,9 @@ export async function AssistantSidebar({ user, active }: { user: Profile; active
         </SidebarNavLink>
         <SidebarNavLink href="/gruplar" icon={CalendarDays} active={active === "gruplar"}>
           Gün grupları
+        </SidebarNavLink>
+        <SidebarNavLink href="/taleplerim" icon={Send} active={active === "talepler"}>
+          Dal talepleri
         </SidebarNavLink>
       </SidebarNav>
 

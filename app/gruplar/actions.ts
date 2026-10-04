@@ -69,21 +69,32 @@ export async function updateStudentInfoAction(
   if (!user || !(await canEditStudentInfo(user, studentId))) {
     throw new PermissionError("Bu öğrencinin bilgilerini düzenleme yetkiniz yok.");
   }
-  if (!(await canAddStudentForHeadTeacher(user, patch.headTeacherId))) {
-    throw new PermissionError("Öğrenciyi bu öğretmene atama yetkiniz yok.");
-  }
-  const [target] = await db
-    .select({ role: profiles.role })
-    .from(profiles)
-    .where(eq(profiles.id, patch.headTeacherId))
+  const [current] = await db
+    .select({ headTeacherId: students.headTeacherId })
+    .from(students)
+    .where(eq(students.id, studentId))
     .limit(1);
-  if (target?.role !== "head_teacher") {
-    throw new PermissionError("Seçilen kişi bir öğretmen değil.");
+  const teacherChanged = !!current && current.headTeacherId !== patch.headTeacherId;
+
+  // Öğretmen değişiyorsa yeni öğretmen "görebildiği" biri olmalı (kurum/seviye/dal kuralı);
+  // yalnızca ad/sınıf düzenleniyorsa bu şart aranmaz.
+  if (teacherChanged) {
+    if (!(await canAddStudentForHeadTeacher(user, patch.headTeacherId))) {
+      throw new PermissionError("Öğrenciyi bu öğretmene atama yetkiniz yok.");
+    }
+    const [target] = await db
+      .select({ role: profiles.role })
+      .from(profiles)
+      .where(eq(profiles.id, patch.headTeacherId))
+      .limit(1);
+    if (target?.role !== "head_teacher") {
+      throw new PermissionError("Seçilen kişi bir öğretmen değil.");
+    }
   }
 
   await db.update(students).set(patch).where(eq(students.id, studentId));
 
-  if (user.role === "assistant") {
+  if (teacherChanged && user.role === "assistant") {
     await db
       .insert(assistantHeadTeachers)
       .values({ assistantId: user.id, headTeacherId: patch.headTeacherId })

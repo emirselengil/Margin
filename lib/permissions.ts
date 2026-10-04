@@ -1,9 +1,17 @@
-import { and, eq, inArray, ne } from "drizzle-orm";
+import { and, eq, inArray, isNull, ne } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
 import { db as defaultDb } from "@/db/client";
 import * as schema from "@/db/schema";
-import { assistantHeadTeachers, profiles, studentStudyDays, students } from "@/db/schema";
+import {
+  assistantHeadTeachers,
+  branchAccessRequests,
+  branches,
+  profiles,
+  studentStudyDays,
+  students,
+  teacherInstitutions,
+} from "@/db/schema";
 import { weekdayOfISODate } from "@/lib/date";
 import type { Role } from "@/lib/roles";
 
@@ -143,21 +151,153 @@ export async function isStudentScheduledOn(
 }
 
 /**
- * `headTeacherId`'ye bağlı yeni bir öğrenci ekleyebilir mi?
+ * Kullanıcının görebileceği / seçebileceği baş öğretmenler (öğretmen
+ * listeleri ve seçim kutuları için; öğrencilerin görünürlüğünü etkilemez).
+ *
+ * - admin: tüm aktif baş öğretmenler
+ * - assistant: bir baş öğretmen ancak şu koşulların HEPSİ doğruysa görünür:
+ *   1. asistanın ve öğretmenin dalı vardır ve SEVİYELERİ aynıdır
+ *      (lise öğretmeni ortaokul öğretmenini göremez; talep bunu aşamaz),
+ *   2. en az bir ortak kurumları vardır,
+ *   3. dalları aynıdır VEYA asistan, öğretmenin dalı için o ortak kurumda
+ *      yönetici tarafından ONAYLANMIŞ bir erişim talebine sahiptir.
+ * - diğerleri: hiçbiri
+ */
+export async function visibleHeadTeacherIds(
+  user: CurrentUser | null,
+  database: Database = defaultDb,
+): Promise<string[]> {
+  if (!user || !user.isActive) return [];
+
+  const activeHeadTeachers = and(
+    eq(profiles.role, "head_teacher"),
+    eq(profiles.isActive, true),
+    isNull(profiles.deletedAt),
+  );
+
+  if (user.role === "admin") {
+    const rows = await database.select({ id: profiles.id }).from(profiles).where(activeHeadTeachers);
+    return rows.map((r) => r.id);
+  }
+  if (user.role !== "assistant") return [];
+
+  const [me] = await database
+    .select({ branchId: profiles.branchId, level: branches.level })
+    .from(profiles)
+    .innerJoin(branches, eq(branches.id, profiles.branchId))
+    .where(eq(profiles.id, user.id))
+    .limit(1);
+  if (!me?.branchId) return [];
+
+  const myInstitutions = (
+    await database
+      .select({ institutionId: teacherInstitutions.institutionId })
+      .from(teacherInstitutions)
+      .where(eq(teacherInstitutions.teacherId, user.id))
+  ).map((r) => r.institutionId);
+  if (myInstitutions.length === 0) return [];
+
+  const candidates = await database
+    .select({ id: profiles.id, branchId: profiles.branchId })
+    .from(profiles)
+    .innerJoin(branches, eq(branches.id, profiles.branchId))
+    .where(and(activeHeadTeachers, eq(branches.level, me.level)));
+  if (candidates.length === 0) return [];
+
+  const shared = await database
+    .select({ teacherId: teacherInstitutions.teacherId, institutionId: teacherInstitutions.institutionId })
+    .from(teacherInstitutions)
+    .where(
+      and(
+        inArray(
+          teacherInstitutions.teacherId,
+          candidates.map((c) => c.id),
+        ),
+        inArray(teacherInstitutions.institutionId, myInstitutions),
+      ),
+    );
+  const sharedByTeacher = new Map<string, Set<string>>();
+  for (const row of shared) {
+    const set = sharedByTeacher.get(row.teacherId) ?? new Set<string>();
+    set.add(row.institutionId);
+    sharedByTeacher.set(row.teacherId, set);
+  }
+
+  const approved = await database
+    .select({ institutionId: branchAccessRequests.institutionId, branchId: branchAccessRequests.branchId })
+    .from(branchAccessRequests)
+    .where(and(eq(branchAccessRequests.assistantId, user.id), eq(branchAccessRequests.status, "approved")));
+
+  return candidates
+    .filter((c) => {
+      const common = sharedByTeacher.get(c.id);
+      if (!common || common.size === 0) return false;
+      if (c.branchId === me.branchId) return true;
+      return approved.some((a) => a.branchId === c.branchId && common.has(a.institutionId));
+    })
+    .map((c) => c.id);
+}
+
+/**
+ * Asistan, kendi kurumundaki farklı bir dal için erişim talebi açabilir mi?
+ * Kurallar: aktif asistan; dalı vardır; kurum kendisinin kurumlarından biri;
+ * hedef dal kendi seviyesinde ve kendi dalından farklı. Uymazsa Türkçe hata.
+ */
+export async function assertCanRequestBranchAccess(
+  user: CurrentUser | null,
+  institutionId: string,
+  branchId: string,
+  database: Database = defaultDb,
+): Promise<void> {
+  if (!user || !user.isActive || user.role !== "assistant") {
+    throw new PermissionError("Dal erişim talebini yalnızca asistan öğretmenler açabilir.");
+  }
+  const [me] = await database
+    .select({ branchId: profiles.branchId, level: branches.level })
+    .from(profiles)
+    .innerJoin(branches, eq(branches.id, profiles.branchId))
+    .where(eq(profiles.id, user.id))
+    .limit(1);
+  if (!me?.branchId) {
+    throw new PermissionError("Talep açabilmek için yöneticinin size bir dal atamış olması gerekir.");
+  }
+  const [membership] = await database
+    .select({ institutionId: teacherInstitutions.institutionId })
+    .from(teacherInstitutions)
+    .where(and(eq(teacherInstitutions.teacherId, user.id), eq(teacherInstitutions.institutionId, institutionId)))
+    .limit(1);
+  if (!membership) {
+    throw new PermissionError("Yalnızca kendi kurumlarınız için talep açabilirsiniz.");
+  }
+  const [target] = await database.select().from(branches).where(eq(branches.id, branchId)).limit(1);
+  if (!target) throw new PermissionError("Dal bulunamadı.");
+  if (target.level !== me.level) {
+    throw new PermissionError("Yalnızca kendi seviyenizdeki dallar için talep açabilirsiniz.");
+  }
+  if (target.id === me.branchId) {
+    throw new PermissionError("Bu zaten sizin dalınız.");
+  }
+}
+
+/**
+ * `headTeacherId`'ye bağlı yeni bir öğrenci ekleyebilir / öğrenciyi ona atayabilir mi?
  * - admin: her zaman
  * - head_teacher: yalnızca kendi altına (kendi id'si verilmişse)
- * - assistant: herhangi bir baş öğretmene — yeni öğrenci eklemek, henüz
- *   bağlı olmadığı bir baş öğretmenle ilk ilişkiyi kurmanın yolu olabilir,
- *   bu yüzden bu tek işlemde bağlı olma şartı aranmaz (yalnızca head_teacher
- *   rolündeki aktif bir kullanıcıya atanabilir; bunu veritabanı FK'si zaten
- *   garanti eder)
+ * - assistant: yalnızca GÖREBİLDİĞİ baş öğretmenlere (`visibleHeadTeacherIds`:
+ *   aynı kurum, aynı seviye, aynı dal ya da onaylı dal talebi). Öğrenci eklemek,
+ *   henüz bağlı olmadığı bir baş öğretmenle ilk ilişkiyi kurmanın yolu olabilir
+ *   (bkz. addStudentAction), bu yüzden mevcut asistan bağı aranmaz.
  */
 export async function canAddStudentForHeadTeacher(
   user: CurrentUser | null,
   headTeacherId: string,
+  database: Database = defaultDb,
 ): Promise<boolean> {
   if (!user || !user.isActive) return false;
-  if (user.role === "admin" || user.role === "assistant") return true;
+  if (user.role === "admin") return true;
+  if (user.role === "assistant") {
+    return (await visibleHeadTeacherIds(user, database)).includes(headTeacherId);
+  }
   if (user.role === "head_teacher") return user.id === headTeacherId;
   return false;
 }

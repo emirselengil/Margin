@@ -1,9 +1,20 @@
+import { eq } from "drizzle-orm";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { createTestDb, type TestDb } from "@/db/test-utils";
-import { assistantHeadTeachers, profiles, studentStudyDays, students } from "@/db/schema";
+import {
+  assistantHeadTeachers,
+  branchAccessRequests,
+  branches,
+  institutions,
+  profiles,
+  studentStudyDays,
+  students,
+  teacherInstitutions,
+} from "@/db/schema";
 import { weekdayOfISODate } from "@/lib/date";
 import {
+  assertCanRequestBranchAccess,
   assertKeepsOneActiveAdmin,
   assertNotSelfDelete,
   assertNotSelfRoleDemotion,
@@ -15,6 +26,7 @@ import {
   isStudentScheduledOn,
   PermissionError,
   requireRole,
+  visibleHeadTeacherIds,
   visibleStudentIds,
   type CurrentUser,
 } from "@/lib/permissions";
@@ -75,7 +87,11 @@ beforeEach(async () => {
   await db.delete(studentStudyDays);
   await db.delete(students);
   await db.delete(assistantHeadTeachers);
+  await db.delete(branchAccessRequests);
+  await db.delete(teacherInstitutions);
   await db.delete(profiles);
+  await db.delete(branches);
+  await db.delete(institutions);
 });
 
 describe("requireRole", () => {
@@ -283,10 +299,14 @@ describe("canAddStudentForHeadTeacher", () => {
     expect(await canAddStudentForHeadTeacher(user(HEAD_A, "head_teacher"), HEAD_B)).toBe(false);
   });
 
-  it("asistan, bağlı olmasa bile herhangi bir baş öğretmene öğrenci ekleyebilir (ilk bağlantıyı kurmanın yolu)", async () => {
-    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_A, "assistant"), HEAD_A)).toBe(true);
-    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_A, "assistant"), HEAD_B)).toBe(true);
-    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_NONE, "assistant"), HEAD_A)).toBe(true);
+  it("asistan yalnızca görebildiği (aynı kurum + seviye + dal) baş öğretmene öğrenci ekleyebilir", async () => {
+    const org = await seedOrg(db);
+    const a = user(ASSISTANT_OF_A, "assistant");
+    expect(await canAddStudentForHeadTeacher(a, HEAD_A, db)).toBe(true); // aynı dal, ortak kurum
+    expect(await canAddStudentForHeadTeacher(a, HEAD_B, db)).toBe(false); // ortak kurum yok
+    expect(await canAddStudentForHeadTeacher(a, HEAD_C, db)).toBe(false); // farklı dal, onay yok
+    expect(await canAddStudentForHeadTeacher(a, org.headD, db)).toBe(false); // farklı seviye
+    expect(await canAddStudentForHeadTeacher(user(ASSISTANT_OF_NONE, "assistant"), HEAD_A, db)).toBe(false);
   });
 
   it("pending kullanıcı öğrenci ekleyemez", async () => {
@@ -315,5 +335,153 @@ describe("isStudentScheduledOn", () => {
   it("hiç etüt günü atanmamış öğrenci için her zaman reddeder", async () => {
     const { studentOfA } = await seedBaseFixture(db);
     expect(await isStudentScheduledOn(studentOfA, "2026-10-05", db)).toBe(false);
+  });
+});
+
+// ---- Kurum / dal görünürlüğü ----
+
+const HEAD_C = "99999999-9999-9999-9999-999999999991"; // Türkçe · lise · Kurum A
+const HEAD_D = "99999999-9999-9999-9999-999999999992"; // Matematik · ortaokul · Kurum A
+const HEAD_E = "99999999-9999-9999-9999-999999999993"; // Matematik · lise · "Kurum A" (AYNI ADLI, farklı kurum)
+const HEAD_F = "99999999-9999-9999-9999-999999999994"; // Matematik · lise · Kurum A ama pasif
+
+async function seedOrg(database: TestDb) {
+  await seedBaseFixture(database);
+  const [kurumA] = await database.insert(institutions).values({ name: "Kurum A" }).returning({ id: institutions.id });
+  const [kurumB] = await database.insert(institutions).values({ name: "Kurum B" }).returning({ id: institutions.id });
+  const [kurumA2] = await database.insert(institutions).values({ name: "Kurum A" }).returning({ id: institutions.id });
+  const [matLise] = await database.insert(branches).values({ name: "Matematik", level: "lise" }).returning({ id: branches.id });
+  const [trkLise] = await database.insert(branches).values({ name: "Türkçe", level: "lise" }).returning({ id: branches.id });
+  const [matOrta] = await database.insert(branches).values({ name: "Matematik", level: "ortaokul" }).returning({ id: branches.id });
+
+  await database.insert(profiles).values([
+    { id: HEAD_C, firstName: "Baş C", lastName: "Öğretmen", email: "head-c@test.local", role: "head_teacher", isActive: true },
+    { id: HEAD_D, firstName: "Baş D", lastName: "Öğretmen", email: "head-d@test.local", role: "head_teacher", isActive: true },
+    { id: HEAD_E, firstName: "Baş E", lastName: "Öğretmen", email: "head-e@test.local", role: "head_teacher", isActive: true },
+    { id: HEAD_F, firstName: "Baş F", lastName: "Öğretmen", email: "head-f@test.local", role: "head_teacher", isActive: false },
+  ]);
+  const setBranch = (id: string, branchId: string) =>
+    database.update(profiles).set({ branchId }).where(eq(profiles.id, id));
+  await setBranch(ASSISTANT_OF_A, matLise.id);
+  await setBranch(HEAD_A, matLise.id);
+  await setBranch(HEAD_B, matLise.id);
+  await setBranch(HEAD_C, trkLise.id);
+  await setBranch(HEAD_D, matOrta.id);
+  await setBranch(HEAD_E, matLise.id);
+  await setBranch(HEAD_F, matLise.id);
+
+  await database.insert(teacherInstitutions).values([
+    { teacherId: ASSISTANT_OF_A, institutionId: kurumA.id },
+    { teacherId: ASSISTANT_OF_NONE, institutionId: kurumA.id }, // kurumu var ama dalı yok
+    { teacherId: HEAD_A, institutionId: kurumA.id },
+    { teacherId: HEAD_B, institutionId: kurumB.id }, // ortak kurum yok
+    { teacherId: HEAD_C, institutionId: kurumA.id },
+    { teacherId: HEAD_D, institutionId: kurumA.id },
+    { teacherId: HEAD_E, institutionId: kurumA2.id }, // adı "Kurum A" ama başka kurum
+    { teacherId: HEAD_F, institutionId: kurumA.id },
+  ]);
+  return {
+    kurumA: kurumA.id,
+    kurumB: kurumB.id,
+    kurumA2: kurumA2.id,
+    matLise: matLise.id,
+    trkLise: trkLise.id,
+    matOrta: matOrta.id,
+    headD: HEAD_D,
+  };
+}
+
+describe("visibleHeadTeacherIds", () => {
+  it("asistan aynı kurum + aynı seviye + aynı daldaki öğretmeni görür, başkalarını görmez", async () => {
+    await seedOrg(db);
+    const ids = await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db);
+    expect(ids).toEqual([HEAD_A]);
+    // HEAD_B: ortak kurum yok · HEAD_C: farklı dal · HEAD_D: farklı seviye
+    // HEAD_E: adı aynı ama farklı kurum (id'ye göre) · HEAD_F: pasif
+  });
+
+  it("aynı adlı iki kurum birbirinden id ile ayrılır", async () => {
+    const org = await seedOrg(db);
+    expect(org.kurumA).not.toBe(org.kurumA2);
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).not.toContain(HEAD_E);
+  });
+
+  it("onaylı talep, o kurumdaki farklı daldaki öğretmeni görünür yapar", async () => {
+    const org = await seedOrg(db);
+    await db.insert(branchAccessRequests).values({
+      assistantId: ASSISTANT_OF_A,
+      institutionId: org.kurumA,
+      branchId: org.trkLise,
+      status: "approved",
+    });
+    const ids = await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db);
+    expect(ids.sort()).toEqual([HEAD_A, HEAD_C].sort());
+  });
+
+  it("bekleyen veya reddedilen talep hiçbir şey açmaz", async () => {
+    const org = await seedOrg(db);
+    await db
+      .insert(branchAccessRequests)
+      .values({ assistantId: ASSISTANT_OF_A, institutionId: org.kurumA, branchId: org.trkLise, status: "pending" });
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).toEqual([HEAD_A]);
+    await db.update(branchAccessRequests).set({ status: "rejected" });
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).toEqual([HEAD_A]);
+  });
+
+  it("onaylı talep başka bir kurum içinse öğretmeni açmaz", async () => {
+    const org = await seedOrg(db);
+    await db
+      .insert(branchAccessRequests)
+      .values({ assistantId: ASSISTANT_OF_A, institutionId: org.kurumB, branchId: org.trkLise, status: "approved" });
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).toEqual([HEAD_A]);
+  });
+
+  it("seviye kuralı talebi de aşamaz: onaylı kayıt olsa bile ortaokul öğretmeni görünmez", async () => {
+    const org = await seedOrg(db);
+    await db
+      .insert(branchAccessRequests)
+      .values({ assistantId: ASSISTANT_OF_A, institutionId: org.kurumA, branchId: org.matOrta, status: "approved" });
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_A, "assistant"), db)).not.toContain(HEAD_D);
+  });
+
+  it("dalı veya kurumu olmayan asistan hiçbir öğretmeni görmez", async () => {
+    await seedOrg(db);
+    expect(await visibleHeadTeacherIds(user(ASSISTANT_OF_NONE, "assistant"), db)).toEqual([]);
+  });
+
+  it("yönetici tüm aktif baş öğretmenleri görür; baş öğretmen, pending ve oturumsuz hiçbirini", async () => {
+    await seedOrg(db);
+    const admin = (await visibleHeadTeacherIds(user(ADMIN, "admin"), db)).sort();
+    expect(admin).toEqual([HEAD_A, HEAD_B, HEAD_C, HEAD_D, HEAD_E].sort());
+    expect(await visibleHeadTeacherIds(user(HEAD_A, "head_teacher"), db)).toEqual([]);
+    expect(await visibleHeadTeacherIds(user(PENDING, "pending"), db)).toEqual([]);
+    expect(await visibleHeadTeacherIds(null, db)).toEqual([]);
+  });
+});
+
+describe("assertCanRequestBranchAccess", () => {
+  it("kendi kurumunda, kendi seviyesindeki farklı bir dal için talep açabilir", async () => {
+    const org = await seedOrg(db);
+    await expect(
+      assertCanRequestBranchAccess(user(ASSISTANT_OF_A, "assistant"), org.kurumA, org.trkLise, db),
+    ).resolves.toBeUndefined();
+  });
+
+  it("kendi kurumu olmayan, başka seviyedeki veya kendi dalı için talebi reddeder", async () => {
+    const org = await seedOrg(db);
+    const a = user(ASSISTANT_OF_A, "assistant");
+    await expect(assertCanRequestBranchAccess(a, org.kurumB, org.trkLise, db)).rejects.toThrow(PermissionError);
+    await expect(assertCanRequestBranchAccess(a, org.kurumA, org.matOrta, db)).rejects.toThrow(PermissionError);
+    await expect(assertCanRequestBranchAccess(a, org.kurumA, org.matLise, db)).rejects.toThrow(PermissionError);
+  });
+
+  it("asistan olmayanlar ve dalı olmayan asistan talep açamaz", async () => {
+    const org = await seedOrg(db);
+    await expect(
+      assertCanRequestBranchAccess(user(HEAD_A, "head_teacher"), org.kurumA, org.trkLise, db),
+    ).rejects.toThrow(PermissionError);
+    await expect(
+      assertCanRequestBranchAccess(user(ASSISTANT_OF_NONE, "assistant"), org.kurumA, org.trkLise, db),
+    ).rejects.toThrow(PermissionError);
   });
 });
