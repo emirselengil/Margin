@@ -61,7 +61,7 @@ export default async function EtutPage({
             <div className="font-mono text-xs font-medium tracking-[0.06em] text-accent-text uppercase">
               {formatLong(dateISO)}
             </div>
-            <h1 className="mt-1.5 text-[30px] font-semibold tracking-[-0.03em]">Bugünün etüdü</h1>
+            <h1 className="mt-1.5 text-[30px] font-semibold tracking-[-0.03em]">Bugünkü Etütler</h1>
           </div>
           <div className="flex items-center gap-1.5">
             <Link

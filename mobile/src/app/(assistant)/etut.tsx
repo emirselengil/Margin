@@ -79,7 +79,7 @@ export default function EtutScreen() {
 
   return (
     <Screen
-      title="Bugünün etüdü"
+      title="Bugünkü Etütler"
       crumb={`Etüt listesi › ${formatLong(dateISO).split(",")[0]}`}
       onRefresh={q.refresh}
       refreshing={q.refreshing}
