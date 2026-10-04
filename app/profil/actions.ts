@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/db/client";
 import { profiles } from "@/db/schema";
-import { auth } from "@/lib/auth/server";
+import { getRequestAuth } from "@/lib/auth/mobile";
 import { getOrCreateProfile } from "@/lib/profile";
 
 export type ProfileActionResult = { ok: boolean; message: string };
@@ -24,7 +24,7 @@ export async function updateNameAction(firstName: string, lastName: string): Pro
   const last = lastName.trim();
   if (!first || !last) return { ok: false, message: "Ad ve soyad gerekli." };
 
-  const { error } = await auth.updateUser({ name: `${first} ${last}` });
+  const { error } = await (await getRequestAuth()).updateUser({ name: `${first} ${last}` });
   if (error) {
     console.error("updateUser başarısız:", error);
     return { ok: false, message: "İsim güncellenemedi, lütfen tekrar deneyin." };
@@ -48,7 +48,7 @@ export async function changePasswordAction(
   if (newPassword !== newPasswordConfirm) return { ok: false, message: "Yeni şifreler eşleşmiyor." };
   if (newPassword === currentPassword) return { ok: false, message: "Yeni şifre mevcut şifreden farklı olmalı." };
 
-  const { error } = await auth.changePassword({ currentPassword, newPassword });
+  const { error } = await (await getRequestAuth()).changePassword({ currentPassword, newPassword });
   if (error) {
     console.error("changePassword başarısız:", error);
     if (error.status === 400 || error.status === 401 || error.status === 403) {

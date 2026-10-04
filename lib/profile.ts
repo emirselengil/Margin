@@ -1,10 +1,16 @@
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 
 import { db } from "@/db/client";
 import { profiles, type Profile } from "@/db/schema";
 import { auth } from "@/lib/auth/server";
+import { userFromBearerToken } from "@/lib/auth/mobile";
 
 export async function getSessionUser() {
+  // Mobil uygulama: Authorization: Bearer <oturum belirteci>
+  const bearer = (await headers()).get("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
+  if (bearer) return userFromBearerToken(bearer);
+
   const { data } = await auth.getSession();
   return data?.user ?? null;
 }

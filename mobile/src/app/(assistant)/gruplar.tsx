@@ -1,0 +1,394 @@
+import { Check, Plus } from "lucide-react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import {
+  AppText,
+  Avatar,
+  Button,
+  Card,
+  ColorDot,
+  Empty,
+  ErrorState,
+  Field,
+  Loading,
+  Message,
+  OptionPicker,
+  Screen,
+  Sheet,
+  useRemote,
+} from "@/components/ui";
+import { api, ApiError } from "@/lib/api";
+import { WEEKDAY_LONG, WEEKDAY_SHORT } from "@/lib/date";
+import type { GroupStudent, GruplarResponse } from "@/lib/types";
+import { usePalette } from "@/theme";
+
+type StudentForm = { fullName: string; className: string; headTeacherId: string };
+
+export default function GruplarScreen() {
+  const p = usePalette();
+  const insets = useSafeAreaInsets();
+  const q = useRemote(() => api<GruplarResponse>("/gruplar"), []);
+
+  const [students, setStudents] = useState<GroupStudent[]>([]);
+  const [dirty, setDirty] = useState<Set<string>>(new Set());
+  const [filter, setFilter] = useState("all");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [sheet, setSheet] = useState<{ mode: "add" } | { mode: "edit"; id: string } | null>(null);
+
+  // Sunucudan gelen listeyi yerel düzenleme durumuna al (kaydedilmemiş değişiklik yokken).
+  // Render sırasında eşitleme deseni: efekt yerine, ekstra render turu olmadan.
+  const [syncedWith, setSyncedWith] = useState<GruplarResponse | null>(null);
+  if (q.data && q.data !== syncedWith && dirty.size === 0) {
+    setSyncedWith(q.data);
+    setStudents(q.data.students);
+  }
+
+  const allTeachers = q.data?.allHeadTeachers ?? [];
+  const filterTeachers = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of students) if (s.headTeacherName !== "—") map.set(s.headTeacherId, s.headTeacherName);
+    return Array.from(map, ([id, name]) => ({ id, name }));
+  }, [students]);
+  const shown = filter === "all" ? students : students.filter((s) => s.headTeacherId === filter);
+
+  function toggleDay(studentId: string, weekday: number) {
+    setStudents((prev) =>
+      prev.map((s) => {
+        if (s.id !== studentId) return s;
+        const has = s.days.includes(weekday);
+        return { ...s, days: has ? s.days.filter((d) => d !== weekday) : [...s.days, weekday].sort((a, b) => a - b) };
+      }),
+    );
+    setDirty((prev) => new Set(prev).add(studentId));
+  }
+
+  async function saveDays() {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await api("/gruplar/days", {
+        method: "PUT",
+        body: {
+          changes: Array.from(dirty).map((studentId) => ({
+            studentId,
+            weekdays: students.find((s) => s.id === studentId)?.days ?? [],
+          })),
+        },
+      });
+      // Kaydedilen hâl yerelde zaten güncel; eski sunucu verisiyle ezilmesin
+      setSyncedWith(q.data);
+      setDirty(new Set());
+    } catch (e) {
+      setSaveError(e instanceof ApiError ? e.message : "Kaydedilemedi, lütfen tekrar deneyin.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const editing = sheet?.mode === "edit" ? students.find((s) => s.id === sheet.id) : undefined;
+  const totals = [0, 0, 0, 0, 0, 0, 0];
+  for (const s of shown) for (const d of s.days) totals[d]++;
+
+  return (
+    <Screen
+      title="Gün grupları"
+      crumb="Haftalık plan"
+      onRefresh={q.refresh}
+      refreshing={q.refreshing}
+      right={
+        <Button
+          label="Öğrenci ekle"
+          small
+          variant="secondary"
+          onPress={() => setSheet({ mode: "add" })}
+          disabled={allTeachers.length === 0}
+          icon={<Plus size={15} color={p.ink} />}
+        />
+      }
+      footer={
+        dirty.size > 0 ? (
+          <View
+            style={{
+              padding: 12,
+              paddingBottom: Math.max(insets.bottom, 12) + 4,
+              backgroundColor: p.surface,
+              borderTopWidth: 1,
+              borderTopColor: p.line,
+              gap: 8,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: p.warnText }} />
+              <AppText size={12} weight="medium" tone="warn">
+                Kaydedilmemiş değişiklik
+              </AppText>
+            </View>
+            {saveError ? <Message ok={false} text={saveError} /> : null}
+            <Button label="Kaydet" onPress={saveDays} loading={saving} />
+          </View>
+        ) : null
+      }
+    >
+      <View style={{ gap: 6 }}>
+        <AppText mono weight="medium" size={12} tone="accent" style={{ textTransform: "uppercase", letterSpacing: 0.7 }}>
+          Haftalık plan
+        </AppText>
+        <AppText size={26} weight="semibold">
+          Kim hangi gün geliyor?
+        </AppText>
+        <AppText tone="ink2">Kutulara dokunarak etüt günlerini belirleyin. Etüt listesi her gün bu plana göre oluşur.</AppText>
+      </View>
+
+      {q.loading && !q.data ? <Loading /> : q.error && !q.data ? <ErrorState error={q.error} onRetry={q.reload} /> : null}
+
+      {q.data ? (
+        <>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+            <FilterChip label={`Tümü · ${students.length}`} active={filter === "all"} onPress={() => setFilter("all")} />
+            {filterTeachers.map((t) => (
+              <FilterChip
+                key={t.id}
+                label={`${t.name} · ${students.filter((s) => s.headTeacherId === t.id).length}`}
+                active={filter === t.id}
+                onPress={() => setFilter(t.id)}
+              />
+            ))}
+          </View>
+
+          <Card style={{ padding: 14, gap: 10 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+              <AppText weight="semibold" size={13}>
+                Günlük yoğunluk
+              </AppText>
+              <AppText size={13} tone="muted">
+                öğrenci sayısı
+              </AppText>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 6, height: 96 }}>
+              {WEEKDAY_SHORT.map((label, i) => (
+                <View key={label} style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
+                  <AppText mono weight="medium" size={12}>
+                    {totals[i]}
+                  </AppText>
+                  <View
+                    style={{
+                      width: "70%",
+                      maxWidth: 30,
+                      height: Math.max(4, totals[i] * 8),
+                      borderRadius: 5,
+                      backgroundColor: totals[i] ? p.accent : p.line,
+                    }}
+                  />
+                  <AppText mono weight="medium" size={10} tone="muted">
+                    {label}
+                  </AppText>
+                </View>
+              ))}
+            </View>
+          </Card>
+
+          {shown.length === 0 ? (
+            <Empty>Gösterilecek öğrenci yok.</Empty>
+          ) : (
+            shown.map((s) => (
+              <Card key={s.id} tone="surface" style={{ padding: 14, gap: 12 }}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`${s.fullName} bilgilerini düzenle`}
+                  onPress={() => setSheet({ mode: "edit", id: s.id })}
+                  style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 12, opacity: pressed ? 0.7 : 1 })}
+                >
+                  <Avatar name={s.fullName} colorId={s.headTeacherId} />
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <AppText weight="medium" size={15}>
+                      {s.fullName}
+                    </AppText>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                      <AppText mono size={12} tone="muted">
+                        {s.className}
+                      </AppText>
+                      <ColorDot colorId={s.headTeacherId} />
+                      <AppText size={12} tone="ink2" numberOfLines={1} style={{ flexShrink: 1 }}>
+                        {s.headTeacherName}
+                      </AppText>
+                    </View>
+                  </View>
+                  <AppText mono size={13} weight="medium">
+                    {s.days.length}
+                  </AppText>
+                </Pressable>
+                <View style={{ flexDirection: "row", gap: 5 }}>
+                  {WEEKDAY_SHORT.map((label, di) => {
+                    const on = s.days.includes(di);
+                    return (
+                      <Pressable
+                        key={di}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${s.fullName}, ${WEEKDAY_LONG[di]}`}
+                        accessibilityState={{ selected: on }}
+                        onPress={() => toggleDay(s.id, di)}
+                        style={({ pressed }) => ({
+                          flex: 1,
+                          height: 46,
+                          borderRadius: 10,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 1,
+                          backgroundColor: on ? p.accent : p.sunken,
+                          borderWidth: on ? 0 : 1,
+                          borderStyle: "dashed",
+                          borderColor: p.line2,
+                          opacity: pressed ? 0.75 : 1,
+                        })}
+                      >
+                        {on ? <Check size={14} strokeWidth={3} color="#FFFFFF" /> : null}
+                        <AppText mono weight="medium" size={10} style={{ color: on ? "#FFFFFF" : p.muted }}>
+                          {label}
+                        </AppText>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </Card>
+            ))
+          )}
+        </>
+      ) : null}
+
+      <StudentSheet
+        open={sheet !== null}
+        mode={sheet?.mode ?? "add"}
+        teachers={allTeachers}
+        initial={
+          editing
+            ? {
+                fullName: editing.fullName,
+                className: editing.className,
+                // Pasif/artık seçilemeyen öğretmen: yeniden seçtir
+                headTeacherId: allTeachers.some((t) => t.id === editing.headTeacherId) ? editing.headTeacherId : "",
+              }
+            : { fullName: "", className: "", headTeacherId: allTeachers[0]?.id ?? "" }
+        }
+        onClose={() => setSheet(null)}
+        onSubmit={async (data) => {
+          const teacher = allTeachers.find((t) => t.id === data.headTeacherId);
+          if (sheet?.mode === "edit") {
+            await api(`/gruplar/students/${sheet.id}`, { method: "PATCH", body: data });
+            setStudents((prev) =>
+              prev.map((s) =>
+                s.id === sheet.id
+                  ? { ...s, ...data, headTeacherName: teacher?.name ?? s.headTeacherName }
+                  : s,
+              ),
+            );
+          } else {
+            const { id } = await api<{ id: string }>("/gruplar/students", { method: "POST", body: data });
+            setStudents((prev) => [
+              ...prev,
+              { id, ...data, headTeacherName: teacher?.name ?? "", days: [] },
+            ]);
+            setFilter("all");
+          }
+          setSheet(null);
+        }}
+      />
+    </Screen>
+  );
+}
+
+function FilterChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  const p = usePalette();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      style={({ pressed }) => ({
+        minHeight: 38,
+        paddingHorizontal: 12,
+        borderRadius: 9,
+        borderWidth: 1,
+        borderColor: active ? p.line2 : p.line,
+        backgroundColor: active ? p.surface : pressed ? p.line : p.sunken,
+        justifyContent: "center",
+      })}
+    >
+      <AppText size={13} weight="medium" tone={active ? "ink" : "muted"}>
+        {label}
+      </AppText>
+    </Pressable>
+  );
+}
+
+function StudentSheet({
+  open,
+  mode,
+  teachers,
+  initial,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean;
+  mode: "add" | "edit";
+  teachers: { id: string; name: string }[];
+  initial: StudentForm;
+  onClose: () => void;
+  onSubmit: (data: StudentForm) => Promise<void>;
+}) {
+  const [form, setForm] = useState<StudentForm>(initial);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Pencere her açıldığında formu başlangıç değerleriyle doldur
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (open && !wasOpen.current) {
+      setForm(initial);
+      setError(null);
+    }
+    wasOpen.current = open;
+  }, [open, initial]);
+
+  async function submit() {
+    if (!form.fullName.trim() || !form.className.trim() || !form.headTeacherId) {
+      setError("Ad soyad, sınıf ve öğretmen gerekli.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await onSubmit({ ...form, fullName: form.fullName.trim(), className: form.className.trim() });
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Kaydedilemedi, lütfen tekrar deneyin.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Sheet open={open} title={mode === "add" ? "Öğrenci ekle" : "Öğrenciyi düzenle"} onClose={onClose}>
+      <Field label="Ad soyad" value={form.fullName} onChangeText={(v) => setForm({ ...form, fullName: v })} />
+      <Field
+        label="Sınıf"
+        value={form.className}
+        placeholder="örn. 7-B"
+        onChangeText={(v) => setForm({ ...form, className: v })}
+      />
+      <OptionPicker
+        label="Öğretmen"
+        options={teachers}
+        value={form.headTeacherId}
+        placeholder="Öğretmen seçin"
+        onChange={(id) => setForm({ ...form, headTeacherId: id })}
+      />
+      {error ? <Message ok={false} text={error} /> : null}
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <Button label="Vazgeç" variant="secondary" onPress={onClose} style={{ flex: 1 }} />
+        <Button label={mode === "add" ? "Ekle" : "Kaydet"} onPress={submit} loading={busy} style={{ flex: 1 }} />
+      </View>
+    </Sheet>
+  );
+}

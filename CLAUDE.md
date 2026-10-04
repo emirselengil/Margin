@@ -212,6 +212,16 @@ Girişten sonra yönlendirme rol'e göre yapılır:
 - Gizli bilgileri (bağlantı adresi, anahtarlar) koda veya commit'e yazma.
 - Emin olmadığın bir iş kuralında tahmin yürütme, bana sor.
 
+## Mobil uygulama (`mobile/`)
+
+Expo (React Native) ile Android uygulaması; web ile aynı sunucuyu ve aynı yetki kurallarını kullanır, ayrı bir veritabanı/iş mantığı yoktur.
+
+- Sunucu tarafı: `app/api/mobile/**` ince Route Handler'lardır; yetkiler yine `lib/permissions.ts` ve mevcut sunucu eylemlerinde uygulanır. Kimlik, `Authorization: Bearer <oturum belirteci>` ile gelir (`lib/auth/mobile.ts`, `lib/profile.ts`); web çerezle çalışmaya devam eder.
+- Mobil kodu `mobile/src` altında (Expo Router). Tasarım jetonları `mobile/src/theme.ts` ve tarih kuralları `mobile/src/lib/date.ts` içinde web'dekinin kopyasıdır; web'de renk/tarih kuralı değişirse buraya da yansıt.
+- Sunucu adresi `mobile/.env.local` içinde `EXPO_PUBLIC_API_URL` (örnek: `mobile/.env.example`).
+- Şu an kapsam: asistan ve baş öğretmen rolleri + profil. Yönetici paneli yalnızca web'de.
+- Windows'ta kullanıcı adında boşluk varsa yerel Android derlemesi NDK kısa-yol (8.3) yüzünden bağlama hatası verir; SDK'ya boşluksuz bir junction (`C:sdk`) ile derleyin ve `ANDROID_HOME`/`sdk.dir` olarak onu verin.
+
 ## Komutlar
 
 ```

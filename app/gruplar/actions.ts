@@ -31,6 +31,11 @@ export async function addStudentAction(
     throw new PermissionError("Bu baş öğretmen için öğrenci ekleme yetkiniz yok.");
   }
 
+  const [target] = await db.select({ role: profiles.role }).from(profiles).where(eq(profiles.id, headTeacherId)).limit(1);
+  if (target?.role !== "head_teacher") {
+    throw new PermissionError("Seçilen kişi bir öğretmen değil.");
+  }
+
   const [created] = await db
     .insert(students)
     .values({ fullName, className, headTeacherId, isActive: true })
