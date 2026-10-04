@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -423,21 +422,25 @@ export function Screen({
           {right}
         </View>
       </View>
-      {scroll ? (
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 16 }}
-          keyboardShouldPersistTaps="handled"
-          refreshControl={
-            onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={p.accent} /> : undefined
-          }
-        >
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={{ flex: 1 }}>{children}</View>
-      )}
-      {footer}
+      {/* Klavye açılınca içerik (ve alttaki çubuk) klavyenin üstünde kalır */}
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        {scroll ? (
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 16 }}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            refreshControl={
+              onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={p.accent} /> : undefined
+            }
+          >
+            {children}
+          </ScrollView>
+        ) : (
+          <View style={{ flex: 1 }}>{children}</View>
+        )}
+        {footer}
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -561,7 +564,7 @@ export function Sheet({
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={open} animationType="slide" transparent onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Kapat">
           <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(0,0,0,0.45)" }]} />
         </Pressable>
