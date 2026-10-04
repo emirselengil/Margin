@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Tasarım referansları yerelde kalır, GitHub'a gönderilmez
+/tasarim/
