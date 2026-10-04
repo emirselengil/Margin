@@ -1,6 +1,6 @@
-import { Check, Plus } from "lucide-react-native";
+import { Check, Plus, Search } from "lucide-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -22,7 +22,7 @@ import {
 import { api, ApiError } from "@/lib/api";
 import { WEEKDAY_LONG, WEEKDAY_SHORT } from "@/lib/date";
 import type { GroupStudent, GruplarResponse } from "@/lib/types";
-import { usePalette } from "@/theme";
+import { fonts, usePalette } from "@/theme";
 
 type StudentForm = { fullName: string; className: string; headTeacherId: string };
 
@@ -34,6 +34,8 @@ export default function GruplarScreen() {
   const [students, setStudents] = useState<GroupStudent[]>([]);
   const [dirty, setDirty] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState("all");
+  const [view, setView] = useState<"days" | "grid">("days");
+  const [query, setQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [sheet, setSheet] = useState<{ mode: "add" } | { mode: "edit"; id: string } | null>(null);
@@ -52,7 +54,13 @@ export default function GruplarScreen() {
     for (const s of students) if (s.headTeacherName !== "—") map.set(s.headTeacherId, s.headTeacherName);
     return Array.from(map, ([id, name]) => ({ id, name }));
   }, [students]);
-  const shown = filter === "all" ? students : students.filter((s) => s.headTeacherId === filter);
+  const byTeacher = filter === "all" ? students : students.filter((s) => s.headTeacherId === filter);
+  const needle = query.trim().toLocaleLowerCase("tr");
+  const shown = needle ? byTeacher.filter((s) => s.fullName.toLocaleLowerCase("tr").includes(needle)) : byTeacher;
+  const dayGroups = [
+    ...WEEKDAY_LONG.map((title, i) => ({ key: String(i), title, list: shown.filter((s) => s.days.includes(i)) })),
+    { key: "none", title: "Gün atanmamış", list: shown.filter((s) => s.days.length === 0) },
+  ].filter((g) => g.list.length > 0);
 
   function toggleDay(studentId: string, weekday: number) {
     setStudents((prev) =>
@@ -90,7 +98,10 @@ export default function GruplarScreen() {
 
   const editing = sheet?.mode === "edit" ? students.find((s) => s.id === sheet.id) : undefined;
   const totals = [0, 0, 0, 0, 0, 0, 0];
-  for (const s of shown) for (const d of s.days) totals[d]++;
+  for (const s of byTeacher) for (const d of s.days) totals[d]++;
+  // Çubuklar en kalabalık güne göre oranlanır; öğrenci sayısı ne olursa olsun kutuya sığar.
+  const maxTotal = Math.max(1, ...totals);
+  const BAR_MAX = 56;
 
   return (
     <Screen
@@ -139,7 +150,7 @@ export default function GruplarScreen() {
         <AppText size={26} weight="semibold">
           Kim hangi gün geliyor?
         </AppText>
-        <AppText tone="ink2">Kutulara dokunarak etüt günlerini belirleyin. Etüt listesi her gün bu plana göre oluşur.</AppText>
+        <AppText tone="ink2">Öğrenciler işaretli günlere göre listelenir. Günleri değiştirmek için “Plan tablosu”na geçip kutulara dokunun. Etüt listesi her gün bu plana göre oluşur.</AppText>
       </View>
 
       {q.loading && !q.data ? <Loading /> : q.error && !q.data ? <ErrorState error={q.error} onRetry={q.reload} /> : null}
@@ -167,7 +178,7 @@ export default function GruplarScreen() {
                 öğrenci sayısı
               </AppText>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 6, height: 96 }}>
+            <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 6, height: 104 }}>
               {WEEKDAY_SHORT.map((label, i) => (
                 <View key={label} style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
                   <AppText mono weight="medium" size={12}>
@@ -177,7 +188,7 @@ export default function GruplarScreen() {
                     style={{
                       width: "70%",
                       maxWidth: 30,
-                      height: Math.max(4, totals[i] * 8),
+                      height: Math.max(4, Math.round((totals[i] / maxTotal) * BAR_MAX)),
                       borderRadius: 5,
                       backgroundColor: totals[i] ? p.accent : p.line,
                     }}
@@ -190,8 +201,120 @@ export default function GruplarScreen() {
             </View>
           </Card>
 
+          <View style={{ flexDirection: "row", gap: 2, padding: 3, borderRadius: 10, borderWidth: 1, borderColor: p.line, backgroundColor: p.sunken }}>
+            {(
+              [
+                ["days", "Günlere göre"],
+                ["grid", "Plan tablosu"],
+              ] as const
+            ).map(([value, label]) => (
+              <Pressable
+                key={value}
+                accessibilityRole="button"
+                accessibilityState={{ selected: view === value }}
+                onPress={() => setView(value)}
+                style={({ pressed }) => ({
+                  flex: 1,
+                  minHeight: 40,
+                  borderRadius: 7,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: view === value ? p.surface : "transparent",
+                  borderWidth: view === value ? 1 : 0,
+                  borderColor: p.line,
+                  opacity: pressed ? 0.7 : 1,
+                })}
+              >
+                <AppText size={13} weight="medium" tone={view === value ? "ink" : "muted"}>
+                  {label}
+                </AppText>
+              </Pressable>
+            ))}
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              height: 44,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: p.line,
+              backgroundColor: p.sunken,
+              paddingHorizontal: 12,
+            }}
+          >
+            <Search size={16} color={p.muted} />
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="Öğrenci ara"
+              placeholderTextColor={p.muted}
+              aria-label="Öğrenci ara"
+              style={{ flex: 1, fontFamily: fonts.regular, fontSize: 14, color: p.ink }}
+            />
+          </View>
+
           {shown.length === 0 ? (
-            <Empty>Gösterilecek öğrenci yok.</Empty>
+            <Empty>{needle ? `“${query.trim()}” ile eşleşen öğrenci bulunamadı.` : "Gösterilecek öğrenci yok."}</Empty>
+          ) : view === "days" ? (
+            dayGroups.map((g) => (
+              <Card key={g.key} tone="surface" style={{ overflow: "hidden" }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: 14,
+                    backgroundColor: p.surface2,
+                    borderBottomWidth: 1,
+                    borderBottomColor: p.line,
+                  }}
+                >
+                  <AppText size={15} weight="semibold">
+                    {g.title}
+                  </AppText>
+                  <AppText mono size={13} tone="muted">{`${g.list.length} öğrenci`}</AppText>
+                </View>
+                {g.list.map((s, i) => (
+                  <Pressable
+                    key={s.id}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${s.fullName} bilgilerini düzenle`}
+                    onPress={() => setSheet({ mode: "edit", id: s.id })}
+                    style={({ pressed }) => ({
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: 12,
+                      borderTopWidth: i === 0 ? 0 : 1,
+                      borderTopColor: p.line,
+                      backgroundColor: pressed ? p.sunken : "transparent",
+                    })}
+                  >
+                    <Avatar name={s.fullName} colorId={s.headTeacherId} size={34} />
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <AppText weight="medium" size={15}>
+                        {s.fullName}
+                      </AppText>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                        <AppText mono size={12} tone="muted">
+                          {s.className}
+                        </AppText>
+                        <ColorDot colorId={s.headTeacherId} />
+                        <AppText size={12} tone="ink2" numberOfLines={1} style={{ flexShrink: 1 }}>
+                          {s.headTeacherName}
+                        </AppText>
+                      </View>
+                      <AppText mono size={11} tone="muted">
+                        {s.days.map((d) => WEEKDAY_SHORT[d]).join(" · ") || "—"}
+                      </AppText>
+                    </View>
+                  </Pressable>
+                ))}
+              </Card>
+            ))
           ) : (
             shown.map((s) => (
               <Card key={s.id} tone="surface" style={{ padding: 14, gap: 12 }}>

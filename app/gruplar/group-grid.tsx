@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Plus } from "lucide-react";
+import { Check, Plus, Search } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
 
 import { addStudentAction, saveStudyDaysAction, updateStudentInfoAction } from "@/app/gruplar/actions";
@@ -24,6 +24,8 @@ export function GroupGrid({
   const [students, setStudents] = useState(initialStudents);
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<string>("all");
+  const [view, setView] = useState<"days" | "grid">("days");
+  const [query, setQuery] = useState("");
   const [pending, startTransition] = useTransition();
   const [saveError, setSaveError] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -33,15 +35,33 @@ export function GroupGrid({
   const [editPending, setEditPending] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
-  const shown = useMemo(
+  const byTeacher = useMemo(
     () => (filter === "all" ? students : students.filter((s) => s.headTeacherId === filter)),
     [students, filter],
   );
 
+  const shown = useMemo(() => {
+    const q = query.trim().toLocaleLowerCase("tr");
+    return q ? byTeacher.filter((s) => s.fullName.toLocaleLowerCase("tr").includes(q)) : byTeacher;
+  }, [byTeacher, query]);
+
+  // Günlük yoğunluk grafiği aramadan etkilenmez; yalnızca öğretmen filtresine bakar.
   const totals = useMemo(() => {
     const counts = [0, 0, 0, 0, 0, 0, 0];
-    for (const s of shown) for (const d of s.days) counts[d]++;
+    for (const s of byTeacher) for (const d of s.days) counts[d]++;
     return counts;
+  }, [byTeacher]);
+  // Çubuklar en kalabalık güne göre oranlanır; öğrenci sayısı artınca kart büyümez.
+  const maxTotal = Math.max(1, ...totals);
+
+  const dayGroups = useMemo(() => {
+    const groups = WEEKDAY_LONG.map((title, i) => ({
+      key: String(i),
+      title,
+      list: shown.filter((s) => s.days.includes(i)),
+    }));
+    groups.push({ key: "none", title: "Gün atanmamış", list: shown.filter((s) => s.days.length === 0) });
+    return groups.filter((g) => g.list.length > 0);
   }, [shown]);
 
   function toggleDay(studentId: string, weekday: number) {
@@ -174,8 +194,8 @@ export function GroupGrid({
             </div>
             <h1 className="mt-1.5 text-[30px] font-semibold tracking-[-0.03em]">Kim hangi gün geliyor?</h1>
             <p className="mt-2 max-w-[460px] leading-relaxed text-ink-2">
-              Kutulara tıklayarak etüt günlerini belirleyin. Etüt listesi her gün bu plana göre
-              oluşur.
+              Öğrenciler işaretli günlere göre listelenir. Günleri değiştirmek için &ldquo;Plan
+              tablosu&rdquo;na geçip kutulara tıklayın. Etüt listesi her gün bu plana göre oluşur.
             </p>
             <div className="mt-4 inline-flex gap-0.5 rounded-[10px] border border-line bg-sunken p-[3px]">
               <button
@@ -221,7 +241,7 @@ export function GroupGrid({
                     className="w-full max-w-[34px] rounded-md"
                     style={{
                       background: totals[i] ? "var(--accent)" : "var(--line)",
-                      height: Math.max(4, totals[i] * 13),
+                      height: Math.max(4, Math.round((totals[i] / maxTotal) * 76)),
                     }}
                   />
                   <span className="font-mono text-[11px] font-medium text-muted">{label}</span>
@@ -231,9 +251,91 @@ export function GroupGrid({
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="inline-flex gap-0.5 rounded-[10px] border border-line bg-sunken p-[3px]" role="group" aria-label="Görünüm">
+            {(
+              [
+                ["days", "Günlere göre"],
+                ["grid", "Plan tablosu"],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={view === value}
+                onClick={() => setView(value)}
+                className={
+                  "h-[34px] cursor-pointer rounded-[7px] border-0 px-3 text-[13px] font-medium transition-colors " +
+                  (view === value
+                    ? "bg-surface text-ink shadow-[0_0_0_1px_var(--line)]"
+                    : "bg-transparent text-muted hover:text-ink active:bg-line")
+                }
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="relative">
+            <label htmlFor="gruplar-ara" className="sr-only">
+              Öğrenci ara
+            </label>
+            <Search
+              size={14}
+              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted"
+              aria-hidden="true"
+            />
+            <input
+              id="gruplar-ara"
+              type="search"
+              placeholder="Öğrenci ara"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="h-9 w-56 rounded-[9px] border border-line bg-sunken pl-8 pr-2.5 text-[13px] text-ink outline-none focus:border-accent"
+            />
+          </div>
+        </div>
+
         {shown.length === 0 ? (
           <div className="rounded-[14px] border border-line py-16 text-center text-ink-2">
-            Gösterilecek öğrenci yok.
+            {query.trim() ? `“${query.trim()}” ile eşleşen öğrenci bulunamadı.` : "Gösterilecek öğrenci yok."}
+          </div>
+        ) : view === "days" ? (
+          <div className="flex flex-col gap-4">
+            {dayGroups.map((g) => (
+              <section key={g.key} className="overflow-hidden rounded-[14px] border border-line">
+                <div className="flex items-center justify-between border-b border-line bg-surface-2 px-[18px] py-3">
+                  <h2 className="m-0 text-[15px] font-semibold">{g.title}</h2>
+                  <span className="font-mono text-[13px] text-muted">{g.list.length} öğrenci</span>
+                </div>
+                <ul className="m-0 list-none p-0">
+                  {g.list.map((s) => (
+                    <li key={s.id} className="border-t border-line first:border-t-0">
+                      <button
+                        type="button"
+                        onClick={() => setEditingId(s.id)}
+                        aria-label={`${s.fullName} bilgilerini düzenle`}
+                        className="flex w-full cursor-pointer flex-wrap items-center gap-x-4 gap-y-1 border-0 bg-transparent px-[18px] py-2.5 text-left text-ink transition-colors hover:bg-sunken active:bg-line"
+                      >
+                        <span className="flex min-w-[220px] flex-1 items-center gap-3">
+                          <Avatar name={s.fullName} colorId={s.headTeacherId} size={32} />
+                          <span className="flex flex-col">
+                            <span className="font-medium">{s.fullName}</span>
+                            <span className="font-mono text-xs text-muted">{s.className}</span>
+                          </span>
+                        </span>
+                        <span className="inline-flex min-w-[160px] items-center gap-2 text-ink-2">
+                          <ColorDot colorId={s.headTeacherId} />
+                          {s.headTeacherName}
+                        </span>
+                        <span className="min-w-[140px] font-mono text-xs text-muted">
+                          {s.days.map((d) => WEEKDAY_SHORT[d]).join(" · ") || "—"}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
           </div>
         ) : (
           <div className="overflow-hidden rounded-[14px] border border-line">
