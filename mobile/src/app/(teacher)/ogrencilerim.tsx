@@ -139,6 +139,16 @@ export default function OgrencilerimScreen() {
                             {s.latest.note}
                           </AppText>
                         ) : null}
+                        {s.latest.headTeacherNote ? (
+                          <View style={{ gap: 1 }}>
+                            <AppText size={12} weight="medium" tone="accent">
+                              Öğretmen notu
+                            </AppText>
+                            <AppText size={13} tone="ink2">
+                              {s.latest.headTeacherNote}
+                            </AppText>
+                          </View>
+                        ) : null}
                       </View>
                     ) : (
                       <AppText size={13} tone="muted">

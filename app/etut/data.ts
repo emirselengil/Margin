@@ -54,6 +54,7 @@ export type StudentForDay = {
   book: "brought" | "not_brought" | null;
   attendance: "came" | "absent" | null;
   note: string | null;
+  headTeacherNote: string | null;
 };
 
 /** Belirli bir tarihte (haftanın gününe göre) etüde gelecek, görünür öğrenciler. */
@@ -94,6 +95,7 @@ export async function getStudentsForDate(user: Profile, dateISO: string): Promis
         book: record?.book ?? null,
         attendance: record?.attendance ?? null,
         note: record?.note ?? null,
+        headTeacherNote: record?.headTeacherNote ?? null,
       };
     })
     .sort((a, b) => a.fullName.localeCompare(b.fullName, "tr"));

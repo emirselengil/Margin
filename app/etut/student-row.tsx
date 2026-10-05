@@ -91,6 +91,12 @@ export function StudentRow({ student, dateISO }: { student: StudentForDay; dateI
             + Not ekle
           </Link>
         )}
+        {student.headTeacherNote ? (
+          <div className="mt-1 text-xs">
+            <span className="font-medium text-accent-text">Öğretmen notu: </span>
+            <span className="text-ink-2">{student.headTeacherNote}</span>
+          </div>
+        ) : null}
       </td>
       <td className="px-[18px] py-2.5 text-right">
         <Link

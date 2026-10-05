@@ -222,6 +222,16 @@ export default function EtutScreen() {
                         + Not ekle
                       </AppText>
                     )}
+                    {s.headTeacherNote ? (
+                      <View style={{ marginTop: 4, gap: 1 }}>
+                        <AppText size={12} weight="medium" tone="accent">
+                          Öğretmen notu
+                        </AppText>
+                        <AppText size={13} tone="ink2">
+                          {s.headTeacherNote}
+                        </AppText>
+                      </View>
+                    ) : null}
                   </Pressable>
                 </Card>
               ))
