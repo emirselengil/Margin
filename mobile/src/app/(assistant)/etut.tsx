@@ -99,7 +99,7 @@ export default function EtutScreen() {
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
             <StatTile label="Kayıt girildi" value={done} total={students.length} ring={{ done, total: students.length }} />
             <StatTile label="Etüde gelecek" value={students.length} hint={`${teacherCount} öğretmen`} />
-            <StatTile label="Ödev eksik" value={odevEksik} hint="öğrenci" tone="warn" />
+            <StatTile label="Ödev eksik veya yapılmadı" value={odevEksik} hint="öğrenci" tone="warn" />
             <StatTile label="Kitap getirmedi" value={kitapYok} hint="öğrenci" tone="warn" />
           </View>
 

@@ -72,7 +72,7 @@ export default function EtutlerScreen() {
               tone="accent"
             />
             <StatTile
-              label="Ödev eksik"
+              label="Ödev eksik veya yapılmadı"
               value={eksik.length}
               hint={eksik.map((s) => s.fullName).join(", ") || "—"}
               tone="warn"
