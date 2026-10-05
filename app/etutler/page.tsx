@@ -151,9 +151,7 @@ export default async function EtutlerPage({
             <div className="mt-1.5 font-mono text-[26px] font-medium tracking-[-0.03em] text-warn-text">
               {eksik.length}
             </div>
-            <div className="mt-0.5 truncate text-xs text-warn-text">
-              {eksik.map((s) => s.fullName).join(", ") || "—"}
-            </div>
+            <div className="mt-0.5 text-xs text-warn-text">öğrenci</div>
           </div>
         </div>
 

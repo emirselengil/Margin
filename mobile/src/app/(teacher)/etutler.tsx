@@ -74,7 +74,7 @@ export default function EtutlerScreen() {
             <StatTile
               label="Ödev eksik veya yapılmadı"
               value={eksik.length}
-              hint={eksik.map((s) => s.fullName).join(", ") || "—"}
+              hint="öğrenci"
               tone="warn"
             />
           </View>
