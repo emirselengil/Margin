@@ -36,7 +36,7 @@ export const institutions = pgTable("institutions", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Dal = branş (ders alanı) + seviye. Bir öğretmenin tek dalı olur.
+// Branş = ders alanı + seviye (örn. Matematik · Lise). Bir öğretmenin tek branşı olur.
 export const branches = pgTable(
   "branches",
   {
@@ -65,13 +65,13 @@ export const profiles = pgTable("profiles", {
   // diye); is_active=false olur ve deletedAt damgalanır, hesap bir
   // daha asla aktifleştirilemez.
   deletedAt: timestamp("deleted_at", { withTimezone: true }),
-  // Öğretmenin dalı (branş + seviye); yalnızca yönetici atar.
+  // Öğretmenin branşı (ders alanı + seviye); yalnızca yönetici atar.
   branchId: uuid("branch_id").references(() => branches.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Kurum ↔ dal (çoka çok): hangi dallar hangi kurumda var; yalnızca yönetici atar.
-// Asistanlar bir kurumda yalnızca o kuruma atanmış dalları görebilir/talep edebilir.
+// Kurum ↔ branş (çoka çok): hangi branşlar hangi kurumda var; yalnızca yönetici atar.
+// Asistanlar bir kurumda yalnızca o kuruma atanmış branşları görebilir/talep edebilir.
 export const institutionBranches = pgTable(
   "institution_branches",
   {

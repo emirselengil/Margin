@@ -71,7 +71,7 @@ export function RequestsManager({ initialRequests }: { initialRequests: AdminReq
   return (
     <div className="flex flex-col gap-7 p-6">
       <div>
-        <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Dal talepleri</h1>
+        <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Branş talepleri</h1>
         <p className="mt-1.5 max-w-[640px] text-ink-2">
           Asistan öğretmenler, kendi kurumlarındaki farklı bir daldaki öğretmenleri görmek için talep açabilir.
           Onayladığınızda o asistan, o kurumdaki o daldaki öğretmenleri (kendi seviyesinde) görebilir. Seviyesi farklı

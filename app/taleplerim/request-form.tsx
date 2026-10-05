@@ -55,7 +55,7 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
       <section className="flex flex-col gap-3">
         <h2 className="m-0 text-base font-semibold">Yeni talep</h2>
         {!canRequest ? (
-          <p className="m-0 text-ink-2">Talep açabilmek için yöneticinin size bir dal ve en az bir kurum atamış olması gerekir.</p>
+          <p className="m-0 text-ink-2">Talep açabilmek için yöneticinin size bir branş ve en az bir kurum atamış olması gerekir.</p>
         ) : (
           <form
             className="flex flex-wrap items-end gap-3"
@@ -83,10 +83,10 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
             </div>
             <div className="flex min-w-[200px] flex-1 flex-col gap-1.5">
               <label htmlFor="talep-dal" className="text-[13px] font-medium">
-                Görmek istediğim dal
+                Görmek istediğim branş
               </label>
               <select id="talep-dal" value={branchId} onChange={(e) => setBranchId(e.target.value)} className={selectClass}>
-                <option value="">Dal seçin</option>
+                <option value="">Branş seçin</option>
                 {requestable.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name} · {LEVEL_LABELS[b.level as Level] ?? b.level}
@@ -105,7 +105,7 @@ export function RequestForm({ info }: { info: MyOrgInfo }) {
         )}
         {canRequest && requestable.length === 0 ? (
           <p className="m-0 text-[13px] text-muted">
-            Bu kurumda, kendi seviyenizde talep edebileceğiniz başka bir dal tanımlı değil.
+            Bu kurumda, kendi seviyenizde talep edebileceğiniz başka bir branş tanımlı değil.
           </p>
         ) : null}
         {message ? (

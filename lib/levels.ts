@@ -1,4 +1,4 @@
-/** Öğretmenin çalıştığı eğitim seviyesi. "Dal" = branş (ders alanı) + seviye. */
+/** Öğretmenin çalıştığı eğitim seviyesi. "Branş" = ders alanı + seviye. */
 export const LEVELS = ["ilkokul", "ortaokul", "lise"] as const;
 export type Level = (typeof LEVELS)[number];
 

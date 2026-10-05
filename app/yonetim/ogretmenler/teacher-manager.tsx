@@ -389,13 +389,13 @@ export function TeacherManager({
 
           {selected.role !== "admin" ? (
             <div className="flex flex-col gap-2.5">
-              <div className="text-[13px] font-semibold">Dal ve kurumlar</div>
+              <div className="text-[13px] font-semibold">Branş ve kurumlar</div>
               <div className="text-xs text-muted">
-                Dal (branş + seviye) tek olur; kurum birden fazla olabilir. Asistan, yalnızca aynı seviyedeki ve ortak
-                kurumdaki öğretmenleri görür (aynı dal ya da onaylı talep gerekir).
+                Branş (ders alanı + seviye) tek olur; kurum birden fazla olabilir. Asistan, yalnızca aynı seviyedeki ve ortak
+                kurumdaki öğretmenleri görür (aynı branş ya da onaylı talep gerekir).
               </div>
               <label htmlFor="t-dal" className="text-xs font-medium text-ink-2">
-                Dal
+                Branş
               </label>
               <select
                 id="t-dal"
@@ -404,7 +404,7 @@ export function TeacherManager({
                 onChange={(e) => changeBranch(e.target.value || null)}
                 className="h-[42px] rounded-[10px] border border-line-2 bg-surface px-2.5 text-sm font-medium text-ink"
               >
-                <option value="">Dal atanmamış</option>
+                <option value="">Branş atanmamış</option>
                 {branches.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name} · {LEVEL_LABELS[b.level as Level] ?? b.level}

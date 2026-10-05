@@ -157,10 +157,10 @@ export async function isStudentScheduledOn(
  *
  * - admin: tüm aktif baş öğretmenler
  * - assistant: bir baş öğretmen ancak şu koşulların HEPSİ doğruysa görünür:
- *   1. asistanın ve öğretmenin dalı vardır ve SEVİYELERİ aynıdır
+ *   1. asistanın ve öğretmenin branşı vardır ve SEVİYELERİ aynıdır
  *      (lise öğretmeni ortaokul öğretmenini göremez; talep bunu aşamaz),
  *   2. en az bir ortak kurumları vardır,
- *   3. dalları aynıdır VEYA asistan, öğretmenin dalı için o ortak kurumda
+ *   3. branşları aynıdır VEYA asistan, öğretmenin branşı için o ortak kurumda
  *      yönetici tarafından ONAYLANMIŞ bir erişim talebine sahiptir.
  * - diğerleri: hiçbiri
  */
@@ -229,7 +229,7 @@ export async function visibleHeadTeacherIds(
     .from(branchAccessRequests)
     .where(and(eq(branchAccessRequests.assistantId, user.id), eq(branchAccessRequests.status, "approved")));
 
-  // Onaylı talep, dal hâlâ o kuruma atanmışsa geçerlidir (yönetici dalı kurumdan çıkarırsa erişim de kalkar).
+  // Onaylı talep, branş hâlâ o kuruma atanmışsa geçerlidir (yönetici branşı kurumdan çıkarırsa erişim de kalkar).
   const assignedRows = await database
     .select({ institutionId: institutionBranches.institutionId, branchId: institutionBranches.branchId })
     .from(institutionBranches)
@@ -248,9 +248,9 @@ export async function visibleHeadTeacherIds(
 }
 
 /**
- * Asistan, kendi kurumundaki farklı bir dal için erişim talebi açabilir mi?
- * Kurallar: aktif asistan; dalı vardır; kurum kendisinin kurumlarından biri
- * (başka kurum adına talep açılamaz); hedef dal o kuruma atanmış, kendi
+ * Asistan, kendi kurumundaki farklı bir branş için erişim talebi açabilir mi?
+ * Kurallar: aktif asistan; branşı vardır; kurum kendisinin kurumlarından biri
+ * (başka kurum adına talep açılamaz); hedef branş o kuruma atanmış, kendi
  * seviyesinde ve kendi dalından farklı. Uymazsa Türkçe hata.
  */
 export async function assertCanRequestBranchAccess(
@@ -260,7 +260,7 @@ export async function assertCanRequestBranchAccess(
   database: Database = defaultDb,
 ): Promise<void> {
   if (!user || !user.isActive || user.role !== "assistant") {
-    throw new PermissionError("Dal erişim talebini yalnızca asistan öğretmenler açabilir.");
+    throw new PermissionError("Branş erişim talebini yalnızca asistan öğretmenler açabilir.");
   }
   const [me] = await database
     .select({ branchId: profiles.branchId, level: branches.level })
@@ -269,7 +269,7 @@ export async function assertCanRequestBranchAccess(
     .where(eq(profiles.id, user.id))
     .limit(1);
   if (!me?.branchId) {
-    throw new PermissionError("Talep açabilmek için yöneticinin size bir dal atamış olması gerekir.");
+    throw new PermissionError("Talep açabilmek için yöneticinin size bir branş atamış olması gerekir.");
   }
   const [membership] = await database
     .select({ institutionId: teacherInstitutions.institutionId })
@@ -280,9 +280,9 @@ export async function assertCanRequestBranchAccess(
     throw new PermissionError("Yalnızca kendi kurumlarınız için talep açabilirsiniz.");
   }
   const [target] = await database.select().from(branches).where(eq(branches.id, branchId)).limit(1);
-  if (!target) throw new PermissionError("Dal bulunamadı.");
+  if (!target) throw new PermissionError("Branş bulunamadı.");
   if (target.level !== me.level) {
-    throw new PermissionError("Yalnızca kendi seviyenizdeki dallar için talep açabilirsiniz.");
+    throw new PermissionError("Yalnızca kendi seviyenizdeki branşlar için talep açabilirsiniz.");
   }
   if (target.id === me.branchId) {
     throw new PermissionError("Bu zaten sizin dalınız.");
@@ -293,7 +293,7 @@ export async function assertCanRequestBranchAccess(
     .where(and(eq(institutionBranches.institutionId, institutionId), eq(institutionBranches.branchId, branchId)))
     .limit(1);
   if (!offered) {
-    throw new PermissionError("Bu dal seçtiğiniz kurumda tanımlı değil.");
+    throw new PermissionError("Bu branş seçtiğiniz kurumda tanımlı değil.");
   }
 }
 
@@ -302,7 +302,7 @@ export async function assertCanRequestBranchAccess(
  * - admin: her zaman
  * - head_teacher: yalnızca kendi altına (kendi id'si verilmişse)
  * - assistant: yalnızca GÖREBİLDİĞİ baş öğretmenlere (`visibleHeadTeacherIds`:
- *   aynı kurum, aynı seviye, aynı dal ya da onaylı dal talebi). Öğrenci eklemek,
+ *   aynı kurum, aynı seviye, aynı branş ya da onaylı branş talebi). Öğrenci eklemek,
  *   henüz bağlı olmadığı bir baş öğretmenle ilk ilişkiyi kurmanın yolu olabilir
  *   (bkz. addStudentAction), bu yüzden mevcut asistan bağı aranmaz.
  */

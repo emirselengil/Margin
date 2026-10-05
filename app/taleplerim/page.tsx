@@ -22,14 +22,14 @@ export default async function TaleplerimPage() {
           <>
             <span>Hesabım</span>
             <ChevronRight size={14} aria-hidden="true" />
-            <span className="font-medium text-ink">Dal talepleri</span>
+            <span className="font-medium text-ink">Branş talepleri</span>
           </>
         }
         right={<ThemeToggle />}
       />
       <div className="flex max-w-[760px] flex-col gap-7 p-6">
         <div>
-          <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Dal talepleri</h1>
+          <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Branş talepleri</h1>
           <p className="mt-1.5 text-ink-2">
             Yalnızca kendi kurumunuzdaki, kendi seviyenizdeki ve kendi dalınızdaki öğretmenleri görürsünüz. Kurumunuzdaki
             başka bir daldaki öğretmenleri görmek için buradan yöneticiye talep açabilirsiniz.
@@ -45,7 +45,7 @@ export default async function TaleplerimPage() {
             </p>
           ) : (
             <p className="m-0 text-warn-text">
-              Size henüz bir dal atanmamış. Yönetici dal ve kurum atayana kadar öğretmen listeniz boş görünür.
+              Size henüz bir branş atanmamış. Yönetici branş ve kurum atayana kadar öğretmen listeniz boş görünür.
             </p>
           )}
           <p className="m-0 text-ink-2">

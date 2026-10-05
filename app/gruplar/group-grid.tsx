@@ -122,7 +122,7 @@ export function GroupGrid({
   }
 
   const editingStudent = editingId ? students.find((s) => s.id === editingId) : undefined;
-  // Mevcut öğretmen "görebildiği" listede olmasa da (örn. farklı dal) seçenek olarak kalır;
+  // Mevcut öğretmen "görebildiği" listede olmasa da (örn. farklı branş) seçenek olarak kalır;
   // böylece yalnızca ad/sınıf düzenlemek mümkün olur. Yeni öğretmen yalnızca listeden seçilebilir.
   const editTeacherOptions =
     editingStudent && !allHeadTeachers.some((h) => h.id === editingStudent.headTeacherId)

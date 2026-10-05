@@ -21,7 +21,7 @@ export type MyRequestRow = {
 
 export type MyOrgInfo = {
   branch: { id: string; name: string; level: string } | null;
-  /** Kendi kurumları; her birinde talep açılabilecek dallar (o kuruma atanmış, kendi seviyesinde, kendi dalı dışında) */
+  /** Kendi kurumları; her birinde talep açılabilecek branşlar (o kuruma atanmış, kendi seviyesinde, kendi branşı dışında) */
   institutions: {
     id: string;
     name: string;

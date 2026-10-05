@@ -78,8 +78,8 @@ export async function deleteInstitutionAction(id: string) {
 }
 
 /**
- * Kurumda hangi dalların bulunduğunu belirler (yalnızca yönetici). Asistanlar
- * bir kurumda yalnızca o kuruma atanmış dalları görebilir/talep edebilir.
+ * Kurumda hangi branşların bulunduğunu belirler (yalnızca yönetici). Asistanlar
+ * bir kurumda yalnızca o kuruma atanmış branşları görebilir/talep edebilir.
  */
 export async function setInstitutionBranchesAction(institutionId: string, branchIds: string[]) {
   return runAction(async () => {
@@ -109,11 +109,11 @@ export async function setInstitutionBranchesAction(institutionId: string, branch
   });
 }
 
-/** Yeni dal (branş + seviye): yalnızca yönetici. */
+/** Yeni branş (ders alanı + seviye): yalnızca yönetici. */
 export async function createBranchAction(name: string, level: string) {
   return runAction(async () => {
     await requireAdmin();
-    const cleaned = cleanName(name, "Dal");
+    const cleaned = cleanName(name, "Branş");
     if (!isLevel(level)) throw new PermissionError("Geçerli bir seviye seçin.");
 
     const [existing] = await db
@@ -121,7 +121,7 @@ export async function createBranchAction(name: string, level: string) {
       .from(branches)
       .where(and(eq(branches.name, cleaned), eq(branches.level, level)))
       .limit(1);
-    if (existing) throw new PermissionError("Bu dal (aynı branş ve seviye) zaten tanımlı.");
+    if (existing) throw new PermissionError("Bu branş (aynı ders alanı ve seviye) zaten tanımlı.");
 
     const [created] = await db.insert(branches).values({ name: cleaned, level }).returning({ id: branches.id });
     revalidatePath("/yonetim/kurumlar");
@@ -130,7 +130,7 @@ export async function createBranchAction(name: string, level: string) {
   });
 }
 
-/** Yalnızca hiçbir öğretmene ve talebe bağlı olmayan dal silinebilir. */
+/** Yalnızca hiçbir öğretmene ve talebe bağlı olmayan branş silinebilir. */
 export async function deleteBranchAction(id: string) {
   return runAction(async () => {
     await requireAdmin();
@@ -141,7 +141,7 @@ export async function deleteBranchAction(id: string) {
       .where(eq(branchAccessRequests.branchId, id))
       .limit(1);
     if (teacher || request) {
-      throw new PermissionError("Bu dala bağlı öğretmen veya talep var; önce onları kaldırın.");
+      throw new PermissionError("Bu branşa bağlı öğretmen veya talep var; önce onları kaldırın.");
     }
     await db.transaction(async (tx) => {
       await tx.delete(institutionBranches).where(eq(institutionBranches.branchId, id));

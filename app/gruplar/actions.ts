@@ -76,7 +76,7 @@ export async function updateStudentInfoAction(
     .limit(1);
   const teacherChanged = !!current && current.headTeacherId !== patch.headTeacherId;
 
-  // Öğretmen değişiyorsa yeni öğretmen "görebildiği" biri olmalı (kurum/seviye/dal kuralı);
+  // Öğretmen değişiyorsa yeni öğretmen "görebildiği" biri olmalı (kurum/seviye/branş kuralı);
   // yalnızca ad/sınıf düzenleniyorsa bu şart aranmaz.
   if (teacherChanged) {
     if (!(await canAddStudentForHeadTeacher(user, patch.headTeacherId))) {

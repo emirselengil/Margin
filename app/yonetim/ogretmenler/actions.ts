@@ -84,19 +84,19 @@ export async function setAssistantLinksAction(assistantId: string, headTeacherId
 async function requireTeacher(teacherId: string) {
   const [target] = await db.select().from(profiles).where(eq(profiles.id, teacherId)).limit(1);
   if (!target || (target.role !== "head_teacher" && target.role !== "assistant")) {
-    throw new PermissionError("Dal ve kurum yalnızca öğretmenlere atanabilir.");
+    throw new PermissionError("Branş ve kurum yalnızca öğretmenlere atanabilir.");
   }
   return target;
 }
 
-/** Öğretmenin dalını (branş + seviye) yalnızca yönetici atar. null = dal yok. */
+/** Öğretmenin branşını (ders alanı + seviye) yalnızca yönetici atar. null = branş yok. */
 export async function setTeacherBranchAction(teacherId: string, branchId: string | null) {
   return runAction(async () => {
     await requireAdmin();
     await requireTeacher(teacherId);
     if (branchId !== null) {
       const [branch] = await db.select({ id: branches.id }).from(branches).where(eq(branches.id, branchId)).limit(1);
-      if (!branch) throw new PermissionError("Dal bulunamadı.");
+      if (!branch) throw new PermissionError("Branş bulunamadı.");
     }
     await db.update(profiles).set({ branchId }).where(eq(profiles.id, teacherId));
     revalidatePath("/yonetim/ogretmenler");

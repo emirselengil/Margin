@@ -51,7 +51,7 @@ export type HeadTeacherOption = { id: string; name: string };
 
 /**
  * Kullanıcının seçebileceği / görebileceği baş öğretmenler (asistan için:
- * aynı kurum + aynı seviye + aynı dal ya da onaylı talep; bkz.
+ * aynı kurum + aynı seviye + aynı branş ya da onaylı talep; bkz.
  * `visibleHeadTeacherIds`). Yeni öğrenci eklerken ve öğrenciyi başka
  * öğretmene atarken seçim listesi olarak kullanılır.
  */

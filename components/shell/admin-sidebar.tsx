@@ -46,7 +46,7 @@ export async function AdminSidebar({
           Öğrenciler
         </SidebarNavLink>
         <SidebarNavLink href="/yonetim/kurumlar" icon={Building2} active={active === "kurumlar"}>
-          Kurumlar ve dallar
+          Kurumlar ve branşlar
         </SidebarNavLink>
         <SidebarNavLink
           href="/yonetim/talepler"
@@ -60,7 +60,7 @@ export async function AdminSidebar({
             ) : undefined
           }
         >
-          Dal talepleri
+          Branş talepleri
         </SidebarNavLink>
         <SidebarNavLink href="/yonetim/kayitlar" icon={ClipboardList} active={active === "kayitlar"}>
           Etüt kayıtları

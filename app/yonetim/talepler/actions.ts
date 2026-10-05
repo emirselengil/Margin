@@ -20,7 +20,7 @@ function refresh() {
   revalidatePath("/gruplar");
 }
 
-/** Bekleyen dal erişim talebini onayla ya da reddet. */
+/** Bekleyen branş erişim talebini onayla ya da reddet. */
 export async function decideBranchRequestAction(requestId: string, decision: "approved" | "rejected") {
   return runAction(async () => {
     const admin = await requireAdmin();

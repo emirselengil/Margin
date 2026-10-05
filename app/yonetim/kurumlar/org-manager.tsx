@@ -64,10 +64,10 @@ export function OrgManager({
   return (
     <div className="flex flex-col gap-8 p-6">
       <div>
-        <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Kurumlar ve dallar</h1>
+        <h1 className="m-0 text-[28px] font-semibold tracking-[-0.03em]">Kurumlar ve branşlar</h1>
         <p className="mt-1.5 max-w-[640px] text-ink-2">
-          Kurumları ve dalları (branş + seviye) yalnızca siz oluşturur ve atarsınız. Her kuruma hangi dalların ait
-          olduğunu kurum satırındaki &ldquo;Dallar&rdquo; düğmesinden seçersiniz; öğretmenlere dal ve kurum ataması
+          Kurumları ve branşları (ders alanı + seviye) yalnızca siz oluşturur ve atarsınız. Her kuruma hangi branşların ait
+          olduğunu kurum satırındaki &ldquo;Branşlar&rdquo; düğmesinden seçersiniz; öğretmenlere branş ve kurum ataması
           Öğretmenler sayfasındaki öğretmen panelinden yapılır. Aynı adlı iki kurum açabilirsiniz; her kurumun ayrı
           bir kimliği vardır.
         </p>
@@ -141,11 +141,11 @@ export function OrgManager({
                       <button
                         type="button"
                         aria-expanded={openId === inst.id}
-                        aria-label={`${labels[inst.id]} kurumunun dalları`}
+                        aria-label={`${labels[inst.id]} kurumunun branşları`}
                         onClick={() => setOpenId(openId === inst.id ? null : inst.id)}
                         className="flex h-9 cursor-pointer items-center gap-1.5 rounded-[9px] border border-line bg-surface px-3 text-[13px] font-medium text-ink-2 transition-colors hover:bg-sunken hover:text-ink active:bg-line"
                       >
-                        Dallar · {inst.branchIds.length}
+                        Branşlar · {inst.branchIds.length}
                         <ChevronDown
                           size={14}
                           aria-hidden="true"
@@ -174,11 +174,11 @@ export function OrgManager({
                       {openId === inst.id ? (
                         <div className="flex basis-full flex-col gap-2 rounded-[12px] bg-surface-2 p-3">
                           <div className="text-xs text-muted">
-                            Bu kurumda bulunan dallar. Asistanlar bir kurumda yalnızca buraya eklediğiniz dalları
+                            Bu kurumda bulunan branşlar. Asistanlar bir kurumda yalnızca buraya eklediğiniz branşları
                             görebilir ve talep edebilir.
                           </div>
                           {initialBranches.length === 0 ? (
-                            <p className="m-0 text-[13px] text-ink-2">Önce aşağıdan dal oluşturun.</p>
+                            <p className="m-0 text-[13px] text-ink-2">Önce aşağıdan branş oluşturun.</p>
                           ) : (
                             <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-2">
                               {initialBranches.map((b) => {
@@ -224,7 +224,7 @@ export function OrgManager({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="m-0 text-base font-semibold">Dallar (branş + seviye)</h2>
+        <h2 className="m-0 text-base font-semibold">Branşlar (ders alanı + seviye)</h2>
         <form
           className="flex flex-wrap items-center gap-2"
           onSubmit={(e) => {
@@ -260,13 +260,13 @@ export function OrgManager({
           </select>
           <button type="submit" disabled={isPending || !branchName.trim()} className={primaryButton}>
             <Plus size={15} aria-hidden="true" />
-            Dal ekle
+            Branş ekle
           </button>
         </form>
 
         <div className="overflow-hidden rounded-[14px] border border-line">
           {initialBranches.length === 0 ? (
-            <p className="px-4 py-8 text-center text-ink-2">Henüz dal yok.</p>
+            <p className="px-4 py-8 text-center text-ink-2">Henüz branş yok.</p>
           ) : (
             <ul className="m-0 list-none p-0">
               {initialBranches.map((b) => (
@@ -278,7 +278,7 @@ export function OrgManager({
                   <span className="font-mono text-xs text-muted">{b.teacherCount} öğretmen</span>
                   <button
                     type="button"
-                    aria-label={`${b.name} (${LEVEL_LABELS[b.level as Level] ?? b.level}) dalını sil`}
+                    aria-label={`${b.name} (${LEVEL_LABELS[b.level as Level] ?? b.level}) branşını sil`}
                     onClick={() => setConfirm({ kind: "branch", id: b.id, label: `${b.name} · ${LEVEL_LABELS[b.level as Level] ?? b.level}` })}
                     className={iconButton}
                   >
@@ -293,7 +293,7 @@ export function OrgManager({
 
       <ConfirmDialog
         open={confirm !== null}
-        title={confirm?.kind === "institution" ? "Kurumu sil" : "Dalı sil"}
+        title={confirm?.kind === "institution" ? "Kurumu sil" : "Branşı sil"}
         description={
           confirm
             ? `“${confirm.label}” silinecek. Yalnızca hiçbir öğretmene ve talebe bağlı değilse silinebilir. Bu işlem geri alınamaz.`

@@ -68,14 +68,14 @@ Neon'da satır düzeyinde güvenlik kullanmıyoruz; yetki **sunucu tarafında, t
   - Asistan bağlı olmadığı baş öğretmenin öğrencisini göremez.
   - `pending` kullanıcı hiçbir öğrenciyi göremez.
 
-## Kurumlar, dallar ve öğretmen görünürlüğü
+## Kurumlar, branşlar ve öğretmen görünürlüğü
 
 - **Kurum** (`institutions`): yalnızca yönetici oluşturur ve öğretmenlere atar. Ad benzersiz değildir; aynı adlı iki kurum olabilir, ayıran `id`dir (ekranda ad tekrar ediyorsa `#abcd` eki gösterilir, bkz. `lib/institutions.ts`). Bir öğretmen birden fazla kurumda olabilir (`teacher_institutions`).
-- **Dal** (`branches`): branş (ders alanı) + seviye (`ilkokul`/`ortaokul`/`lise`, bkz. `lib/levels.ts`). Yalnızca yönetici tanımlar ve atar; bir öğretmenin tek dalı olur (`profiles.branch_id`).
-- **Kurum ↔ dal** (`institution_branches`): hangi dalların hangi kurumda bulunduğunu yönetici belirler. Asistan bir kurumda yalnızca o kuruma atanmış dalları görebilir/talep edebilir; talep yalnızca kendi kurumları adına açılır.
-- **Asistanın görebildiği (seçebildiği) baş öğretmenler** `visibleHeadTeacherIds` ile belirlenir: aynı seviye + en az bir ortak kurum + (aynı dal VEYA o ortak kurum için yönetici tarafından onaylanmış erişim talebi). Seviye kuralı talep ile de aşılamaz. Dalı/kurumu olmayan asistan hiçbir öğretmeni görmez.
+- **Branş** (`branches`): ders alanı + seviye (`ilkokul`/`ortaokul`/`lise`, bkz. `lib/levels.ts`). Yalnızca yönetici tanımlar ve atar; bir öğretmenin tek branşı olur (`profiles.branch_id`).
+- **Kurum ↔ branş** (`institution_branches`): hangi branşların hangi kurumda bulunduğunu yönetici belirler. Asistan bir kurumda yalnızca o kuruma atanmış branşları görebilir/talep edebilir; talep yalnızca kendi kurumları adına açılır.
+- **Asistanın görebildiği (seçebildiği) baş öğretmenler** `visibleHeadTeacherIds` ile belirlenir: aynı seviye + en az bir ortak kurum + (aynı branş VEYA o ortak kurum için yönetici tarafından onaylanmış erişim talebi). Seviye kuralı talep ile de aşılamaz. Branşı/kurumu olmayan asistan hiçbir öğretmeni görmez.
 - Bu kural yalnızca öğretmen listeleri ve seçim kutuları içindir (öğrenci eklerken/başka öğretmene atarken, kenar menü, filtre sekmeleri) ve sunucuda zorlanır (`canAddStudentForHeadTeacher`). Öğrencilerin görünürlüğü (`visibleStudentIds`) asistan–baş öğretmen bağlarıyla belirlenmeye devam eder.
-- **Dal erişim talebi** (`branch_access_requests`): asistan kendi kurumunda, o kuruma atanmış ve kendi seviyesindeki başka bir dal için talep açar (`/taleplerim`). Dal kurumdan çıkarılırsa onaylı talep de geçerliliğini yitirir; yönetici `/yonetim/talepler` sayfasında onaylar/reddeder/geri alır.
+- **Branş erişim talebi** (`branch_access_requests`): asistan kendi kurumunda, o kuruma atanmış ve kendi seviyesindeki başka bir branş için talep açar (`/taleplerim`). Branş kurumdan çıkarılırsa onaylı talep de geçerliliğini yitirir; yönetici `/yonetim/talepler` sayfasında onaylar/reddeder/geri alır.
 
 ## Veri modeli (Drizzle, `db/schema.ts`)
 

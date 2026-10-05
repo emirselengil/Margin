@@ -31,7 +31,7 @@ export default async function TaleplerPage() {
           <>
             <span>Yönetim</span>
             <ChevronRight size={14} aria-hidden="true" />
-            <span className="font-medium text-ink">Dal talepleri</span>
+            <span className="font-medium text-ink">Branş talepleri</span>
           </>
         }
         right={<ThemeToggle />}

@@ -39,9 +39,9 @@ export async function createBranchRequestAction(institutionId: string, branchId:
         .set({ status: "pending", decidedAt: null, decidedBy: null, createdAt: new Date() })
         .where(eq(branchAccessRequests.id, existing.id));
     } else if (existing.status === "approved") {
-      throw new PermissionError("Bu dal için zaten erişiminiz var.");
+      throw new PermissionError("Bu branş için zaten erişiminiz var.");
     } else {
-      throw new PermissionError("Bu dal için bekleyen bir talebiniz zaten var.");
+      throw new PermissionError("Bu branş için bekleyen bir talebiniz zaten var.");
     }
     revalidatePath("/taleplerim");
     revalidatePath("/yonetim/talepler");

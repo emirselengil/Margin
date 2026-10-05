@@ -36,7 +36,7 @@ export async function AssistantSidebar({ user, active }: { user: Profile; active
           Gün grupları
         </SidebarNavLink>
         <SidebarNavLink href="/taleplerim" icon={Send} active={active === "talepler"}>
-          Dal talepleri
+          Branş talepleri
         </SidebarNavLink>
       </SidebarNav>
 
