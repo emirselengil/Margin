@@ -69,6 +69,7 @@ export function RecordForm({
   initialBook,
   initialAttendance,
   initialNote,
+  headTeacherNote,
 }: {
   studentId: string;
   dateISO: string;
@@ -77,6 +78,7 @@ export function RecordForm({
   initialBook: Book | null;
   initialAttendance: Attendance | null;
   initialNote: string;
+  headTeacherNote: string | null;
 }) {
   const router = useRouter();
   const [homework, setHomework] = useState<Homework | null>(initialHomework);
@@ -191,6 +193,13 @@ export function RecordForm({
             className="box-border w-full resize-y rounded-[10px] border border-line-2 bg-sunken px-3 py-2.5 font-sans text-sm leading-relaxed text-ink outline-none focus:border-accent"
           />
         </div>
+
+        {headTeacherNote ? (
+          <div className="rounded-[10px] border border-line bg-accent-soft px-3.5 py-3">
+            <div className="text-xs font-medium text-accent-text">Baş öğretmen notu (salt okunur)</div>
+            <p className="m-0 mt-1 whitespace-pre-wrap leading-relaxed text-ink">{headTeacherNote}</p>
+          </div>
+        ) : null}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2.5 border-t border-line bg-surface-2 px-5 py-3.5">

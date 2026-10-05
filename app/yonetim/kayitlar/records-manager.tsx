@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Pencil, Trash2, X } from "lucide-react";
+import { Check, Pencil, StickyNote, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 
@@ -12,6 +12,7 @@ import {
   adminUpdateNoteAction,
 } from "@/app/yonetim/kayitlar/actions";
 import type { AdminRecordRow, HeadTeacherOption, RecordFilters } from "@/app/yonetim/kayitlar/data";
+import { setHeadTeacherNoteAction } from "@/app/ogrencilerim/actions";
 import { Avatar } from "@/components/avatar";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { StatusToggle } from "@/components/status-toggle";
@@ -49,6 +50,9 @@ export function RecordsManager({
   const [onlyMissing, setOnlyMissing] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
+  const [editingHeadNoteId, setEditingHeadNoteId] = useState<string | null>(null);
+  const [headNoteDraft, setHeadNoteDraft] = useState("");
+  const [headNoteError, setHeadNoteError] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -96,6 +100,27 @@ export function RecordsManager({
     setEditingNoteId(null);
     startTransition(async () => {
       await adminUpdateNoteAction(r.id, note);
+    });
+  }
+
+  function startEditHeadNote(r: AdminRecordRow) {
+    setEditingNoteId(null);
+    setHeadNoteError(null);
+    setEditingHeadNoteId(r.id);
+    setHeadNoteDraft(r.headTeacherNote ?? "");
+  }
+
+  function saveHeadNote(r: AdminRecordRow) {
+    const note = headNoteDraft.trim() || null;
+    startTransition(async () => {
+      const result = await setHeadTeacherNoteAction(r.studentId, r.date, note);
+      if (!result.ok) {
+        setHeadNoteError(result.message);
+        return;
+      }
+      setRecords((prev) => prev.map((x) => (x.id === r.id ? { ...x, headTeacherNote: note } : x)));
+      setEditingHeadNoteId(null);
+      setHeadNoteError(null);
     });
   }
 
@@ -287,7 +312,52 @@ export function RecordsManager({
                           </button>
                         </span>
                       ) : (
-                        r.note || "—"
+                        <>
+                          {r.note || "—"}
+                          {editingHeadNoteId === r.id ? (
+                            <span className="mt-1.5 flex flex-col gap-1">
+                              <span className="flex items-center gap-1">
+                                <input
+                                  autoFocus
+                                  aria-label="Baş öğretmen notu"
+                                  value={headNoteDraft}
+                                  onChange={(e) => setHeadNoteDraft(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") saveHeadNote(r);
+                                    if (e.key === "Escape") setEditingHeadNoteId(null);
+                                  }}
+                                  className="h-8 w-full rounded-md border border-line-2 bg-surface px-2 text-[13px] text-ink outline-none focus:border-accent"
+                                />
+                                <button
+                                  type="button"
+                                  aria-label="Baş öğretmen notunu kaydet"
+                                  onClick={() => saveHeadNote(r)}
+                                  disabled={isPending}
+                                  className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-accent-text transition-colors hover:bg-accent-soft active:bg-accent-soft disabled:opacity-60"
+                                >
+                                  <Check size={15} aria-hidden="true" />
+                                </button>
+                                <button
+                                  type="button"
+                                  aria-label="Baş öğretmen notundan vazgeç"
+                                  onClick={() => setEditingHeadNoteId(null)}
+                                  className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-sunken hover:text-ink active:bg-line"
+                                >
+                                  <X size={15} aria-hidden="true" />
+                                </button>
+                              </span>
+                              {headNoteError ? (
+                                <span role="alert" className="text-xs font-medium text-warn-text">
+                                  {headNoteError}
+                                </span>
+                              ) : null}
+                            </span>
+                          ) : r.headTeacherNote ? (
+                            <span className="mt-1 block text-xs text-accent-text">
+                              Baş öğretmen: {r.headTeacherNote}
+                            </span>
+                          ) : null}
+                        </>
                       )}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-[13px] text-ink-2">
@@ -306,6 +376,14 @@ export function RecordsManager({
                         className="inline-flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-lg border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
                       >
                         <Pencil size={15} aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Baş öğretmen notunu düzenle"
+                        onClick={() => startEditHeadNote(r)}
+                        className="ml-1 inline-flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-lg border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
+                      >
+                        <StickyNote size={15} aria-hidden="true" />
                       </button>
                       <button
                         type="button"

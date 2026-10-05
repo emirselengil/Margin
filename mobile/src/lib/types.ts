@@ -42,6 +42,7 @@ export type PastRecord = {
   book: Book | null;
   attendance: Attendance | null;
   note: string | null;
+  headTeacherNote: string | null;
 };
 
 export type StudentDetailResponse = {
@@ -55,7 +56,13 @@ export type StudentDetailResponse = {
     studyDays: number[];
   };
   scheduled: boolean;
-  record: { homework: Homework | null; book: Book | null; attendance: Attendance | null; note: string | null } | null;
+  record: {
+    homework: Homework | null;
+    book: Book | null;
+    attendance: Attendance | null;
+    note: string | null;
+    headTeacherNote: string | null;
+  } | null;
   pastRecords: PastRecord[];
   sameDayStudentIds: string[];
 };

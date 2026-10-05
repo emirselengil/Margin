@@ -110,6 +110,26 @@ export async function canWriteRecord(
   return canViewStudent(user, studentId, database);
 }
 
+/**
+ * Etüt kaydındaki "baş öğretmen notu"nu yazabilir/düzenleyebilir mi? Yalnızca
+ * admin ve öğrencinin KENDİ baş öğretmeni. Asistan bu notu görür ama değiştiremez.
+ */
+export async function canWriteHeadTeacherNote(
+  user: CurrentUser | null,
+  studentId: string,
+  database: Database = defaultDb,
+): Promise<boolean> {
+  if (!user || !user.isActive) return false;
+  if (user.role === "admin") return true;
+  if (user.role !== "head_teacher") return false;
+  const [row] = await database
+    .select({ headTeacherId: students.headTeacherId })
+    .from(students)
+    .where(eq(students.id, studentId))
+    .limit(1);
+  return row?.headTeacherId === user.id;
+}
+
 /** Bu öğrencinin etüt günlerini düzenleyebilir mi? admin ve bağlı assistant. */
 export async function canEditStudentDays(
   user: CurrentUser | null,

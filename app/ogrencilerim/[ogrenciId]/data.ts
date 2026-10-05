@@ -38,6 +38,7 @@ export type RecordWithAuthor = {
   book: "brought" | "not_brought" | null;
   attendance: "came" | "absent" | null;
   note: string | null;
+  headTeacherNote: string | null;
   enteredBy: string;
 };
 
@@ -55,6 +56,7 @@ export async function getAllRecords(studentId: string, viewerRole: Role): Promis
     book: record.book,
     attendance: record.attendance,
     note: record.note,
+    headTeacherNote: record.headTeacherNote,
     enteredBy: teacherDisplayName(author, viewerRole),
   }));
 }

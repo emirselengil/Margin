@@ -99,6 +99,8 @@ export const studyRecords = pgTable(
     book: bookStatusEnum("book"),
     attendance: attendanceStatusEnum("attendance"),
     note: text("note"),
+    // Yalnızca baş öğretmen (ve yönetici) yazar; asistan salt görüntüler.
+    headTeacherNote: text("head_teacher_note"),
     createdBy: text("created_by")
       .notNull()
       .references(() => profiles.id),

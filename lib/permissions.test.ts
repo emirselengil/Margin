@@ -11,6 +11,7 @@ import {
   canEditStudentDays,
   canEditStudentInfo,
   canViewStudent,
+  canWriteHeadTeacherNote,
   canWriteRecord,
   isStudentScheduledOn,
   PermissionError,
@@ -193,6 +194,38 @@ describe("canWriteRecord", () => {
   it("pending kullanıcı kayıt giremez", async () => {
     const { studentOfA } = await seedBaseFixture(db);
     expect(await canWriteRecord(user(PENDING, "pending"), studentOfA, db)).toBe(false);
+  });
+});
+
+describe("canWriteHeadTeacherNote", () => {
+  it("öğrencinin kendi baş öğretmeni not yazabilir", async () => {
+    const { studentOfA } = await seedBaseFixture(db);
+    expect(await canWriteHeadTeacherNote(user(HEAD_A, "head_teacher"), studentOfA, db)).toBe(true);
+  });
+
+  it("başka baş öğretmenin öğrencisine not yazılamaz", async () => {
+    const { studentOfB } = await seedBaseFixture(db);
+    expect(await canWriteHeadTeacherNote(user(HEAD_A, "head_teacher"), studentOfB, db)).toBe(false);
+  });
+
+  it("asistan baş öğretmen notunu yazamaz (yalnızca görür)", async () => {
+    const { studentOfA } = await seedBaseFixture(db);
+    expect(await canWriteHeadTeacherNote(user(ASSISTANT_OF_A, "assistant"), studentOfA, db)).toBe(false);
+  });
+
+  it("admin her öğrenci için yazabilir", async () => {
+    const { studentOfA, studentOfB } = await seedBaseFixture(db);
+    expect(await canWriteHeadTeacherNote(user(ADMIN, "admin"), studentOfA, db)).toBe(true);
+    expect(await canWriteHeadTeacherNote(user(ADMIN, "admin"), studentOfB, db)).toBe(true);
+  });
+
+  it("pending, pasif kullanıcı ve oturumsuz yazamaz", async () => {
+    const { studentOfA } = await seedBaseFixture(db);
+    expect(await canWriteHeadTeacherNote(user(PENDING, "pending"), studentOfA, db)).toBe(false);
+    expect(await canWriteHeadTeacherNote(null, studentOfA, db)).toBe(false);
+    expect(
+      await canWriteHeadTeacherNote({ ...user(HEAD_A, "head_teacher"), isActive: false }, studentOfA, db),
+    ).toBe(false);
   });
 });
 
