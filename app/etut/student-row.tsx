@@ -52,67 +52,56 @@ export function StudentRow({ student, dateISO }: { student: StudentForDay; dateI
   }
 
   return (
-    <>
-      <tr className="border-t border-line transition-colors hover:bg-surface-2">
-        <td className="px-[18px] py-2.5">
-          <Link
-            href={`/etut/${student.id}?date=${dateISO}`}
-            className="flex items-center gap-3 text-ink no-underline transition-colors hover:text-accent-text"
-          >
-            <Avatar name={student.fullName} colorId={student.headTeacherId} />
-            <span className="flex flex-col gap-0.5">
-              <span className="font-medium">{student.fullName}</span>
-              <span className="font-mono text-xs text-muted">{student.className}</span>
-            </span>
-          </Link>
-        </td>
-        <td className="px-3 py-2.5 text-ink-2">
-          <span className="inline-flex items-center gap-2">
-            <ColorDot colorId={student.headTeacherId} />
-            {student.headTeacherName}
+    <tr className="border-t border-line transition-colors hover:bg-surface-2">
+      <td className="px-[18px] py-2.5">
+        <Link
+          href={`/etut/${student.id}?date=${dateISO}`}
+          className="flex items-center gap-3 text-ink no-underline transition-colors hover:text-accent-text"
+        >
+          <Avatar name={student.fullName} colorId={student.headTeacherId} />
+          <span className="flex flex-col gap-0.5">
+            <span className="font-medium">{student.fullName}</span>
+            <span className="font-mono text-xs text-muted">{student.className}</span>
           </span>
-        </td>
-        <td className="px-3 py-1.5">
-          <StatusToggle value={attendance} options={ATTENDANCE_OPTIONS} onSelect={handleAttendance} pending={pending} />
-        </td>
-        <td className="px-3 py-1.5">
-          <StatusToggle value={homework} options={HOMEWORK_OPTIONS} onSelect={handleHomework} pending={pending} />
-        </td>
-        <td className="px-3 py-1.5">
-          <StatusToggle value={book} options={BOOK_OPTIONS} onSelect={handleBook} pending={pending} />
-        </td>
-        <td className="max-w-[240px] px-3 py-2.5 text-[13px]">
-          {student.note ? (
-            <span className="text-ink-2">{student.note}</span>
-          ) : (
-            <Link
-              href={`/etut/${student.id}?date=${dateISO}`}
-              className="font-medium text-accent-text no-underline hover:underline"
-            >
-              + Not ekle
-            </Link>
-          )}
-        </td>
-        <td className="px-[18px] py-2.5 text-right">
+        </Link>
+      </td>
+      <td className="px-3 py-2.5 text-ink-2">
+        <span className="inline-flex items-center gap-2">
+          <ColorDot colorId={student.headTeacherId} />
+          {student.headTeacherName}
+        </span>
+      </td>
+      <td className="px-3 py-1.5">
+        <StatusToggle value={attendance} options={ATTENDANCE_OPTIONS} onSelect={handleAttendance} pending={pending} />
+      </td>
+      <td className="px-3 py-1.5">
+        <StatusToggle value={homework} options={HOMEWORK_OPTIONS} onSelect={handleHomework} pending={pending} />
+      </td>
+      <td className="px-3 py-1.5">
+        <StatusToggle value={book} options={BOOK_OPTIONS} onSelect={handleBook} pending={pending} />
+      </td>
+      <td className="max-w-[240px] px-3 py-2.5 text-[13px]">
+        {student.note ? (
+          <span className="text-ink-2">{student.note}</span>
+        ) : (
           <Link
             href={`/etut/${student.id}?date=${dateISO}`}
-            aria-label="Öğrenciyi aç"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-[9px] text-muted transition-colors hover:bg-sunken hover:text-ink"
+            className="font-medium text-accent-text no-underline hover:underline"
           >
-            <ChevronRight size={16} aria-hidden="true" />
+            + Not ekle
           </Link>
-        </td>
-      </tr>
-      {student.headTeacherNote ? (
-        <tr className="hover:bg-surface-2">
-          <td colSpan={7} className="px-[18px] pb-3 pt-0">
-            <div className="ml-[46px] rounded-[10px] bg-accent-soft px-3 py-2 text-[13px]">
-              <span className="font-medium text-accent-text">Öğretmen notu: </span>
-              <span className="text-ink">{student.headTeacherNote}</span>
-            </div>
-          </td>
-        </tr>
-      ) : null}
-    </>
+        )}
+      </td>
+      <td className="max-w-[240px] px-3 py-2.5 text-[13px] text-ink-2">{student.headTeacherNote || "—"}</td>
+      <td className="px-[18px] py-2.5 text-right">
+        <Link
+          href={`/etut/${student.id}?date=${dateISO}`}
+          aria-label="Öğrenciyi aç"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-[9px] text-muted transition-colors hover:bg-sunken hover:text-ink"
+        >
+          <ChevronRight size={16} aria-hidden="true" />
+        </Link>
+      </td>
+    </tr>
   );
 }
