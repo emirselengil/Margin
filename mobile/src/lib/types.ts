@@ -1,7 +1,7 @@
 // Sunucudaki /api/mobile uçlarının döndürdüğü şekiller (web tarafındaki
 // app/**/data.ts tipleriyle aynı).
 export type Role = "admin" | "head_teacher" | "assistant" | "pending";
-export type Homework = "done" | "missing";
+export type Homework = "done" | "missing" | "not_done";
 export type Book = "brought" | "not_brought";
 export type Attendance = "came" | "absent";
 

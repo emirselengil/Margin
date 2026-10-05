@@ -11,7 +11,7 @@ export function StatusToggle({
   pending,
 }: {
   value: string | null;
-  options: readonly [StatusOption, StatusOption];
+  options: readonly StatusOption[];
   onSelect: (value: string) => void;
   pending?: boolean;
 }) {

@@ -21,6 +21,7 @@ import { formatBadgeDate } from "@/lib/date";
 const HOMEWORK_OPTIONS = [
   { value: "done", label: "Yapıldı", tone: "pos" },
   { value: "missing", label: "Eksik", tone: "neg" },
+  { value: "not_done", label: "Yapmadı", tone: "neg" },
 ] as const;
 
 const ATTENDANCE_OPTIONS = [
@@ -59,7 +60,7 @@ export function RecordsManager({
   const shown = useMemo(() => {
     let list = records;
     if (headTeacherId !== "all") list = list.filter((r) => r.headTeacherId === headTeacherId);
-    if (onlyMissing) list = list.filter((r) => r.homework === "missing" || r.book === "not_brought");
+    if (onlyMissing) list = list.filter((r) => r.homework === "missing" || r.homework === "not_done" || r.book === "not_brought");
     return list;
   }, [records, headTeacherId, onlyMissing]);
 
@@ -68,7 +69,7 @@ export function RecordsManager({
     router.push(`/yonetim/kayitlar?${params.toString()}`);
   }
 
-  function setHomework(r: AdminRecordRow, value: "done" | "missing") {
+  function setHomework(r: AdminRecordRow, value: "done" | "missing" | "not_done") {
     setRecords((prev) => prev.map((x) => (x.id === r.id ? { ...x, homework: value, editedByAdmin: true } : x)));
     startTransition(async () => {
       await adminSetHomeworkAction(r.id, value);
@@ -269,7 +270,7 @@ export function RecordsManager({
                       <StatusToggle
                         value={r.homework}
                         options={HOMEWORK_OPTIONS}
-                        onSelect={(v) => setHomework(r, v as "done" | "missing")}
+                        onSelect={(v) => setHomework(r, v as "done" | "missing" | "not_done")}
                         pending={isPending}
                       />
                     </td>

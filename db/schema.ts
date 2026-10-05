@@ -21,7 +21,7 @@ export const roleEnum = pgEnum("role", [
   "pending",
 ]);
 
-export const homeworkStatusEnum = pgEnum("homework_status", ["done", "missing"]);
+export const homeworkStatusEnum = pgEnum("homework_status", ["done", "missing", "not_done"]);
 export const bookStatusEnum = pgEnum("book_status", ["brought", "not_brought"]);
 export const attendanceStatusEnum = pgEnum("attendance_status", ["came", "absent"]);
 

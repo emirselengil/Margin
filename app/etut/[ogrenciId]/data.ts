@@ -42,7 +42,7 @@ export async function getStudentDetail(user: Profile, studentId: string): Promis
 
 export type PastRecord = {
   date: string;
-  homework: "done" | "missing" | null;
+  homework: "done" | "missing" | "not_done" | null;
   book: "brought" | "not_brought" | null;
   attendance: "came" | "absent" | null;
   note: string | null;

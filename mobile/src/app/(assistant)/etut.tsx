@@ -29,6 +29,7 @@ const ATTENDANCE = [
 const HOMEWORK = [
   { value: "done", label: "Yapıldı", tone: "pos" },
   { value: "missing", label: "Eksik", tone: "neg" },
+  { value: "not_done", label: "Yapmadı", tone: "neg" },
 ] as const;
 const BOOK = [
   { value: "brought", label: "Getirdi", tone: "pos" },
@@ -73,7 +74,7 @@ export default function EtutScreen() {
 
   const students = view?.students ?? [];
   const done = students.filter((s) => s.homework && s.book).length;
-  const odevEksik = students.filter((s) => s.homework === "missing").length;
+  const odevEksik = students.filter((s) => (s.homework === "missing" || s.homework === "not_done")).length;
   const kitapYok = students.filter((s) => s.book === "not_brought").length;
   const teacherCount = new Set(students.map((s) => s.headTeacherId)).size;
 

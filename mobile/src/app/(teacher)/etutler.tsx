@@ -10,7 +10,7 @@ import { formatLong, todayISODate } from "@/lib/date";
 import type { EtutlerResponse } from "@/lib/types";
 import { usePalette } from "@/theme";
 
-const HOMEWORK_LABEL = { done: "Yapıldı", missing: "Eksik" } as const;
+const HOMEWORK_LABEL = { done: "Yapıldı", missing: "Eksik", not_done: "Yapmadı" } as const;
 const BOOK_LABEL = { brought: "Getirdi", not_brought: "Getirmedi" } as const;
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 
@@ -24,7 +24,7 @@ export default function EtutlerScreen() {
   const students = view?.students ?? [];
 
   const done = students.filter((s) => s.homework && s.book).length;
-  const eksik = students.filter((s) => s.homework === "missing");
+  const eksik = students.filter((s) => s.homework === "missing" || s.homework === "not_done");
   let homeworkDone = 0;
   let homeworkTotal = 0;
   for (const s of students) {
@@ -118,7 +118,7 @@ export default function EtutlerScreen() {
                               width: 10,
                               height: 8,
                               borderRadius: 2,
-                              backgroundColor: h === "done" ? p.accent : h === "missing" ? "transparent" : p.line,
+                              backgroundColor: h === "done" ? p.accent : h === "not_done" ? p.warn : h === "missing" ? "transparent" : p.line,
                               borderWidth: h === "missing" ? 2 : 0,
                               borderColor: p.warn,
                             }}
@@ -131,7 +131,7 @@ export default function EtutlerScreen() {
                       <StatusChip tone={s.attendance === "came" ? "pos" : s.attendance === "absent" ? "neg" : "wait"}>
                         {`Katılım: ${s.attendance ? ATTENDANCE_LABEL[s.attendance] : "Bekleniyor"}`}
                       </StatusChip>
-                      <StatusChip tone={s.homework === "done" ? "pos" : s.homework === "missing" ? "neg" : "wait"}>
+                      <StatusChip tone={s.homework === "done" ? "pos" : s.homework === "missing" || s.homework === "not_done" ? "neg" : "wait"}>
                         {`Ödev: ${s.homework ? HOMEWORK_LABEL[s.homework] : "Bekleniyor"}`}
                       </StatusChip>
                       <StatusChip tone={s.book === "brought" ? "pos" : s.book === "not_brought" ? "neg" : "wait"}>

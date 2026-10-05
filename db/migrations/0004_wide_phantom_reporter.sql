@@ -1,0 +1,1 @@
+ALTER TYPE "public"."homework_status" ADD VALUE 'not_done';

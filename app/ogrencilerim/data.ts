@@ -18,11 +18,11 @@ export type MyStudentRow = {
   id: string;
   fullName: string;
   className: string;
-  homework: "done" | "missing" | null;
+  homework: "done" | "missing" | "not_done" | null;
   book: "brought" | "not_brought" | null;
   attendance: "came" | "absent" | null;
   note: string | null;
-  last4Homework: ("done" | "missing" | null)[];
+  last4Homework: ("done" | "missing" | "not_done" | null)[];
 };
 
 export async function getStudentsForDate(user: Profile, dateISO: string): Promise<MyStudentRow[]> {
@@ -75,7 +75,7 @@ export type MyStudentListRow = {
   days: number[];
   latest: {
     date: string;
-    homework: "done" | "missing" | null;
+    homework: "done" | "missing" | "not_done" | null;
     book: "brought" | "not_brought" | null;
     attendance: "came" | "absent" | null;
     note: string | null;

@@ -12,7 +12,7 @@ export type AdminRecordRow = {
   className: string;
   headTeacherId: string;
   headTeacherName: string;
-  homework: "done" | "missing" | null;
+  homework: "done" | "missing" | "not_done" | null;
   book: "brought" | "not_brought" | null;
   attendance: "came" | "absent" | null;
   note: string | null;

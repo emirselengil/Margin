@@ -1,14 +1,55 @@
 const RADIUS = 16;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+// Dilimler r=8, çizgi kalınlığı 16 olan halkalarla çizilir (dolu pasta görünümü).
+const ARC_R = RADIUS / 2;
+const ARC_LEN = 2 * Math.PI * ARC_R;
 
-/** Tüm etütlerdeki ödev durumu dağılımı (yapıldı / eksik) pasta grafiği. */
-export function HomeworkPie({ done, missing, size = 132 }: { done: number; missing: number; size?: number }) {
-  const total = done + missing;
-  const donePct = total > 0 ? Math.round((done / total) * 100) : 0;
+/** Üç dilimin yüzdeleri toplamı her zaman 100 olacak şekilde yuvarlanır. */
+function percentages(done: number, missing: number, notDone: number) {
+  const total = done + missing + notDone;
+  if (total === 0) return { done: 0, missing: 0, notDone: 0 };
+  const d = Math.round((done / total) * 100);
+  const m = Math.round((missing / total) * 100);
+  return { done: d, missing: m, notDone: Math.max(0, 100 - d - m) };
+}
+
+/** Tüm etütlerdeki ödev durumu dağılımı (yapıldı / eksik / yapmadı) pasta grafiği. */
+export function HomeworkPie({
+  done,
+  missing,
+  notDone,
+  size = 132,
+}: {
+  done: number;
+  missing: number;
+  notDone: number;
+  size?: number;
+}) {
+  const total = done + missing + notDone;
+  const pct = percentages(done, missing, notDone);
   const summary =
     total === 0
       ? "Henüz ödev kaydı yok"
-      : `Ödev yapıldı ${done} (%${donePct}), ödev eksik ${missing} (%${100 - donePct})`;
+      : `Ödev yapıldı ${done} (%${pct.done}), ödev eksik ${missing} (%${pct.missing}), ödev yapmadı ${notDone} (%${pct.notDone})`;
+
+  // Her dilim: başlangıç ofseti + uzunluk
+  const arcs = [
+    { key: "done", count: done, stroke: "var(--accent)", opacity: 1 },
+    { key: "missing", count: missing, stroke: "var(--warn)", opacity: 0.5 },
+    { key: "notDone", count: notDone, stroke: "var(--warn)", opacity: 1 },
+  ];
+  let offset = 0;
+  const drawn = arcs.map((a) => {
+    const len = total > 0 ? (a.count / total) * ARC_LEN : 0;
+    const arc = { ...a, len, offset };
+    offset += len;
+    return arc;
+  });
+
+  const rows = [
+    { key: "done", label: "✓ Ödev yapıldı", count: done, pct: pct.done, color: "var(--accent)", opacity: 1 },
+    { key: "missing", label: "– Ödev eksik", count: missing, pct: pct.missing, color: "var(--warn)", opacity: 0.5 },
+    { key: "notDone", label: "✕ Ödev yapmadı", count: notDone, pct: pct.notDone, color: "var(--warn)", opacity: 1 },
+  ];
 
   return (
     <div className="flex flex-wrap items-center gap-5">
@@ -21,46 +62,37 @@ export function HomeworkPie({ done, missing, size = 132 }: { done: number; missi
         style={{ transform: "rotate(-90deg)", flexShrink: 0 }}
       >
         <circle cx="16" cy="16" r={RADIUS} fill="var(--line)" />
-        {total > 0 ? (
-          <>
+        {drawn
+          .filter((a) => a.len > 0)
+          .map((a) => (
             <circle
+              key={a.key}
               cx="16"
               cy="16"
-              r={RADIUS / 2}
+              r={ARC_R}
               fill="none"
-              stroke="var(--warn)"
+              stroke={a.stroke}
+              strokeOpacity={a.opacity}
               strokeWidth={RADIUS}
-              strokeDasharray={`${(CIRCUMFERENCE / 2).toFixed(2)} ${(CIRCUMFERENCE / 2).toFixed(2)}`}
+              strokeDasharray={`${a.len.toFixed(3)} ${ARC_LEN.toFixed(3)}`}
+              strokeDashoffset={(-a.offset).toFixed(3)}
             />
-            <circle
-              cx="16"
-              cy="16"
-              r={RADIUS / 2}
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth={RADIUS}
-              strokeDasharray={`${((done / total) * (CIRCUMFERENCE / 2)).toFixed(2)} ${(CIRCUMFERENCE / 2).toFixed(2)}`}
-            />
-          </>
-        ) : null}
+          ))}
       </svg>
       <ul className="m-0 flex list-none flex-col gap-2 p-0 text-[13px]">
-        <li className="flex items-center gap-2">
-          <span className="inline-flex h-3 w-3 shrink-0 rounded-[3px]" style={{ background: "var(--accent)" }} />
-          <span className="text-ink-2">✓ Ödev yapıldı</span>
-          <span className="font-mono font-medium text-ink">
-            {done}
-            {total > 0 ? <span className="text-muted"> · %{donePct}</span> : null}
-          </span>
-        </li>
-        <li className="flex items-center gap-2">
-          <span className="inline-flex h-3 w-3 shrink-0 rounded-[3px]" style={{ background: "var(--warn)" }} />
-          <span className="text-ink-2">– Ödev eksik</span>
-          <span className="font-mono font-medium text-ink">
-            {missing}
-            {total > 0 ? <span className="text-muted"> · %{100 - donePct}</span> : null}
-          </span>
-        </li>
+        {rows.map((r) => (
+          <li key={r.key} className="flex items-center gap-2">
+            <span
+              className="inline-flex h-3 w-3 shrink-0 rounded-[3px]"
+              style={{ background: r.color, opacity: r.opacity }}
+            />
+            <span className="text-ink-2">{r.label}</span>
+            <span className="font-mono font-medium text-ink">
+              {r.count}
+              {total > 0 ? <span className="text-muted"> · %{r.pct}</span> : null}
+            </span>
+          </li>
+        ))}
         {total === 0 ? <li className="text-muted">Henüz ödev kaydı yok.</li> : null}
       </ul>
     </div>

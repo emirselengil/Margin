@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 
 import { saveRecordAction } from "@/app/etut/actions";
 
-type Homework = "done" | "missing";
+type Homework = "done" | "missing" | "not_done";
 type Book = "brought" | "not_brought";
 type Attendance = "came" | "absent";
 
@@ -144,6 +144,13 @@ export function RecordForm({
               title="Eksik"
               subtitle="Eksik kalan kısım var"
               onClick={() => setHomework("missing")}
+            />
+            <OptionCard
+              selected={homework === "not_done"}
+              tone="neg"
+              title="Yapmadı"
+              subtitle="Ödev hiç yapılmamış"
+              onClick={() => setHomework("not_done")}
             />
           </div>
         </fieldset>

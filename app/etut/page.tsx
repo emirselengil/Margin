@@ -30,7 +30,7 @@ export default async function EtutPage({
 
   const done = students.filter((s) => s.homework && s.book).length;
   const total = students.length;
-  const odevEksik = students.filter((s) => s.homework === "missing").length;
+  const odevEksik = students.filter((s) => (s.homework === "missing" || s.homework === "not_done")).length;
   const kitapYok = students.filter((s) => s.book === "not_brought").length;
   const headTeacherCount = new Set(students.map((s) => s.headTeacherId)).size;
 

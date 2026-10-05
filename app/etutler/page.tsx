@@ -15,7 +15,7 @@ import { visibleStudentIds } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
-const HOMEWORK_LABEL = { done: "Yapıldı", missing: "Eksik" } as const;
+const HOMEWORK_LABEL = { done: "Yapıldı", missing: "Eksik", not_done: "Yapmadı" } as const;
 const BOOK_LABEL = { brought: "Getirdi", not_brought: "Getirmedi" } as const;
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 
@@ -38,7 +38,7 @@ export default async function EtutlerPage({
 
   const total = todayStudents.length;
   const done = todayStudents.filter((s) => s.homework && s.book).length;
-  const eksik = todayStudents.filter((s) => s.homework === "missing");
+  const eksik = todayStudents.filter((s) => s.homework === "missing" || s.homework === "not_done");
 
   let homeworkDone = 0;
   let homeworkTotal = 0;
@@ -261,7 +261,7 @@ export default async function EtutlerPage({
                         </StatusChip>
                       </td>
                       <td className="px-3 py-3">
-                        <StatusChip tone={s.homework === "done" ? "pos" : s.homework === "missing" ? "neg" : "wait"}>
+                        <StatusChip tone={s.homework === "done" ? "pos" : s.homework === "missing" || s.homework === "not_done" ? "neg" : "wait"}>
                           {s.homework ? HOMEWORK_LABEL[s.homework] : "Bekleniyor"}
                         </StatusChip>
                       </td>
@@ -282,7 +282,9 @@ export default async function EtutlerPage({
                                   ? { background: "var(--accent)" }
                                   : h === "missing"
                                     ? { border: "2px solid var(--warn)", boxSizing: "border-box" }
-                                    : { background: "var(--line)" }
+                                    : h === "not_done"
+                                      ? { background: "var(--warn)" }
+                                      : { background: "var(--line)" }
                               }
                             />
                           ))}

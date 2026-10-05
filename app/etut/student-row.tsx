@@ -12,6 +12,7 @@ import { StatusToggle } from "@/components/status-toggle";
 const HOMEWORK_OPTIONS = [
   { value: "done", label: "Yapıldı", tone: "pos" },
   { value: "missing", label: "Eksik", tone: "neg" },
+  { value: "not_done", label: "Yapmadı", tone: "neg" },
 ] as const;
 
 const ATTENDANCE_OPTIONS = [
@@ -33,7 +34,7 @@ export function StudentRow({ student, dateISO }: { student: StudentForDay; dateI
   function handleHomework(value: string) {
     setHomework(value as typeof homework);
     startTransition(async () => {
-      await setHomeworkAction(student.id, dateISO, value as "done" | "missing");
+      await setHomeworkAction(student.id, dateISO, value as "done" | "missing" | "not_done");
     });
   }
 
