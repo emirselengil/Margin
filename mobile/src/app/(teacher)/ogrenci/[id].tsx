@@ -161,7 +161,7 @@ export default function OgrenciDetay() {
                 Genel ödev durumu
               </AppText>
               <AppText size={13} tone="muted">
-                Tüm etütlerdeki ödev kayıtlarının dağılımı.
+                Tüm ödev kayıtlarının dağılımı.
               </AppText>
             </View>
             <HomeworkPie done={allHwDone} missing={allHwMissing} notDone={allHwNotDone} />

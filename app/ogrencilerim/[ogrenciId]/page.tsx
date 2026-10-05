@@ -156,7 +156,7 @@ export default async function BasOgrenciDetayPage({
 
         <div className="rounded-[14px] border border-line bg-surface-2 p-[18px]">
           <h2 className="m-0 text-[15px] font-semibold">Genel ödev durumu</h2>
-          <p className="m-0 mb-4 mt-1 text-[13px] text-muted">Tüm etütlerdeki ödev kayıtlarının dağılımı.</p>
+          <p className="m-0 mb-4 mt-1 text-[13px] text-muted">Tüm ödev kayıtlarının dağılımı.</p>
           <HomeworkPie done={allHomeworkDone} missing={allHomeworkMissing} notDone={allHomeworkNotDone} />
         </div>
 
