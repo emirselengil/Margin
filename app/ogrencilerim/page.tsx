@@ -70,13 +70,14 @@ export default async function OgrencilerimPage() {
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px] border-collapse">
+              <table className="w-full min-w-[1200px] border-collapse">
                 <thead>
                   <tr className="text-left text-xs text-muted">
                     <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
                     <th className="px-3 py-2.5 font-medium">Etüt günleri</th>
                     <th className="px-3 py-2.5 font-medium">Son etüt</th>
                     <th className="px-3 py-2.5 font-medium">Not</th>
+                    <th className="px-3 py-2.5 font-medium">Öğretmen notu</th>
                     <th className="px-[18px] py-2.5">
                       <span className="sr-only">Aç</span>
                     </th>
@@ -125,13 +126,10 @@ export default async function OgrencilerimPage() {
                         )}
                       </td>
                       <td className="max-w-[260px] px-3 py-3 text-[13px] text-ink-2">
-                        {s.latest?.note || (s.latest?.headTeacherNote ? null : "—")}
-                        {s.latest?.headTeacherNote ? (
-                          <div className={s.latest.note ? "mt-1 text-xs" : "text-xs"}>
-                            <span className="font-medium text-accent-text">Öğretmen notu: </span>
-                            <span className="text-ink-2">{s.latest.headTeacherNote}</span>
-                          </div>
-                        ) : null}
+                        {s.latest?.note || "—"}
+                      </td>
+                      <td className="max-w-[260px] px-3 py-3 text-[13px] text-ink-2">
+                        {s.latest?.headTeacherNote || "—"}
                       </td>
                       <td className="px-[18px] py-3 text-right">
                         <Link

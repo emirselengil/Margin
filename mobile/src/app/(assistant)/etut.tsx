@@ -224,7 +224,7 @@ export default function EtutScreen() {
                     )}
                     {s.headTeacherNote ? (
                       <View style={{ marginTop: 4, gap: 1 }}>
-                        <AppText size={12} weight="medium" tone="accent">
+                        <AppText size={12} tone="muted">
                           Öğretmen notu
                         </AppText>
                         <AppText size={13} tone="ink2">
