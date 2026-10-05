@@ -143,6 +143,16 @@ export default function EtutlerScreen() {
                         {s.note}
                       </AppText>
                     ) : null}
+                    {s.headTeacherNote ? (
+                      <View style={{ gap: 1 }}>
+                        <AppText size={12} tone="muted">
+                          Öğretmen notu
+                        </AppText>
+                        <AppText size={13} tone="ink2">
+                          {s.headTeacherNote}
+                        </AppText>
+                      </View>
+                    ) : null}
                   </Card>
                 )}
               </Pressable>

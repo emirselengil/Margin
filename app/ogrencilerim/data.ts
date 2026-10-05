@@ -22,6 +22,7 @@ export type MyStudentRow = {
   book: "brought" | "not_brought" | null;
   attendance: "came" | "absent" | null;
   note: string | null;
+  headTeacherNote: string | null;
   last4Homework: ("done" | "missing" | "not_done" | null)[];
 };
 
@@ -62,6 +63,7 @@ export async function getStudentsForDate(user: Profile, dateISO: string): Promis
       book: today?.book ?? null,
       attendance: today?.attendance ?? null,
       note: today?.note ?? null,
+      headTeacherNote: today?.headTeacherNote ?? null,
       last4Homework: past.map((p) => p.homework).reverse(),
     });
   }
