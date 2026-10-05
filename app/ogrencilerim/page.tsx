@@ -1,5 +1,6 @@
 import { ChevronRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { Fragment } from "react";
 
 import { AddMyStudentButton } from "@/app/ogrencilerim/add-my-student-button";
 import { getAllMyStudents } from "@/app/ogrencilerim/data";
@@ -84,65 +85,71 @@ export default async function OgrencilerimPage() {
                 </thead>
                 <tbody>
                   {students.map((s) => (
-                    <tr key={s.id} className="border-t border-line transition-colors hover:bg-surface-2">
-                      <td className="px-[18px] py-3">
-                        <Link
-                          href={`/ogrencilerim/${s.id}`}
-                          className="flex items-center gap-3 text-ink no-underline transition-colors hover:text-accent-text"
-                        >
-                          <Avatar name={s.fullName} colorId={s.id} />
-                          <span className="flex flex-col gap-0.5">
-                            <span className="font-medium">{s.fullName}</span>
-                            <span className="font-mono text-xs text-muted">{s.className}</span>
-                          </span>
-                        </Link>
-                      </td>
-                      <td className="px-3 py-3 font-mono text-xs text-ink-2">
-                        {s.days.map((d) => WEEKDAY_SHORT[d]).join(" · ") || "Gün belirlenmemiş"}
-                      </td>
-                      <td className="px-3 py-3">
-                        {s.latest ? (
-                          <span className="flex flex-wrap items-center gap-1.5">
-                            <span className="font-mono text-xs text-muted">{formatDayMonth(s.latest.date)}</span>
-                            {s.latest.attendance ? (
-                              <StatusChip tone={s.latest.attendance === "came" ? "pos" : "neg"}>
-                                {ATTENDANCE_LABEL[s.latest.attendance]}
-                              </StatusChip>
-                            ) : null}
-                            {s.latest.homework ? (
-                              <StatusChip tone={s.latest.homework === "done" ? "pos" : "neg"}>
-                                {HOMEWORK_LABEL[s.latest.homework]}
-                              </StatusChip>
-                            ) : null}
-                            {s.latest.book ? (
-                              <StatusChip tone={s.latest.book === "brought" ? "pos" : "neg"}>
-                                {BOOK_LABEL[s.latest.book]}
-                              </StatusChip>
-                            ) : null}
-                          </span>
-                        ) : (
-                          <span className="text-[13px] text-muted">Henüz kayıt yok</span>
-                        )}
-                      </td>
-                      <td className="max-w-[260px] px-3 py-3 text-[13px] text-ink-2">
-                        {s.latest?.note || (s.latest?.headTeacherNote ? null : "—")}
-                        {s.latest?.headTeacherNote ? (
-                          <div className={s.latest.note ? "mt-1 text-xs" : "text-xs"}>
-                            <span className="font-medium text-accent-text">Öğretmen notu: </span>
-                            <span className="text-ink-2">{s.latest.headTeacherNote}</span>
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className="px-[18px] py-3 text-right">
-                        <Link
-                          href={`/ogrencilerim/${s.id}`}
-                          aria-label="Öğrenciyi aç"
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-[9px] text-muted transition-colors hover:bg-sunken hover:text-ink"
-                        >
-                          <ChevronRight size={16} aria-hidden="true" />
-                        </Link>
-                      </td>
-                    </tr>
+                    <Fragment key={s.id}>
+                      <tr className="border-t border-line transition-colors hover:bg-surface-2">
+                        <td className="px-[18px] py-3">
+                          <Link
+                            href={`/ogrencilerim/${s.id}`}
+                            className="flex items-center gap-3 text-ink no-underline transition-colors hover:text-accent-text"
+                          >
+                            <Avatar name={s.fullName} colorId={s.id} />
+                            <span className="flex flex-col gap-0.5">
+                              <span className="font-medium">{s.fullName}</span>
+                              <span className="font-mono text-xs text-muted">{s.className}</span>
+                            </span>
+                          </Link>
+                        </td>
+                        <td className="px-3 py-3 font-mono text-xs text-ink-2">
+                          {s.days.map((d) => WEEKDAY_SHORT[d]).join(" · ") || "Gün belirlenmemiş"}
+                        </td>
+                        <td className="px-3 py-3">
+                          {s.latest ? (
+                            <span className="flex flex-wrap items-center gap-1.5">
+                              <span className="font-mono text-xs text-muted">{formatDayMonth(s.latest.date)}</span>
+                              {s.latest.attendance ? (
+                                <StatusChip tone={s.latest.attendance === "came" ? "pos" : "neg"}>
+                                  {ATTENDANCE_LABEL[s.latest.attendance]}
+                                </StatusChip>
+                              ) : null}
+                              {s.latest.homework ? (
+                                <StatusChip tone={s.latest.homework === "done" ? "pos" : "neg"}>
+                                  {HOMEWORK_LABEL[s.latest.homework]}
+                                </StatusChip>
+                              ) : null}
+                              {s.latest.book ? (
+                                <StatusChip tone={s.latest.book === "brought" ? "pos" : "neg"}>
+                                  {BOOK_LABEL[s.latest.book]}
+                                </StatusChip>
+                              ) : null}
+                            </span>
+                          ) : (
+                            <span className="text-[13px] text-muted">Henüz kayıt yok</span>
+                          )}
+                        </td>
+                        <td className="max-w-[260px] px-3 py-3 text-[13px] text-ink-2">
+                          {s.latest?.note || "—"}
+                        </td>
+                        <td className="px-[18px] py-3 text-right">
+                          <Link
+                            href={`/ogrencilerim/${s.id}`}
+                            aria-label="Öğrenciyi aç"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-[9px] text-muted transition-colors hover:bg-sunken hover:text-ink"
+                          >
+                            <ChevronRight size={16} aria-hidden="true" />
+                          </Link>
+                        </td>
+                      </tr>
+                      {s.latest?.headTeacherNote ? (
+                        <tr className="hover:bg-surface-2">
+                          <td colSpan={5} className="px-[18px] pb-3 pt-0">
+                            <div className="ml-[46px] rounded-[10px] bg-accent-soft px-3 py-2 text-[13px]">
+                              <span className="font-medium text-accent-text">Öğretmen notu: </span>
+                              <span className="text-ink">{s.latest.headTeacherNote}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : null}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
