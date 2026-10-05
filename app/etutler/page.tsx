@@ -226,7 +226,7 @@ export default async function EtutlerPage({
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px] border-collapse">
+              <table className="w-full min-w-[1200px] border-collapse">
                 <thead>
                   <tr className="text-left text-xs text-muted">
                     <th className="px-[18px] py-2.5 font-medium">Öğrenci</th>
@@ -234,6 +234,7 @@ export default async function EtutlerPage({
                     <th className="px-3 py-2.5 font-medium">Ödev</th>
                     <th className="px-3 py-2.5 font-medium">Kitap</th>
                     <th className="px-3 py-2.5 font-medium">Not</th>
+                    <th className="px-3 py-2.5 font-medium">Öğretmen notu</th>
                     <th className="px-3 py-2.5 font-medium">Son 4 etüt</th>
                     <th className="px-[18px] py-2.5">
                       <span className="sr-only">Aç</span>
@@ -271,6 +272,7 @@ export default async function EtutlerPage({
                         </StatusChip>
                       </td>
                       <td className="max-w-[240px] px-3 py-3 text-[13px] text-ink-2">{s.note || "—"}</td>
+                      <td className="max-w-[240px] px-3 py-3 text-[13px] text-ink-2">{s.headTeacherNote || "—"}</td>
                       <td className="px-3 py-3">
                         <span className="flex gap-1" aria-label="Son 4 etütte ödev durumu">
                           {s.last4Homework.map((h, i) => (

@@ -102,6 +102,7 @@ export type EtutlerStudent = {
   book: Book | null;
   attendance: Attendance | null;
   note: string | null;
+  headTeacherNote: string | null;
   last4Homework: (Homework | null)[];
 };
 export type EtutlerResponse = {
