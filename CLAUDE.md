@@ -144,7 +144,7 @@ Tasarımlar `tasarim/` klasöründe (açık ve koyu tema). Ekranları bu görsel
 **Asistan öğretmen**
 - `/etut`: Etüt listesi
   - hafta şeridi (gün seçimi, günlük öğrenci sayısı)
-  - özet kutuları: kayıt girildi x/y, gelecek öğrenci, ödev eksik (eksik + yapmadı), kitap getirmedi
+  - özet kutuları: kayıt girildi x/y, gelecek öğrenci, ödev eksik veya yapılmadı, kitap getirmedi
   - öğrenci tablosu: ödev ve kitap doğrudan tablodan tek tıkla girilir, anında kaydedilir
 - `/etut/[ogrenciId]`: Öğrenci detayı ve kayıt formu
   - solda günün öğrenci listesi
