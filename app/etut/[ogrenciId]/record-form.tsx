@@ -196,7 +196,7 @@ export function RecordForm({
 
         {headTeacherNote ? (
           <div className="rounded-[10px] border border-line bg-accent-soft px-3.5 py-3">
-            <div className="text-xs font-medium text-accent-text">Baş öğretmen notu (salt okunur)</div>
+            <div className="text-xs font-medium text-accent-text">Öğretmen notu (salt okunur)</div>
             <p className="m-0 mt-1 whitespace-pre-wrap leading-relaxed text-ink">{headTeacherNote}</p>
           </div>
         ) : null}

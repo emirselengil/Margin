@@ -319,7 +319,7 @@ export function RecordsManager({
                               <span className="flex items-center gap-1">
                                 <input
                                   autoFocus
-                                  aria-label="Baş öğretmen notu"
+                                  aria-label="Öğretmen notu"
                                   value={headNoteDraft}
                                   onChange={(e) => setHeadNoteDraft(e.target.value)}
                                   onKeyDown={(e) => {
@@ -330,7 +330,7 @@ export function RecordsManager({
                                 />
                                 <button
                                   type="button"
-                                  aria-label="Baş öğretmen notunu kaydet"
+                                  aria-label="Öğretmen notunu kaydet"
                                   onClick={() => saveHeadNote(r)}
                                   disabled={isPending}
                                   className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-accent-text transition-colors hover:bg-accent-soft active:bg-accent-soft disabled:opacity-60"
@@ -339,7 +339,7 @@ export function RecordsManager({
                                 </button>
                                 <button
                                   type="button"
-                                  aria-label="Baş öğretmen notundan vazgeç"
+                                  aria-label="Öğretmen notundan vazgeç"
                                   onClick={() => setEditingHeadNoteId(null)}
                                   className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-sunken hover:text-ink active:bg-line"
                                 >
@@ -354,7 +354,7 @@ export function RecordsManager({
                             </span>
                           ) : r.headTeacherNote ? (
                             <span className="mt-1 block text-xs text-accent-text">
-                              Baş öğretmen: {r.headTeacherNote}
+                              Öğretmen notu: {r.headTeacherNote}
                             </span>
                           ) : null}
                         </>
@@ -379,7 +379,7 @@ export function RecordsManager({
                       </button>
                       <button
                         type="button"
-                        aria-label="Baş öğretmen notunu düzenle"
+                        aria-label="Öğretmen notunu düzenle"
                         onClick={() => startEditHeadNote(r)}
                         className="ml-1 inline-flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-lg border border-line bg-surface text-ink-2 transition-colors hover:bg-sunken hover:border-line-2 hover:text-ink active:bg-line"
                       >
