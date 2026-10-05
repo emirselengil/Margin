@@ -42,7 +42,7 @@ export function HeadTeacherNoteEditor({
     return (
       <div className="mt-2.5 flex flex-col gap-2 rounded-[10px] border border-line bg-surface-2 p-3">
         <label htmlFor={inputId} className="text-xs font-medium text-ink-2">
-          Baş öğretmen notu
+          Öğretmen notu
         </label>
         <textarea
           id={inputId}
@@ -87,7 +87,7 @@ export function HeadTeacherNoteEditor({
     <div className="mt-2.5">
       {saved ? (
         <div className="rounded-[10px] border border-line bg-accent-soft px-3 py-2">
-          <div className="text-xs font-medium text-accent-text">Baş öğretmen notu</div>
+          <div className="text-xs font-medium text-accent-text">Öğretmen notu</div>
           <p className="m-0 mt-1 whitespace-pre-wrap leading-relaxed text-ink">{saved}</p>
         </div>
       ) : null}

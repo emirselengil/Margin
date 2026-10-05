@@ -7,7 +7,7 @@ import { api, ApiError } from "@/lib/api";
 import { usePalette } from "@/theme";
 
 /** Asistan için: baş öğretmen notunu salt okunur gösterir. */
-export function HeadNoteReadOnly({ note, title = "Baş öğretmen notu" }: { note: string; title?: string }) {
+export function HeadNoteReadOnly({ note, title = "Öğretmen notu" }: { note: string; title?: string }) {
   const p = usePalette();
   return (
     <View style={{ borderRadius: 10, borderWidth: 1, borderColor: p.line, backgroundColor: p.accentSoft, padding: 10, gap: 2 }}>
@@ -56,7 +56,7 @@ export function HeadNoteEditor({
   if (editing) {
     return (
       <View style={{ gap: 8, borderRadius: 10, borderWidth: 1, borderColor: p.line, backgroundColor: p.surface2, padding: 10 }}>
-        <Field label="Baş öğretmen notu" value={draft} onChangeText={setDraft} multiline maxLength={1000} />
+        <Field label="Öğretmen notu" value={draft} onChangeText={setDraft} multiline maxLength={1000} />
         {error ? <Message ok={false} text={error} /> : null}
         <View style={{ flexDirection: "row", gap: 8 }}>
           <Button label="Kaydet" small onPress={save} loading={busy} />

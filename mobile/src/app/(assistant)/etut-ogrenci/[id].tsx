@@ -250,7 +250,7 @@ export default function OgrenciDetay() {
                   <Field label="Not" value={note} onChangeText={setNote} placeholder="Öğretmen notu (isteğe bağlı)" multiline />
                 </View>
                 {detail?.record?.headTeacherNote ? (
-                  <HeadNoteReadOnly note={detail.record.headTeacherNote} title="Baş öğretmen notu (salt okunur)" />
+                  <HeadNoteReadOnly note={detail.record.headTeacherNote} title="Öğretmen notu (salt okunur)" />
                 ) : null}
                 {error ? <Message ok={false} text={error} /> : null}
                 {saved ? <Message ok text="Kaydedildi." /> : null}
