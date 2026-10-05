@@ -111,7 +111,7 @@ study_records                           -- her etüt için bir kayıt
   id               uuid pk
   student_id       uuid fk → students
   date             date
-  homework         enum('done','missing')
+  homework         enum('done','missing','not_done')  -- Yapıldı / Eksik (kısmen) / Yapmadı; 'ödev eksik' sayımlarında missing ve not_done birlikte sayılır
   book             enum('brought','not_brought')
   note             text null
   head_teacher_note text null        -- yalnızca öğrencinin baş öğretmeni ve yönetici yazar; asistan salt görür; yalnızca var olan kayda eklenir
@@ -144,7 +144,7 @@ Tasarımlar `tasarim/` klasöründe (açık ve koyu tema). Ekranları bu görsel
 **Asistan öğretmen**
 - `/etut`: Etüt listesi
   - hafta şeridi (gün seçimi, günlük öğrenci sayısı)
-  - özet kutuları: kayıt girildi x/y, gelecek öğrenci, ödev eksik, kitap getirmedi
+  - özet kutuları: kayıt girildi x/y, gelecek öğrenci, ödev eksik (eksik + yapmadı), kitap getirmedi
   - öğrenci tablosu: ödev ve kitap doğrudan tablodan tek tıkla girilir, anında kaydedilir
 - `/etut/[ogrenciId]`: Öğrenci detayı ve kayıt formu
   - solda günün öğrenci listesi

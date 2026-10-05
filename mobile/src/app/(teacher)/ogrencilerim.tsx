@@ -23,7 +23,7 @@ import { formatDayMonth, WEEKDAY_SHORT } from "@/lib/date";
 import type { MyStudentListRow } from "@/lib/types";
 import { usePalette } from "@/theme";
 
-const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik", not_done: "Ödev yapmadı" } as const;
 const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 

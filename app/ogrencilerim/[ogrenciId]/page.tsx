@@ -16,7 +16,7 @@ import { visibleStudentIds } from "@/lib/permissions";
 
 export const dynamic = "force-dynamic";
 
-const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik", not_done: "Ödev yapmadı" } as const;
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 
@@ -63,6 +63,7 @@ export default async function BasOgrenciDetayPage({
   const homeworkCounted = last4.filter((r) => r.homework !== null).length;
   const allHomeworkDone = records.filter((r) => r.homework === "done").length;
   const allHomeworkMissing = records.filter((r) => r.homework === "missing").length;
+  const allHomeworkNotDone = records.filter((r) => r.homework === "not_done").length;
   const bookBrought = last4.filter((r) => r.book === "brought").length;
   const bookCounted = last4.filter((r) => r.book !== null).length;
 
@@ -156,7 +157,7 @@ export default async function BasOgrenciDetayPage({
         <div className="rounded-[14px] border border-line bg-surface-2 p-[18px]">
           <h2 className="m-0 text-[15px] font-semibold">Genel ödev durumu</h2>
           <p className="m-0 mb-4 mt-1 text-[13px] text-muted">Tüm etütlerdeki ödev kayıtlarının dağılımı.</p>
-          <HomeworkPie done={allHomeworkDone} missing={allHomeworkMissing} />
+          <HomeworkPie done={allHomeworkDone} missing={allHomeworkMissing} notDone={allHomeworkNotDone} />
         </div>
 
         <div className="overflow-hidden rounded-[14px] border border-line">
@@ -171,7 +172,7 @@ export default async function BasOgrenciDetayPage({
             <div className="relative px-[18px] py-5 pl-11">
               <div className="absolute bottom-6 left-6 top-6 w-0.5 bg-line" />
               {records.map((r) => {
-                const ok = r.homework !== "missing" && r.book !== "not_brought";
+                const ok = r.homework !== "missing" && r.homework !== "not_done" && r.book !== "not_brought";
                 return (
                   <div key={r.date} className="relative flex flex-wrap gap-2 pb-[22px]">
                     <span

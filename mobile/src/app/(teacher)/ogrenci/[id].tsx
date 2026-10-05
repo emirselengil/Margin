@@ -10,7 +10,7 @@ import { formatDayMonth, formatTimelineDate, todayISODate, WEEKDAY_LONG } from "
 import type { OwnStudentDetailResponse } from "@/lib/types";
 import { usePalette } from "@/theme";
 
-const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik", not_done: "Ödev yapmadı" } as const;
 const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 
@@ -43,6 +43,7 @@ export default function OgrenciDetay() {
   const last4 = records.slice(0, 4);
   const allHwDone = records.filter((r) => r.homework === "done").length;
   const allHwMissing = records.filter((r) => r.homework === "missing").length;
+  const allHwNotDone = records.filter((r) => r.homework === "not_done").length;
 
   const hwSquares = Array.from({ length: 4 }, (_, i) => {
     const h = last4[3 - i]?.homework;
@@ -163,7 +164,7 @@ export default function OgrenciDetay() {
                 Tüm etütlerdeki ödev kayıtlarının dağılımı.
               </AppText>
             </View>
-            <HomeworkPie done={allHwDone} missing={allHwMissing} />
+            <HomeworkPie done={allHwDone} missing={allHwMissing} notDone={allHwNotDone} />
           </Card>
 
           <Card tone="surface" style={{ overflow: "hidden" }}>
@@ -177,7 +178,7 @@ export default function OgrenciDetay() {
             ) : (
               <View style={{ padding: 14, gap: 4 }}>
                 {records.map((r) => {
-                  const ok = r.homework !== "missing" && r.book !== "not_brought" && r.attendance !== "absent";
+                  const ok = r.homework !== "missing" && r.homework !== "not_done" && r.book !== "not_brought" && r.attendance !== "absent";
                   return (
                     <View key={r.date} style={{ flexDirection: "row", gap: 12 }}>
                       <View style={{ alignItems: "center" }}>

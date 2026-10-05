@@ -257,7 +257,7 @@ export function StatusChip({ tone, children }: { tone: "pos" | "neg" | "wait"; c
 
 export type ToggleOption = { value: string; label: string; tone: "pos" | "neg" };
 
-/** Web'deki StatusToggle ile aynı: iki seçenekli, ikon + renk + metin. */
+/** Web'deki StatusToggle ile aynı: ikon + renk + metin. */
 export function StatusToggle({
   value,
   options,
@@ -266,7 +266,7 @@ export function StatusToggle({
   label,
 }: {
   value: string | null;
-  options: readonly [ToggleOption, ToggleOption];
+  options: readonly ToggleOption[];
   onSelect: (value: string) => void;
   disabled?: boolean;
   label: string;

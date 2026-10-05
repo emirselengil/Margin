@@ -1,6 +1,6 @@
 {
-  "id": "6bce5f2f-91bc-48a6-8a1f-ab308a7b5ddb",
-  "prevId": "8e606312-3607-43f4-8698-badeb7c4ee96",
+  "id": "57f26352-f1f4-4403-8aa2-dff71fe37921",
+  "prevId": "6bce5f2f-91bc-48a6-8a1f-ab308a7b5ddb",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -64,6 +64,280 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.branch_access_requests": {
+      "name": "branch_access_requests",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "assistant_id": {
+          "name": "assistant_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "institution_id": {
+          "name": "institution_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "branch_request_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "decided_at": {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decided_by": {
+          "name": "decided_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "branch_access_requests_assistant_id_profiles_id_fk": {
+          "name": "branch_access_requests_assistant_id_profiles_id_fk",
+          "tableFrom": "branch_access_requests",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "assistant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "branch_access_requests_institution_id_institutions_id_fk": {
+          "name": "branch_access_requests_institution_id_institutions_id_fk",
+          "tableFrom": "branch_access_requests",
+          "tableTo": "institutions",
+          "columnsFrom": [
+            "institution_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "branch_access_requests_branch_id_branches_id_fk": {
+          "name": "branch_access_requests_branch_id_branches_id_fk",
+          "tableFrom": "branch_access_requests",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "branch_access_requests_decided_by_profiles_id_fk": {
+          "name": "branch_access_requests_decided_by_profiles_id_fk",
+          "tableFrom": "branch_access_requests",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "decided_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "branch_access_requests_unique": {
+          "name": "branch_access_requests_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "assistant_id",
+            "institution_id",
+            "branch_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.branches": {
+      "name": "branches",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "level": {
+          "name": "level",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "branches_name_level_unique": {
+          "name": "branches_name_level_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name",
+            "level"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "branches_level_check": {
+          "name": "branches_level_check",
+          "value": "\"branches\".\"level\" in ('ilkokul', 'ortaokul', 'lise')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.institution_branches": {
+      "name": "institution_branches",
+      "schema": "",
+      "columns": {
+        "institution_id": {
+          "name": "institution_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "institution_branches_institution_id_institutions_id_fk": {
+          "name": "institution_branches_institution_id_institutions_id_fk",
+          "tableFrom": "institution_branches",
+          "tableTo": "institutions",
+          "columnsFrom": [
+            "institution_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "institution_branches_branch_id_branches_id_fk": {
+          "name": "institution_branches_branch_id_branches_id_fk",
+          "tableFrom": "institution_branches",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "institution_branches_institution_id_branch_id_pk": {
+          "name": "institution_branches_institution_id_branch_id_pk",
+          "columns": [
+            "institution_id",
+            "branch_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.institutions": {
+      "name": "institutions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.profiles": {
       "name": "profiles",
       "schema": "",
@@ -113,6 +387,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -122,7 +402,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "profiles_branch_id_branches_id_fk": {
+          "name": "profiles_branch_id_branches_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "profiles_email_unique": {
@@ -460,6 +754,66 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.teacher_institutions": {
+      "name": "teacher_institutions",
+      "schema": "",
+      "columns": {
+        "teacher_id": {
+          "name": "teacher_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "institution_id": {
+          "name": "institution_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "teacher_institutions_teacher_id_profiles_id_fk": {
+          "name": "teacher_institutions_teacher_id_profiles_id_fk",
+          "tableFrom": "teacher_institutions",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "teacher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "teacher_institutions_institution_id_institutions_id_fk": {
+          "name": "teacher_institutions_institution_id_institutions_id_fk",
+          "tableFrom": "teacher_institutions",
+          "tableTo": "institutions",
+          "columnsFrom": [
+            "institution_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "teacher_institutions_teacher_id_institution_id_pk": {
+          "name": "teacher_institutions_teacher_id_institution_id_pk",
+          "columns": [
+            "teacher_id",
+            "institution_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -477,6 +831,15 @@
       "values": [
         "brought",
         "not_brought"
+      ]
+    },
+    "public.branch_request_status": {
+      "name": "branch_request_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "approved",
+        "rejected"
       ]
     },
     "public.homework_status": {

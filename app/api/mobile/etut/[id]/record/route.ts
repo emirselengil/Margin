@@ -11,7 +11,7 @@ export const PUT = withUser<{ id: string }>(["assistant"], async (req, _user, { 
   const date = requireDate(body.date);
 
   if (body.homework !== undefined) {
-    await setHomeworkAction(id, date, requireOneOf(body.homework, ["done", "missing"] as const, "Ödev"));
+    await setHomeworkAction(id, date, requireOneOf(body.homework, ["done", "missing", "not_done"] as const, "Ödev"));
   }
   if (body.book !== undefined) {
     await setBookAction(id, date, requireOneOf(body.book, ["brought", "not_brought"] as const, "Kitap"));

@@ -24,7 +24,7 @@ import { fonts, usePalette } from "@/theme";
 
 const NOTE_SHORTCUTS = ["Derse aktif katıldı", "Eksiği tamamlayacak"];
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
-const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik", not_done: "Ödev yapmadı" } as const;
 const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 
 function OptionCard({
@@ -221,6 +221,7 @@ export default function OgrenciDetay() {
                 <Group title="Ödev durumu">
                   <OptionCard selected={homework === "done"} tone="pos" title="Yapıldı" subtitle="Ödevin tamamı yapılmış" onPress={() => setHomework("done")} />
                   <OptionCard selected={homework === "missing"} tone="neg" title="Eksik" subtitle="Eksik kalan kısım var" onPress={() => setHomework("missing")} />
+                  <OptionCard selected={homework === "not_done"} tone="neg" title="Yapmadı" subtitle="Ödev hiç yapılmamış" onPress={() => setHomework("not_done")} />
                 </Group>
                 <Group title="Kitap">
                   <OptionCard selected={book === "brought"} tone="pos" title="Getirdi" subtitle="Kitabı yanında" onPress={() => setBook("brought")} />
@@ -276,7 +277,7 @@ export default function OgrenciDetay() {
               <AppText tone="ink2">Bu öğrenci için henüz geçmiş etüt kaydı yok.</AppText>
             ) : (
               filledPast.map((r) => {
-                const ok = r.homework !== "missing" && r.book !== "not_brought" && r.attendance !== "absent";
+                const ok = r.homework !== "missing" && r.homework !== "not_done" && r.book !== "not_brought" && r.attendance !== "absent";
                 return (
                   <View key={r.date} style={{ flexDirection: "row", gap: 12 }}>
                     <View style={{ alignItems: "center" }}>

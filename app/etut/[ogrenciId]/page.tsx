@@ -22,7 +22,7 @@ import { requirePageRole } from "@/lib/page-guard";
 
 export const dynamic = "force-dynamic";
 
-const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik" } as const;
+const HOMEWORK_LABEL = { done: "Ödev yapıldı", missing: "Ödev eksik", not_done: "Ödev yapmadı" } as const;
 const ATTENDANCE_LABEL = { came: "Geldi", absent: "Gelmedi" } as const;
 const BOOK_LABEL = { brought: "Kitap getirdi", not_brought: "Kitap getirmedi" } as const;
 
@@ -198,7 +198,7 @@ export default async function OgrenciDetayPage({
                 <div className="relative pl-[26px]">
                   <div className="absolute bottom-1.5 left-[7px] top-1.5 w-0.5 bg-line" />
                   {filledPast.map((r) => {
-                    const ok = r.homework !== "missing" && r.book !== "not_brought";
+                    const ok = r.homework !== "missing" && r.homework !== "not_done" && r.book !== "not_brought";
                     return (
                       <div key={r.date} className="relative pb-5">
                         <span
