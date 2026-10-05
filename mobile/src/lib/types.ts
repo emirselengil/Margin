@@ -24,6 +24,7 @@ export type StudentForDay = {
   book: Book | null;
   attendance: Attendance | null;
   note: string | null;
+  headTeacherNote: string | null;
 };
 
 export type HeadTeacherSummary = { id: string; name: string; studentCount: number };
@@ -89,6 +90,7 @@ export type MyStudentListRow = {
     book: Book | null;
     attendance: Attendance | null;
     note: string | null;
+    headTeacherNote: string | null;
   } | null;
 };
 

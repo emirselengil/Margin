@@ -79,6 +79,7 @@ export type MyStudentListRow = {
     book: "brought" | "not_brought" | null;
     attendance: "came" | "absent" | null;
     note: string | null;
+    headTeacherNote: string | null;
   } | null;
 };
 
@@ -120,6 +121,7 @@ export async function getAllMyStudents(user: Profile): Promise<MyStudentListRow[
               book: latest.book,
               attendance: latest.attendance,
               note: latest.note,
+              headTeacherNote: latest.headTeacherNote,
             }
           : null,
       };

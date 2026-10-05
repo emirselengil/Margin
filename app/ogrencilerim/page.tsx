@@ -125,7 +125,13 @@ export default async function OgrencilerimPage() {
                         )}
                       </td>
                       <td className="max-w-[260px] px-3 py-3 text-[13px] text-ink-2">
-                        {s.latest?.note || "—"}
+                        {s.latest?.note || (s.latest?.headTeacherNote ? null : "—")}
+                        {s.latest?.headTeacherNote ? (
+                          <div className={s.latest.note ? "mt-1 text-xs" : "text-xs"}>
+                            <span className="font-medium text-accent-text">Öğretmen notu: </span>
+                            <span className="text-ink-2">{s.latest.headTeacherNote}</span>
+                          </div>
+                        ) : null}
                       </td>
                       <td className="px-[18px] py-3 text-right">
                         <Link
