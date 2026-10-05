@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 
 import { getAllRecords, getStudentDetail } from "@/app/ogrencilerim/[ogrenciId]/data";
 import { Avatar } from "@/components/avatar";
+import { HeadTeacherNoteEditor } from "@/components/head-teacher-note-editor";
+import { HomeworkPie } from "@/components/homework-pie";
 import { AppShell } from "@/components/shell/app-shell";
 import { HeadTeacherSidebar } from "@/components/shell/head-teacher-sidebar";
 import { Topbar } from "@/components/shell/topbar";
@@ -59,6 +61,8 @@ export default async function BasOgrenciDetayPage({
   });
   const homeworkDone = last4.filter((r) => r.homework === "done").length;
   const homeworkCounted = last4.filter((r) => r.homework !== null).length;
+  const allHomeworkDone = records.filter((r) => r.homework === "done").length;
+  const allHomeworkMissing = records.filter((r) => r.homework === "missing").length;
   const bookBrought = last4.filter((r) => r.book === "brought").length;
   const bookCounted = last4.filter((r) => r.book !== null).length;
 
@@ -78,7 +82,7 @@ export default async function BasOgrenciDetayPage({
           <>
             <span className="flex h-[30px] items-center gap-1.5 rounded-lg border border-line bg-sunken px-2.5 text-xs font-medium text-ink-2">
               <ShieldCheck size={13} aria-hidden="true" />
-              Salt görüntüleme
+              Kayıtlar salt görüntüleme
             </span>
             <ThemeToggle />
           </>
@@ -149,6 +153,12 @@ export default async function BasOgrenciDetayPage({
           </div>
         </div>
 
+        <div className="rounded-[14px] border border-line bg-surface-2 p-[18px]">
+          <h2 className="m-0 text-[15px] font-semibold">Genel ödev durumu</h2>
+          <p className="m-0 mb-4 mt-1 text-[13px] text-muted">Tüm etütlerdeki ödev kayıtlarının dağılımı.</p>
+          <HomeworkPie done={allHomeworkDone} missing={allHomeworkMissing} />
+        </div>
+
         <div className="overflow-hidden rounded-[14px] border border-line">
           <div className="border-b border-line bg-surface-2 px-[18px] py-3.5">
             <h2 className="m-0 text-[15px] font-semibold">Etüt kayıtları</h2>
@@ -215,6 +225,7 @@ export default async function BasOgrenciDetayPage({
                         ) : null}
                       </div>
                       {r.note ? <p className="mt-2 leading-relaxed text-ink-2">{r.note}</p> : null}
+                      <HeadTeacherNoteEditor studentId={student.id} dateISO={r.date} initialNote={r.headTeacherNote} />
                     </div>
                     <div className="text-xs text-muted">Giren: {r.enteredBy}</div>
                   </div>

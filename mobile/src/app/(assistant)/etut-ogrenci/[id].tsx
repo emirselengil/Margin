@@ -3,6 +3,7 @@ import { Check, ChevronDown, ChevronLeft, ChevronUp, Minus } from "lucide-react-
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
+import { HeadNoteReadOnly } from "@/components/head-note";
 import {
   AppText,
   Avatar,
@@ -248,6 +249,9 @@ export default function OgrenciDetay() {
                   </View>
                   <Field label="Not" value={note} onChangeText={setNote} placeholder="Öğretmen notu (isteğe bağlı)" multiline />
                 </View>
+                {detail?.record?.headTeacherNote ? (
+                  <HeadNoteReadOnly note={detail.record.headTeacherNote} title="Baş öğretmen notu (salt okunur)" />
+                ) : null}
                 {error ? <Message ok={false} text={error} /> : null}
                 {saved ? <Message ok text="Kaydedildi." /> : null}
                 <View style={{ flexDirection: "row", gap: 8 }}>
@@ -289,6 +293,7 @@ export default function OgrenciDetay() {
                         {r.book ? <Tag pos={r.book === "brought"}>{BOOK_LABEL[r.book]}</Tag> : null}
                       </View>
                       {r.note ? <AppText tone="ink2">{r.note}</AppText> : null}
+                      {r.headTeacherNote ? <HeadNoteReadOnly note={r.headTeacherNote} /> : null}
                     </View>
                   </View>
                 );

@@ -27,6 +27,7 @@ export const GET = withUser<{ id: string }>(["assistant"], async (req, user, { i
           book: record.book,
           attendance: record.attendance,
           note: record.note,
+          headTeacherNote: record.headTeacherNote,
         }
       : null,
     pastRecords,

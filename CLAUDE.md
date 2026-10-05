@@ -40,7 +40,7 @@ NEON_AUTH_COOKIE_SECRET= # en az 32 karakter: openssl rand -base64 32
 | Rol | Kod | Ne yapabilir |
 |---|---|---|
 | Yönetici | `admin` | Her şeyi görür ve değiştirir: kullanıcı onayı, roller, asistan–baş öğretmen bağları, öğrenciler, etüt günleri, tüm kayıtlar |
-| Baş öğretmen | `head_teacher` | Yalnızca kendisine atanmış öğrencileri ve onların kayıtlarını **görüntüler**. Hiçbir şeyi değiştiremez |
+| Baş öğretmen | `head_teacher` | Yalnızca kendisine atanmış öğrencileri ve onların kayıtlarını **görüntüler**. Tek istisna: asistanın girdiği etüt kaydına **baş öğretmen notu** ekler/düzenler (`canWriteHeadTeacherNote`); başka hiçbir şeyi değiştiremez |
 | Asistan öğretmen | `assistant` | Bağlı olduğu baş öğretmenlerin öğrencilerini görür; bu öğrencilere kayıt ekler/düzenler; bu öğrencilerin etüt günlerini düzenler |
 | Onay bekliyor | `pending` | Kayıt olmuş ama yönetici onaylamamış. Hiçbir veriye erişemez, yalnızca "Hesabınız onay bekliyor" ekranını görür |
 
@@ -114,6 +114,7 @@ study_records                           -- her etüt için bir kayıt
   homework         enum('done','missing')
   book             enum('brought','not_brought')
   note             text null
+  head_teacher_note text null        -- yalnızca öğrencinin baş öğretmeni ve yönetici yazar; asistan salt görür; yalnızca var olan kayda eklenir
   created_by       uuid fk → profiles
   created_at       timestamptz
   updated_at       timestamptz
@@ -153,9 +154,9 @@ Tasarımlar `tasarim/` klasöründe (açık ve koyu tema). Ekranları bu görsel
   - günlük yoğunluk grafiği
   - kaydedilmemiş değişiklik uyarısı
 
-**Baş öğretmen** (salt görüntüleme, hiçbir düzenleme kontrolü görünmez)
+**Baş öğretmen** (kayıtlar salt görüntüleme; tek düzenleme: her kayıtta baş öğretmen notu)
 - `/ogrencilerim`: özet kutuları, hafta şeridi, bugünün durumu, son 4 etüt göstergesi
-- `/ogrencilerim/[ogrenciId]`: özet, son 4 etüt şeritleri, kayıt zaman çizelgesi ("Giren: …")
+- `/ogrencilerim/[ogrenciId]`: özet, son 4 etüt şeritleri, tüm etütlerdeki ödev durumu pasta grafiği, kayıt zaman çizelgesi ("Giren: …") ve kayıt başına baş öğretmen notu
 
 **Yönetici**
 - `/yonetim/ogretmenler`

@@ -2,6 +2,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { View } from "react-native";
 
+import { HeadNoteEditor } from "@/components/head-note";
+import { HomeworkPie } from "@/components/homework-pie";
 import { AppText, Avatar, Card, Empty, ErrorState, IconButton, Loading, Screen, useRemote } from "@/components/ui";
 import { api } from "@/lib/api";
 import { formatDayMonth, formatTimelineDate, todayISODate, WEEKDAY_LONG } from "@/lib/date";
@@ -39,6 +41,8 @@ export default function OgrenciDetay() {
   const today = todayISODate();
   const todayRecord = records.find((r) => r.date === today);
   const last4 = records.slice(0, 4);
+  const allHwDone = records.filter((r) => r.homework === "done").length;
+  const allHwMissing = records.filter((r) => r.homework === "missing").length;
 
   const hwSquares = Array.from({ length: 4 }, (_, i) => {
     const h = last4[3 - i]?.homework;
@@ -150,6 +154,18 @@ export default function OgrenciDetay() {
             </View>
           </View>
 
+          <Card style={{ padding: 14, gap: 12 }}>
+            <View style={{ gap: 2 }}>
+              <AppText size={15} weight="semibold">
+                Genel ödev durumu
+              </AppText>
+              <AppText size={13} tone="muted">
+                Tüm etütlerdeki ödev kayıtlarının dağılımı.
+              </AppText>
+            </View>
+            <HomeworkPie done={allHwDone} missing={allHwMissing} />
+          </Card>
+
           <Card tone="surface" style={{ overflow: "hidden" }}>
             <View style={{ padding: 14, backgroundColor: p.surface2, borderBottomWidth: 1, borderBottomColor: p.line }}>
               <AppText size={15} weight="semibold">
@@ -180,6 +196,7 @@ export default function OgrenciDetay() {
                           {r.book ? <Tag pos={r.book === "brought"}>{BOOK_LABEL[r.book]}</Tag> : null}
                         </View>
                         {r.note ? <AppText tone="ink2">{r.note}</AppText> : null}
+                        <HeadNoteEditor studentId={data.student.id} date={r.date} initialNote={r.headTeacherNote} onSaved={q.refresh} />
                         <AppText size={12} tone="muted">{`Giren: ${r.enteredBy}`}</AppText>
                       </View>
                     </View>

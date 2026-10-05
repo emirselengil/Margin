@@ -1,6 +1,6 @@
 {
-  "id": "b3e2e2d7-0654-4c8d-bc85-9db34d4fe0a4",
-  "prevId": "d0f857b2-1bae-4707-8c2a-447a4a9fc69d",
+  "id": "d55dd715-21cb-49c4-b096-1cd750da2ccb",
+  "prevId": "8e606312-3607-43f4-8698-badeb7c4ee96",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -673,6 +673,12 @@
         },
         "note": {
           "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "head_teacher_note": {
+          "name": "head_teacher_note",
           "type": "text",
           "primaryKey": false,
           "notNull": false

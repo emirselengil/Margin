@@ -55,7 +55,7 @@ export default async function OgrenciDetayPage({
       : null;
 
   const isScheduledToday = student.studyDays.includes(weekdayOfISODate(dateISO));
-  const filledPast = pastRecords.filter((r) => r.homework || r.book || r.attendance);
+  const filledPast = pastRecords.filter((r) => r.homework || r.book || r.attendance || r.headTeacherNote);
   const homeworkDoneCount = pastRecords.filter((r) => r.homework === "done").length;
   const bookBroughtCount = pastRecords.filter((r) => r.book === "brought").length;
 
@@ -166,6 +166,7 @@ export default async function OgrenciDetayPage({
                 initialBook={todayRecord?.book ?? null}
                 initialAttendance={todayRecord?.attendance ?? null}
                 initialNote={todayRecord?.note ?? ""}
+                headTeacherNote={todayRecord?.headTeacherNote ?? null}
               />
             ) : (
               <div className="rounded-2xl border border-line bg-surface-2 p-5 text-ink-2">
@@ -251,6 +252,12 @@ export default async function OgrenciDetayPage({
                           ) : null}
                         </div>
                         {r.note ? <p className="mt-2 leading-relaxed text-ink-2">{r.note}</p> : null}
+                        {r.headTeacherNote ? (
+                          <div className="mt-2 rounded-[10px] border border-line bg-accent-soft px-3 py-2">
+                            <div className="text-xs font-medium text-accent-text">Baş öğretmen notu</div>
+                            <p className="m-0 mt-1 whitespace-pre-wrap leading-relaxed text-ink">{r.headTeacherNote}</p>
+                          </div>
+                        ) : null}
                       </div>
                     );
                   })}

@@ -1,0 +1,1 @@
+ALTER TABLE "study_records" ADD COLUMN "head_teacher_note" text;
